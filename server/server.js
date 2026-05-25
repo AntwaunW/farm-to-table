@@ -9,16 +9,15 @@ connectDB();
 const app = express();
 
 app.use(cors());
+app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
 
-//Routes
+// Routes
 app.use('/api/auth', require('./routes/auth'));
-
-app.use('/api/farms' , require('./routes/farms'));
-
+app.use('/api/farms', require('./routes/farms'));
 app.use('/api/listings', require('./routes/listings'));
-
 app.use('/api/orders', require('./routes/orders'));
+app.use('/api/payments', require('./routes/payments'));
 
 app.get('/', (req, res) => {
   res.send('Farm-to-Table API running');
