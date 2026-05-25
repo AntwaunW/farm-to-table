@@ -16,6 +16,8 @@ app.use('/api/auth', require('./routes/auth'));
 
 app.use('/api/farms' , require('./routes/farms'));
 
+app.use('/api/listings', require('./routes/listings'));
+
 app.get('/', (req, res) => {
   res.send('Farm-to-Table API running');
 });
