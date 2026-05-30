@@ -1,0 +1,75 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.navbar {
+  background: #ffffff;
+  border-bottom: 1px solid $border;
+  position: sticky;
+  top: 0;
+  z-index: $z-navbar;
+
+  &__container {
+    @include container;
+    @include flex-between;
+    height: 60px;
+  }
+
+  &__logo {
+    @include flex-start;
+    gap: $spacing-sm;
+    font-size: $text-lg;
+    font-weight: 600;
+    color: $primary;
+    text-decoration: none;
+
+    &:hover {
+      color: $primary-dark;
+    }
+  }
+
+  &__logo-icon {
+    font-size: $text-xl;
+  }
+
+  &__links {
+    @include flex-start;
+    gap: $spacing-md;
+  }
+
+  &__link {
+    font-size: $text-sm;
+    color: $text-muted;
+    text-decoration: none;
+    font-weight: 500;
+    transition: $transition;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: $font-main;
+
+    &:hover {
+      color: $primary;
+    }
+
+    &--logout {
+      color: $error;
+
+      &:hover {
+        color: darken($error, 10%);
+      }
+    }
+  }
+
+  &__btn {
+    @include button-primary;
+    font-size: $text-sm;
+    padding: $spacing-xs $spacing-md;
+  }
+
+  @include respond-to(tablet) {
+    &__links {
+      gap: $spacing-sm;
+    }
+  }
+}

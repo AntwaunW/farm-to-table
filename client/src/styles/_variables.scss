@@ -1,0 +1,61 @@
+// Colors
+$primary: #2d6a4f;
+$primary-light: #52b788;
+$primary-dark: #1b4332;
+$secondary: #f4a261;
+$secondary-light: #f9c784;
+$background: #fafaf8;
+$surface: #ffffff;
+$text-dark: #1b1b1b;
+$text-muted: #6b7280;
+$border: #e5e7eb;
+$error: #e63946;
+$success: #40916c;
+$warning: #f4a261;
+
+// Typography
+$font-main: 'Inter', sans-serif;
+$font-heading: 'Merriweather', serif;
+
+// Font sizes
+$text-xs: 0.75rem;
+$text-sm: 0.875rem;
+$text-md: 1rem;
+$text-lg: 1.125rem;
+$text-xl: 1.25rem;
+$text-2xl: 1.5rem;
+$text-3xl: 1.875rem;
+$text-4xl: 2.25rem;
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 32px;
+$spacing-xl: 64px;
+
+// Breakpoints
+$mobile: 480px;
+$tablet: 768px;
+$desktop: 1024px;
+$wide: 1280px;
+
+// Border radius
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 16px;
+$radius-full: 9999px;
+
+// Shadows
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.10);
+
+// Transitions
+$transition: all 0.2s ease;
+$transition-slow: all 0.3s ease;
+
+// Z-index
+$z-navbar: 100;
+$z-modal: 200;
+$z-toast: 300;
