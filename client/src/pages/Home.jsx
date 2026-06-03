@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import './Home.scss';
+import FarmCard from '../components/common/FarmCard';
 
 const Home = () => {
   const [farms, setFarms] = useState([]);
@@ -115,29 +116,7 @@ const Home = () => {
           {error && <p className="home__error">{error}</p>}
           <div className="home__farms-grid">
             {farms.slice(0, 3).map((farm) => (
-              <Link to={`/farms/${farm._id}`} key={farm._id} className="farm-card">
-                <div className="farm-card__image">
-                  {farm.photos.length > 0 ? (
-                    <img src={farm.photos[0]} alt={farm.farmName} />
-                  ) : (
-                    <div className="farm-card__placeholder">🌾</div>
-                  )}
-                </div>
-                <div className="farm-card__info">
-                  <h3 className="farm-card__name">{farm.farmName}</h3>
-                  <p className="farm-card__location">
-                    📍 {farm.location.city}, {farm.location.state}
-                  </p>
-                  <div className="farm-card__tags">
-                    {farm.category.map((cat) => (
-                      <span key={cat} className="farm-card__tag">{cat}</span>
-                    ))}
-                  </div>
-                  {farm.rating && (
-                    <p className="farm-card__rating">★ {farm.rating}</p>
-                  )}
-                </div>
-              </Link>
+                <FarmCard key={farm._id} farm={farm} />
             ))}
           </div>
         </div>
