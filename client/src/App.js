@@ -3,13 +3,14 @@ import './index.scss';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Layout from './components/layout/Layout';
+import Home from './pages/Home';
 
 function App() {
   return (
     <Router>
       <Layout>
         <Routes>
-          <Route path="/" element={<h1>Home</h1>} />
+          <Route path="/" element={<Home />} />
           <Route path="/browse" element={<h1>Browse</h1>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
