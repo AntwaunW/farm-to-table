@@ -4,6 +4,7 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home';
+import Browse from './pages/Browse';
 
 function App() {
   return (
@@ -11,7 +12,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/browse" element={<h1>Browse</h1>} />
+          <Route path="/browse" element={<Browse />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/farms/:id" element={<h1>Farm Profile</h1>} />

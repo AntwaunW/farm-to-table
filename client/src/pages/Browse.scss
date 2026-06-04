@@ -1,0 +1,102 @@
+@import '../styles/variables';
+@import '../styles/mixins';
+
+.browse {
+  &__header {
+    background: $primary-dark;
+    padding: $spacing-lg 0;
+
+    &-container {
+      @include container;
+    }
+  }
+
+  &__title {
+    font-size: $text-3xl;
+    color: #ffffff;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__subtitle {
+    font-size: $text-md;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  &__container {
+    @include container;
+    padding-top: $spacing-lg;
+    padding-bottom: $spacing-xl;
+  }
+
+  &__filters {
+    margin-bottom: $spacing-lg;
+  }
+
+  &__search {
+    @include input-base;
+    max-width: 400px;
+    margin-bottom: $spacing-md;
+  }
+
+  &__categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+  }
+
+  &__cat-btn {
+    @include button-base;
+    background: #ffffff;
+    color: $text-muted;
+    border: 1px solid $border;
+    font-size: $text-sm;
+    padding: $spacing-xs $spacing-md;
+
+    &:hover {
+      border-color: $primary;
+      color: $primary;
+    }
+
+    &--active {
+      background: $primary;
+      color: #ffffff;
+      border-color: $primary;
+
+      &:hover {
+        background: $primary-dark;
+      }
+    }
+  }
+
+  &__loading {
+    text-align: center;
+    padding: $spacing-xl;
+    color: $text-muted;
+  }
+
+  &__error {
+    color: $error;
+    padding: $spacing-md;
+  }
+
+  &__empty {
+    text-align: center;
+    padding: $spacing-xl;
+    color: $text-muted;
+    font-size: $text-lg;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-md;
+
+    @include respond-to(tablet) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to(mobile) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
