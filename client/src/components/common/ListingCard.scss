@@ -1,0 +1,57 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+// Listing Card
+.listing-card {
+  background: #ffffff;
+  border-radius: $radius-md;
+  border: 1px solid $border;
+  padding: $spacing-md;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  transition: $transition;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-md;
+    background: #e8f5e0;
+    @include flex-center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__title {
+    font-size: $text-md;
+    font-weight: 500;
+    color: $text-dark;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__farm {
+    font-size: $text-sm;
+    color: $text-muted;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__price {
+    font-size: $text-lg;
+    font-weight: 600;
+    color: $primary;
+  }
+
+  &__unit {
+    font-size: $text-sm;
+    color: $text-muted;
+    font-weight: 400;
+  }
+}

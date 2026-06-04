@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import './Home.scss';
 import FarmCard from '../components/common/FarmCard';
+import ListingCard from '../components/common/ListingCard';
 
 const Home = () => {
   const [farms, setFarms] = useState([]);
@@ -131,29 +132,9 @@ const Home = () => {
           </div>
           <div className="home__listings-grid">
             {listings.slice(0, 4).map((listing) => (
-              <div key={listing._id} className="listing-card">
-                <div className="listing-card__icon">
-                  {listing.category === 'beef' && '🥩'}
-                  {listing.category === 'eggs' && '🥚'}
-                  {listing.category === 'honey' && '🍯'}
-                  {listing.category === 'dairy' && '🥛'}
-                  {listing.category === 'produce' && '🥬'}
-                  {listing.category === 'pork' && '🥓'}
-                  {listing.category === 'lamb' && '🍖'}
-                  {listing.category === 'poultry' && '🍗'}
-                  {listing.category === 'other' && '🌾'}
-                </div>
-                <div className="listing-card__info">
-                  <h4 className="listing-card__title">{listing.title}</h4>
-                  <p className="listing-card__farm">{listing.farm?.farmName}</p>
-                  <p className="listing-card__price">
-                    ${listing.pricePerUnit}
-                    <span className="listing-card__unit"> / {listing.unit}</span>
-                  </p>
-                </div>
-              </div>
+                <ListingCard key={listing._id} listing={listing} />
             ))}
-          </div>
+        </div>
         </div>
       </section>
 
