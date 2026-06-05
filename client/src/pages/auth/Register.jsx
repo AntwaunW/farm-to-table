@@ -1,3 +1,6 @@
+// Register page — creates a new user account (farmer or consumer)
+// On success, calls AuthContext's login() to log them in immediately and redirects home
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -10,7 +13,7 @@ const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'consumer',
+    role: 'consumer', // Default role — user can switch to 'farmer' via the dropdown
     location: {
       city: '',
       state: '',
@@ -22,12 +25,14 @@ const Register = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // Handles both top-level fields and nested location fields
+  // City, state, and zip are nested under formData.location
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (['city', 'state', 'zip'].includes(name)) {
-      setFormData({ 
-        ...formData, 
-        location: { ...formData.location, [name]: value } 
+      setFormData({
+        ...formData,
+        location: { ...formData.location, [name]: value }
       });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -35,9 +40,10 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent browser page reload on form submit
     setError('');
 
+    // Client-side password match check before making the API call
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -46,11 +52,15 @@ const Register = () => {
     setLoading(true);
 
     try {
+      // Strip confirmPassword before sending — the backend doesn't expect it
       const { confirmPassword, ...submitData } = formData;
       const res = await api.post('/auth/register', submitData);
+
+      // Log the user in immediately after successful registration
       login(res.data.user, res.data.token);
       navigate('/');
     } catch (err) {
+      // Display the server's error message or a generic fallback
       setError(err.response?.data?.message || 'Something went wrong');
     } finally {
       setLoading(false);
@@ -65,6 +75,7 @@ const Register = () => {
           <p className="auth__subtitle">Join FarmTable today</p>
         </div>
 
+        {/* Show server-side or validation errors above the form */}
         {error && <div className="auth__error">{error}</div>}
 
         <form className="auth__form" onSubmit={handleSubmit}>
@@ -94,6 +105,7 @@ const Register = () => {
             />
           </div>
 
+          {/* Role selection — determines what the user can do in the app */}
           <div className="auth__field">
             <label className="auth__label">I am a</label>
             <select
@@ -120,6 +132,7 @@ const Register = () => {
             />
           </div>
 
+          {/* State and zip are side by side using the auth__row layout */}
           <div className="auth__row">
             <div className="auth__field">
               <label className="auth__label">State</label>
@@ -174,6 +187,7 @@ const Register = () => {
             />
           </div>
 
+          {/* Disable the button while the request is in flight to prevent duplicate submissions */}
           <button
             className="auth__btn"
             type="submit"

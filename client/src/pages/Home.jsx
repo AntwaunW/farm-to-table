@@ -1,3 +1,7 @@
+// Home page — the public-facing landing page for the marketplace
+// Fetches and displays featured farms and fresh listings on load
+// Also provides a search bar that redirects to the Browse page with query params
+
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
@@ -14,6 +18,7 @@ const Home = () => {
   const [searchCategory, setSearchCategory] = useState('');
   const navigate = useNavigate();
 
+  // Fetch farms and listings in parallel on mount to minimize load time
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,11 +38,13 @@ const Home = () => {
     fetchData();
   }, []);
 
+  // Pass search inputs as query params to the Browse page where filtering happens
   const handleSearch = (e) => {
     e.preventDefault();
     navigate(`/browse?search=${searchTerm}&category=${searchCategory}`);
   };
 
+  // Show a loading message while the API calls are in flight
   if (loading) {
     return (
       <div className="home__loading">
@@ -49,7 +56,7 @@ const Home = () => {
   return (
     <div className="home">
 
-      {/* Hero Section */}
+      {/* Hero Section — main value proposition and search bar */}
       <section className="hero">
         <div className="hero__container">
           <span className="hero__tag">🌿 Texas-grown, direct to you</span>
@@ -63,6 +70,7 @@ const Home = () => {
             <Link to="/browse" className="hero__btn hero__btn--white">Browse farms</Link>
             <Link to="/register" className="hero__btn hero__btn--outline">List your farm</Link>
           </div>
+          {/* Search redirects to /browse with the terms pre-filled */}
           <form className="hero__search" onSubmit={handleSearch}>
             <input
               type="text"
@@ -91,7 +99,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Stats Section — social proof numbers */}
       <section className="stats">
         <div className="stats__item">
           <span className="stats__number">240+</span>
@@ -107,23 +115,25 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Farms Section */}
+      {/* Featured Farms Section — shows the 3 most recently added farms */}
       <section className="home__section">
         <div className="home__section-container">
           <div className="home__section-header">
             <h2 className="home__section-title">Featured farms</h2>
             <Link to="/browse" className="home__see-all">See all →</Link>
           </div>
+          {/* Error only renders inside this section if the API call failed */}
           {error && <p className="home__error">{error}</p>}
           <div className="home__farms-grid">
+            {/* Limit to 3 farms on the home page — full list is on Browse */}
             {farms.slice(0, 3).map((farm) => (
-                <FarmCard key={farm._id} farm={farm} />
+              <FarmCard key={farm._id} farm={farm} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Fresh Listings Section */}
+      {/* Fresh Listings Section — shows the 4 most recently added product listings */}
       <section className="home__section home__section--gray">
         <div className="home__section-container">
           <div className="home__section-header">
@@ -131,14 +141,15 @@ const Home = () => {
             <Link to="/browse" className="home__see-all">See all →</Link>
           </div>
           <div className="home__listings-grid">
+            {/* Limit to 4 listings on the home page */}
             {listings.slice(0, 4).map((listing) => (
-                <ListingCard key={listing._id} listing={listing} />
+              <ListingCard key={listing._id} listing={listing} />
             ))}
-        </div>
+          </div>
         </div>
       </section>
 
-      {/* Farmer CTA Section */}
+      {/* Farmer CTA Section — encourages farmers to sign up and list their products */}
       <section className="home__cta">
         <div className="home__cta-container">
           <div className="home__cta-text">

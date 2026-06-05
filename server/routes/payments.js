@@ -1,3 +1,14 @@
+// Payment routes — Stripe integration for processing consumer payments
+//
+// Flow:
+//  1. Consumer places an order (orders route) → order is created with paymentStatus 'unpaid'
+//  2. Frontend calls POST /create-intent → gets a clientSecret to render Stripe's payment UI
+//  3. Consumer completes payment in the browser
+//  4. Stripe calls POST /webhook → we update the order to 'paid' / 'confirmed'
+//
+// The webhook endpoint uses raw body parsing (registered before express.json in server.js)
+// so Stripe can verify the request signature
+
 const express = require('express');
 const router = express.Router();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -5,43 +16,44 @@ const Order = require('../models/Order');
 const { protect } = require('../middleware/auth');
 
 // @route   POST /api/payments/create-intent
-// @desc    Create a Stripe payment intent
-// @access  Private (consumers only)
+// @desc    Create a Stripe PaymentIntent for an existing order
+// @access  Private (consumer who owns the order)
 router.post('/create-intent', protect, async (req, res) => {
   try {
     const { orderId } = req.body;
 
-    // Find the order
     const order = await Order.findById(orderId);
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    // Make sure the logged in user owns the order
+    // Only the consumer who placed the order can pay for it
     if (order.consumer.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized' });
     }
 
-    // Make sure order hasn't already been paid
+    // Prevent double-charging if the consumer hits this endpoint again after paying
     if (order.paymentStatus === 'paid') {
       return res.status(400).json({ message: 'Order has already been paid' });
     }
 
-    // Create payment intent with Stripe
+    // Stripe amounts are in the smallest currency unit (cents for USD)
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(order.totalAmount * 100), // Stripe uses cents
+      amount: Math.round(order.totalAmount * 100),
       currency: 'usd',
+      // Metadata links the Stripe payment back to our order when the webhook fires
       metadata: {
         orderId: order._id.toString(),
         consumerId: req.user.id,
       },
     });
 
-    // Save the payment intent ID to the order
+    // Save the intent ID so we can reference it if a refund is needed later
     order.stripePaymentIntentId = paymentIntent.id;
     await order.save();
 
+    // The clientSecret is passed to the frontend to initialize Stripe's payment UI
     res.status(200).json({
       success: true,
       clientSecret: paymentIntent.client_secret,
@@ -53,13 +65,15 @@ router.post('/create-intent', protect, async (req, res) => {
 });
 
 // @route   POST /api/payments/webhook
-// @desc    Handle Stripe webhook events
-// @access  Public (Stripe only)
+// @desc    Receive and handle Stripe webhook events
+// @access  Public (Stripe servers only — verified by signature)
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let event;
 
   try {
+    // Verify the event came from Stripe using the webhook signing secret
+    // This prevents anyone from faking a payment_intent.succeeded event
     event = stripe.webhooks.constructEvent(
       req.body,
       sig,
@@ -70,7 +84,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     return res.status(400).json({ message: `Webhook error: ${error.message}` });
   }
 
-  // Handle payment success
+  // Payment was successful — mark the order as paid and confirmed
   if (event.type === 'payment_intent.succeeded') {
     const paymentIntent = event.data.object;
     const orderId = paymentIntent.metadata.orderId;
@@ -78,7 +92,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     try {
       await Order.findByIdAndUpdate(orderId, {
         paymentStatus: 'paid',
-        status: 'confirmed',
+        status: 'confirmed', // Automatically moves the order out of 'pending'
       });
       console.log(`Order ${orderId} payment confirmed`);
     } catch (error) {
@@ -86,13 +100,14 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     }
   }
 
-  // Handle payment failure
+  // Payment failed — log it for visibility (could send a notification to the consumer here)
   if (event.type === 'payment_intent.payment_failed') {
     const paymentIntent = event.data.object;
     const orderId = paymentIntent.metadata.orderId;
     console.log(`Payment failed for order ${orderId}`);
   }
 
+  // Stripe expects a 200 response to acknowledge receipt of the webhook
   res.status(200).json({ received: true });
 });
 

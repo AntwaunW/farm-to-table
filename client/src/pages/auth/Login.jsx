@@ -1,3 +1,6 @@
+// Login page — authenticates an existing user and stores their session
+// On success, calls AuthContext's login() to persist the token and redirects home
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -11,20 +14,23 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // Generic change handler — updates whichever field the user is typing in
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent the browser from reloading the page
     setError('');
     setLoading(true);
 
     try {
       const res = await api.post('/auth/login', formData);
+      // Save the user and token to context + localStorage for persistent sessions
       login(res.data.user, res.data.token);
-      navigate('/');
+      navigate('/'); // Redirect to home after successful login
     } catch (err) {
+      // Display the server's error message or a generic fallback
       setError(err.response?.data?.message || 'Something went wrong');
     } finally {
       setLoading(false);
@@ -39,6 +45,7 @@ const Login = () => {
           <p className="auth__subtitle">Sign in to your FarmToTable account</p>
         </div>
 
+        {/* Show server-side or validation errors above the form */}
         {error && <div className="auth__error">{error}</div>}
 
         <form className="auth__form" onSubmit={handleSubmit}>
@@ -68,6 +75,7 @@ const Login = () => {
             />
           </div>
 
+          {/* Disable the button while the request is in flight to prevent duplicate submissions */}
           <button
             className="auth__btn"
             type="submit"

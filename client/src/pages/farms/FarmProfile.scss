@@ -1,0 +1,157 @@
+// Import design tokens and mixins
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.farm-profile {
+
+  // Loading state
+  &__loading {
+    @include flex-center;
+    min-height: 60vh;
+    color: $text-muted;
+    font-size: $text-lg;
+  }
+
+  // Error state
+  &__error {
+    @include flex-center;
+    flex-direction: column;
+    min-height: 60vh;
+    gap: $spacing-md;
+    color: $error;
+
+    a {
+      color: $primary;
+      text-decoration: underline;
+    }
+  }
+
+  // Header section with dark background
+  &__header {
+    background: $primary-dark;
+    padding: $spacing-xl 0;
+
+    &-container {
+      @include container;
+      display: flex;
+      gap: $spacing-lg;
+      align-items: flex-start;
+
+      // Stack vertically on tablet
+      @include respond-to(tablet) {
+        flex-direction: column;
+      }
+    }
+  }
+
+  // Farm photo
+  &__image {
+    width: 280px;
+    height: 200px;
+    border-radius: $radius-lg;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    // Full width on tablet
+    @include respond-to(tablet) {
+      width: 100%;
+    }
+  }
+
+  // Placeholder when no photo
+  &__placeholder {
+    @include flex-center;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    font-size: 64px;
+  }
+
+  // Farm name, location, tags
+  &__info {
+    flex: 1;
+  }
+
+  &__name {
+    font-size: $text-3xl;
+    color: #ffffff;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__location {
+    font-size: $text-md;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: $spacing-md;
+  }
+
+  // Category tags
+  &__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+    margin-bottom: $spacing-md;
+  }
+
+  &__tag {
+    font-size: $text-sm;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    padding: $spacing-xs $spacing-md;
+    border-radius: $radius-full;
+    text-transform: capitalize;
+  }
+
+  &__rating {
+    font-size: $text-lg;
+    color: $secondary;
+    font-weight: 500;
+    margin-bottom: $spacing-md;
+  }
+
+  &__description {
+    font-size: $text-md;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.7;
+    max-width: 600px;
+  }
+
+  // Listings section
+  &__listings {
+    padding: $spacing-xl 0;
+
+    &-container {
+      @include container;
+    }
+
+    &-title {
+      font-size: $text-2xl;
+      color: $text-dark;
+      margin-bottom: $spacing-lg;
+    }
+
+    // Two column grid for listings
+    &-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: $spacing-md;
+
+      @include respond-to(mobile) {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+
+  // Empty state
+  &__empty {
+    color: $text-muted;
+    font-size: $text-lg;
+    text-align: center;
+    padding: $spacing-xl;
+  }
+}

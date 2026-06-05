@@ -1,3 +1,9 @@
+// Navbar — top navigation bar rendered on every page via Layout
+// Links shown depend on auth state and user role:
+//   - Logged out: Login + Sign up
+//   - Consumer: My orders + Logout
+//   - Farmer: Dashboard + My listings + Logout
+
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './Navbar.scss';
@@ -6,6 +12,7 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  // Clear the session and send the user back to the home page
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -15,14 +22,17 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar__container">
 
+        {/* Logo — always links back to the home page */}
         <Link to="/" className="navbar__logo">
           <span className="navbar__logo-icon">🌿</span>
           FarmToTable
         </Link>
 
         <div className="navbar__links">
+          {/* Browse is always visible regardless of auth state */}
           <Link to="/browse" className="navbar__link">Browse farms</Link>
 
+          {/* Show Login and Sign up only when no user is logged in */}
           {!user && (
             <>
               <Link to="/login" className="navbar__link">Login</Link>
@@ -30,6 +40,7 @@ const Navbar = () => {
             </>
           )}
 
+          {/* Consumer nav — access to order history */}
           {user && user.role === 'consumer' && (
             <>
               <Link to="/orders" className="navbar__link">My orders</Link>
@@ -37,6 +48,7 @@ const Navbar = () => {
             </>
           )}
 
+          {/* Farmer nav — access to dashboard and listing management */}
           {user && user.role === 'farmer' && (
             <>
               <Link to="/dashboard" className="navbar__link">Dashboard</Link>

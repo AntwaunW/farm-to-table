@@ -1,12 +1,16 @@
+// Application entry point — mounts the React app into the #root div in public/index.html
+// AuthProvider wraps the entire app so authentication state is available on every page
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from './context/AuthContext';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode> 
+  <React.StrictMode>
     <AuthProvider>
       <App />
     </AuthProvider>

@@ -1,3 +1,7 @@
+// Listing routes — CRUD for farm product listings
+// Public: GET all listings, GET single listing, GET listings by farm
+// Private (farmer only): POST create, PUT update, DELETE remove
+
 const express = require('express');
 const router = express.Router();
 const Listing = require('../models/Listing');
@@ -5,13 +9,16 @@ const Farm = require('../models/Farm');
 const { protect, authorizeRoles } = require('../middleware/auth');
 
 // @route   GET /api/listings
-// @desc    Get all listings
+// @desc    Get all available listings — supports filtering by category, price range, and unit
 // @access  Public
 router.get('/', async (req, res) => {
   try {
     const { category, minPrice, maxPrice, unit } = req.query;
+
+    // Only return listings that are currently available
     let query = { isAvailable: true };
 
+    // Apply optional query filters
     if (category) query.category = category;
     if (unit) query.unit = unit;
     if (minPrice || maxPrice) {
@@ -21,9 +28,9 @@ router.get('/', async (req, res) => {
     }
 
     const listings = await Listing.find(query)
-      .populate('farm', 'farmName location rating')
+      .populate('farm', 'farmName location rating') // Attach farm details consumers care about
       .populate('owner', 'name')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 }); // Newest listings first
 
     res.status(200).json({ success: true, count: listings.length, listings });
   } catch (error) {
@@ -33,7 +40,7 @@ router.get('/', async (req, res) => {
 });
 
 // @route   GET /api/listings/:id
-// @desc    Get single listing
+// @desc    Get a single listing by ID
 // @access  Public
 router.get('/:id', async (req, res) => {
   try {
@@ -53,7 +60,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // @route   GET /api/listings/farm/:farmId
-// @desc    Get all listings for a specific farm
+// @desc    Get all available listings for a specific farm (used on the farm profile page)
 // @access  Public
 router.get('/farm/:farmId', async (req, res) => {
   try {
@@ -70,13 +77,13 @@ router.get('/farm/:farmId', async (req, res) => {
 });
 
 // @route   POST /api/listings
-// @desc    Create a listing
+// @desc    Create a new product listing under the farmer's farm
 // @access  Private (farmers only)
 router.post('/', protect, authorizeRoles('farmer'), async (req, res) => {
   try {
     const { title, description, category, pricePerUnit, unit, quantityAvailable, harvestDate } = req.body;
 
-    // Find the farmer's farm
+    // A farmer must have a farm profile before they can create listings
     const farm = await Farm.findOne({ owner: req.user.id });
     if (!farm) {
       return res.status(404).json({ message: 'You must create a farm profile before adding listings' });
@@ -102,7 +109,7 @@ router.post('/', protect, authorizeRoles('farmer'), async (req, res) => {
 });
 
 // @route   PUT /api/listings/:id
-// @desc    Update a listing
+// @desc    Update a listing's details
 // @access  Private (listing owner only)
 router.put('/:id', protect, authorizeRoles('farmer'), async (req, res) => {
   try {
@@ -112,13 +119,14 @@ router.put('/:id', protect, authorizeRoles('farmer'), async (req, res) => {
       return res.status(404).json({ message: 'Listing not found' });
     }
 
+    // Only the farmer who created the listing can edit it
     if (listing.owner.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized to update this listing' });
     }
 
     listing = await Listing.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
+      new: true,           // Return the updated document
+      runValidators: true, // Run schema validators on the updated fields
     });
 
     res.status(200).json({ success: true, listing });
@@ -129,7 +137,7 @@ router.put('/:id', protect, authorizeRoles('farmer'), async (req, res) => {
 });
 
 // @route   DELETE /api/listings/:id
-// @desc    Delete a listing
+// @desc    Permanently delete a listing
 // @access  Private (listing owner only)
 router.delete('/:id', protect, authorizeRoles('farmer'), async (req, res) => {
   try {
@@ -139,6 +147,7 @@ router.delete('/:id', protect, authorizeRoles('farmer'), async (req, res) => {
       return res.status(404).json({ message: 'Listing not found' });
     }
 
+    // Only the farmer who created the listing can delete it
     if (listing.owner.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized to delete this listing' });
     }
