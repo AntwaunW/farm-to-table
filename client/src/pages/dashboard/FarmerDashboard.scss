@@ -1,0 +1,240 @@
+// Farmer Dashboard styles
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.farmer-dashboard {
+
+  &__loading, &__error {
+    @include flex-center;
+    min-height: 60vh;
+    color: $text-muted;
+    font-size: $text-lg;
+  }
+
+  // Dark header banner
+  &__header {
+    background: $primary-dark;
+    padding: $spacing-lg 0;
+
+    &-container {
+      @include container;
+    }
+  }
+
+  &__title {
+    font-size: $text-3xl;
+    color: #ffffff;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__subtitle {
+    font-size: $text-md;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  // Main content area
+  &__container {
+    @include container;
+    padding-top: $spacing-lg;
+    padding-bottom: $spacing-xl;
+  }
+
+  // Stats row at the top
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+
+    @include respond-to(mobile) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__stat {
+    @include card;
+    text-align: center;
+    padding: $spacing-lg;
+  }
+
+  &__stat-number {
+    display: block;
+    font-size: $text-3xl;
+    font-weight: 700;
+    color: $primary;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__stat-label {
+    font-size: $text-sm;
+    color: $text-muted;
+  }
+
+  // Section containers
+  &__section {
+    @include card;
+    margin-bottom: $spacing-lg;
+
+    &-header {
+      @include flex-between;
+      margin-bottom: $spacing-md;
+      padding-bottom: $spacing-md;
+      border-bottom: 1px solid $border;
+    }
+
+    &-title {
+      font-size: $text-xl;
+      color: $text-dark;
+    }
+  }
+
+  // Farm profile card
+  &__farm-card {
+    h3 {
+      font-size: $text-lg;
+      margin-bottom: $spacing-xs;
+    }
+    p {
+      color: $text-muted;
+      font-size: $text-sm;
+      margin-bottom: $spacing-xs;
+    }
+  }
+
+  &__farm-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-xs;
+    margin: $spacing-sm 0;
+  }
+
+  &__tag {
+    font-size: $text-xs;
+    background: #e8f5e0;
+    color: $primary;
+    padding: 2px $spacing-sm;
+    border-radius: $radius-full;
+    text-transform: capitalize;
+  }
+
+  &__subscription {
+    font-size: $text-sm;
+    color: $text-muted;
+    margin-top: $spacing-sm;
+  }
+
+  // Listings list
+  &__listings {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__listing-item {
+    @include flex-between;
+    padding: $spacing-sm;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+
+    h4 {
+      font-size: $text-md;
+      margin-bottom: $spacing-xs;
+    }
+
+    p {
+      font-size: $text-sm;
+      color: $text-muted;
+    }
+  }
+
+  &__listing-status {
+    font-size: $text-xs;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-full;
+    font-weight: 500;
+
+    &.available {
+      background: #e8f5e0;
+      color: $primary;
+    }
+
+    &.unavailable {
+      background: #fde8e8;
+      color: $error;
+    }
+  }
+
+  // Orders list
+  &__orders {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__order-item {
+    @include flex-between;
+    padding: $spacing-md;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    align-items: flex-start;
+
+    h4 {
+      font-size: $text-md;
+      margin-bottom: $spacing-xs;
+    }
+
+    p {
+      font-size: $text-sm;
+      color: $text-muted;
+      margin-bottom: 2px;
+    }
+  }
+
+  &__order-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: $spacing-sm;
+  }
+
+  // Status badges
+  &__status {
+    font-size: $text-xs;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-full;
+    font-weight: 500;
+    text-transform: capitalize;
+
+    &--pending { background: #fff8e8; color: $warning; }
+    &--confirmed { background: #e8f0ff; color: #185fa5; }
+    &--ready { background: #e8f5e0; color: $primary; }
+    &--completed { background: #f0f0f0; color: $text-muted; }
+    &--cancelled { background: #fde8e8; color: $error; }
+  }
+
+  &__action-btn {
+    @include button-primary;
+    font-size: $text-sm;
+    padding: $spacing-xs $spacing-md;
+  }
+
+  // Empty states
+  &__empty {
+    text-align: center;
+    padding: $spacing-lg;
+    color: $text-muted;
+  }
+
+  &__empty-text {
+    color: $text-muted;
+    font-size: $text-sm;
+    padding: $spacing-md 0;
+  }
+
+  // Primary button
+  &__btn {
+    @include button-primary;
+    font-size: $text-sm;
+    padding: $spacing-xs $spacing-md;
+  }
+}

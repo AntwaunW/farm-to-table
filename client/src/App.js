@@ -3,6 +3,7 @@
 // Routes with placeholder <h1> tags are pages not yet built
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 import './index.scss';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -10,6 +11,16 @@ import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import Browse from './pages/Browse';
 import FarmProfile from './pages/farms/FarmProfile';
+import ProtectedRoute from './components/common/ProtectedRoute';
+import FarmerDashboard from './pages/dashboard/FarmerDashboard';
+import ConsumerDashboard from './pages/dashboard/ConsumerDashboard';
+
+// Checks user role and renders the correct dashboard component
+const DashboardRouter = () => {
+  const { user } = useAuth();
+  if (user?.role === 'farmer') return <FarmerDashboard />;
+  return <ConsumerDashboard />;
+};
 
 function App() {
   return (
@@ -17,12 +28,17 @@ function App() {
       {/* Layout provides the persistent Navbar and Footer around all page content */}
       <Layout>
         <Routes>
+          {/* Public routes - anyone can access */}
           <Route path="/" element={<Home />} />
           <Route path="/browse" element={<Browse />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/farms/:id" element={<FarmProfile />} />
-          <Route path="/dashboard" element={<h1>Dashboard</h1>} />
+
+          {/* Protected route - must be logged in */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<DashboardRouter />} />
+          </Route>
         </Routes>
       </Layout>
     </Router>

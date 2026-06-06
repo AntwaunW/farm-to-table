@@ -1,0 +1,173 @@
+// Consumer Dashboard styles
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.consumer-dashboard {
+
+  &__loading, &__error {
+    @include flex-center;
+    min-height: 60vh;
+    color: $text-muted;
+    font-size: $text-lg;
+  }
+
+  &__header {
+    background: $primary-dark;
+    padding: $spacing-lg 0;
+
+    &-container {
+      @include container;
+    }
+  }
+
+  &__title {
+    font-size: $text-3xl;
+    color: #ffffff;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__subtitle {
+    font-size: $text-md;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  &__container {
+    @include container;
+    padding-top: $spacing-lg;
+    padding-bottom: $spacing-xl;
+  }
+
+  // Stats row
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+
+    @include respond-to(mobile) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__stat {
+    @include card;
+    text-align: center;
+    padding: $spacing-lg;
+  }
+
+  &__stat-number {
+    display: block;
+    font-size: $text-3xl;
+    font-weight: 700;
+    color: $primary;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__stat-label {
+    font-size: $text-sm;
+    color: $text-muted;
+  }
+
+  // Orders section
+  &__section {
+    @include card;
+  }
+
+  &__section-title {
+    font-size: $text-xl;
+    color: $text-dark;
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid $border;
+  }
+
+  &__orders {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  // Individual order card
+  &__order-item {
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    overflow: hidden;
+  }
+
+  &__order-header {
+    @include flex-between;
+    padding: $spacing-md;
+    background: $background;
+    border-bottom: 1px solid $border;
+  }
+
+  &__farm-name {
+    font-size: $text-md;
+    font-weight: 500;
+    color: $text-dark;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__order-date {
+    font-size: $text-sm;
+    color: $text-muted;
+  }
+
+  // Order line items
+  &__items {
+    padding: $spacing-md;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    font-size: $text-sm;
+    color: $text-dark;
+
+    span:last-child {
+      font-weight: 500;
+      color: $primary;
+    }
+  }
+
+  // Order footer with total
+  &__order-footer {
+    @include flex-between;
+    padding: $spacing-md;
+    background: $background;
+    border-top: 1px solid $border;
+    font-size: $text-sm;
+    color: $text-muted;
+  }
+
+  &__total {
+    font-size: $text-md;
+    font-weight: 600;
+    color: $text-dark;
+  }
+
+  // Status badges
+  &__status {
+    font-size: $text-xs;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $radius-full;
+    font-weight: 500;
+    text-transform: capitalize;
+
+    &--pending { background: #fff8e8; color: $warning; }
+    &--confirmed { background: #e8f0ff; color: #185fa5; }
+    &--ready { background: #e8f5e0; color: $primary; }
+    &--completed { background: #f0f0f0; color: $text-muted; }
+    &--cancelled { background: #fde8e8; color: $error; }
+  }
+
+  &__empty {
+    text-align: center;
+    padding: $spacing-xl;
+    color: $text-muted;
+    font-size: $text-lg;
+  }
+}
