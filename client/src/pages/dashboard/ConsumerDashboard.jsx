@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { Link } from 'react-router-dom';
 import api from '../../utils/api';
 import './ConsumerDashboard.scss';
 
@@ -97,10 +98,21 @@ const ConsumerDashboard = () => {
                         Ordered: {new Date(order.createdAt).toLocaleDateString()}
                       </p>
                     </div>
-                    {/* Status badge */}
-                    <span className={`consumer-dashboard__status consumer-dashboard__status--${order.status}`}>
-                      {order.status}
-                    </span>
+                    <div className="consumer-dashboard__order-actions">
+                      {/* Status badge */}
+                      <span className={`consumer-dashboard__status consumer-dashboard__status--${order.status}`}>
+                        {order.status}
+                      </span>
+                      {/* Pay now button — only shows on unpaid orders */}
+                      {order.paymentStatus === 'unpaid' && (
+                        <Link
+                          to={`/checkout/${order._id}`}
+                          className="consumer-dashboard__pay-btn"
+                        >
+                          Pay now
+                        </Link>
+                      )}
+                    </div>
                   </div>
 
                   {/* Order items */}

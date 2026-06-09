@@ -1,0 +1,175 @@
+// Checkout page styles
+@import '../styles/variables';
+@import '../styles/mixins';
+
+.checkout {
+  padding: $spacing-xl 0;
+  background: $background;
+  min-height: calc(100vh - 60px);
+
+  &__loading {
+    @include flex-center;
+    min-height: 60vh;
+    font-size: $text-lg;
+    color: $text-muted;
+  }
+
+  &__error-page {
+    @include flex-center;
+    min-height: 60vh;
+    color: $error;
+    font-size: $text-lg;
+  }
+
+  // Two column layout — summary on left, payment on right
+  &__container {
+    @include container;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-xl;
+    align-items: flex-start;
+
+    @include respond-to(tablet) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // Order summary section
+  &__summary {
+    @include card;
+    padding: $spacing-lg;
+  }
+
+  &__summary-title {
+    font-size: $text-xl;
+    color: $text-dark;
+    margin-bottom: $spacing-md;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid $border;
+  }
+
+  &__farm-name {
+    font-size: $text-lg;
+    font-weight: 600;
+    color: $primary;
+    margin-bottom: $spacing-md;
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-md;
+  }
+
+  &__item {
+    @include flex-between;
+    padding: $spacing-sm 0;
+    border-bottom: 1px solid $border;
+  }
+
+  &__item-title {
+    font-size: $text-md;
+    font-weight: 500;
+    color: $text-dark;
+    display: block;
+  }
+
+  &__item-qty {
+    font-size: $text-sm;
+    color: $text-muted;
+    display: block;
+    margin-top: 2px;
+  }
+
+  &__item-subtotal {
+    font-size: $text-md;
+    font-weight: 600;
+    color: $text-dark;
+  }
+
+  // Totals section
+  &__totals {
+    margin-bottom: $spacing-md;
+    padding-top: $spacing-sm;
+  }
+
+  &__total-row {
+    @include flex-between;
+    font-size: $text-sm;
+    color: $text-muted;
+    padding: $spacing-xs 0;
+
+    &--total {
+      font-size: $text-lg;
+      font-weight: 700;
+      color: $text-dark;
+      border-top: 2px solid $border;
+      padding-top: $spacing-sm;
+      margin-top: $spacing-sm;
+    }
+  }
+
+  // Pickup details
+  &__pickup {
+    background: $background;
+    border-radius: $radius-md;
+    padding: $spacing-md;
+
+    &-title {
+      font-size: $text-md;
+      font-weight: 600;
+      margin-bottom: $spacing-sm;
+    }
+
+    p {
+      font-size: $text-sm;
+      color: $text-muted;
+      margin-bottom: $spacing-xs;
+    }
+  }
+
+  // Payment form section
+  &__payment {
+    @include card;
+    padding: $spacing-lg;
+  }
+
+  &__payment-title {
+    font-size: $text-xl;
+    color: $text-dark;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__secure-note {
+    font-size: $text-sm;
+    color: $text-muted;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__stripe-element {
+    margin-bottom: $spacing-md;
+  }
+
+  &__error {
+    color: $error;
+    font-size: $text-sm;
+    margin-bottom: $spacing-md;
+    padding: $spacing-sm;
+    background: rgba($error, 0.1);
+    border-radius: $radius-md;
+  }
+
+  &__pay-btn {
+    @include button-primary;
+    width: 100%;
+    padding: $spacing-md;
+    font-size: $text-lg;
+    margin-top: $spacing-sm;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+  }
+}

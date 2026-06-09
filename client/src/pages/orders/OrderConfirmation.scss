@@ -1,0 +1,77 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.confirmation {
+  @include flex-center;
+  min-height: calc(100vh - 60px);
+  padding: $spacing-lg $spacing-md;
+  background: $background;
+
+  &__card {
+    @include card;
+    max-width: 520px;
+    width: 100%;
+    padding: $spacing-xl;
+    text-align: center;
+  }
+
+  &__icon {
+    font-size: 64px;
+    margin-bottom: $spacing-md;
+  }
+
+  &__title {
+    font-size: $text-3xl;
+    color: $text-dark;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__subtitle {
+    font-size: $text-md;
+    color: $text-muted;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__order-id {
+    background: $background;
+    border-radius: $radius-md;
+    padding: $spacing-sm $spacing-md;
+    margin-bottom: $spacing-md;
+    font-size: $text-sm;
+    color: $text-muted;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-sm;
+
+    code {
+      font-family: monospace;
+      color: $primary;
+      font-size: $text-xs;
+    }
+  }
+
+  &__note {
+    font-size: $text-sm;
+    color: $text-muted;
+    line-height: 1.6;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__btn {
+    @include button-primary;
+    width: 100%;
+    padding: $spacing-sm;
+    font-size: $text-md;
+
+    &--outline {
+      @include button-secondary;
+    }
+  }
+}
