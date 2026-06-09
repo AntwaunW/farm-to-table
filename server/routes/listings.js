@@ -39,6 +39,25 @@ router.get('/', async (req, res) => {
   }
 });
 
+// @route   GET /api/listings/farm/:farmId
+// @desc    Get all available listings for a specific farm (used on the farm profile page)
+// @access  Public
+// NOTE: This route MUST be defined before /:id — Express matches routes top-to-bottom,
+// so if /:id comes first, "farm" gets treated as an ID and causes a CastError.
+router.get('/farm/:farmId', async (req, res) => {
+  try {
+    const listings = await Listing.find({
+      farm: req.params.farmId,
+      isAvailable: true,
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, count: listings.length, listings });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   GET /api/listings/:id
 // @desc    Get a single listing by ID
 // @access  Public
@@ -53,23 +72,6 @@ router.get('/:id', async (req, res) => {
     }
 
     res.status(200).json({ success: true, listing });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// @route   GET /api/listings/farm/:farmId
-// @desc    Get all available listings for a specific farm (used on the farm profile page)
-// @access  Public
-router.get('/farm/:farmId', async (req, res) => {
-  try {
-    const listings = await Listing.find({
-      farm: req.params.farmId,
-      isAvailable: true,
-    }).sort({ createdAt: -1 });
-
-    res.status(200).json({ success: true, count: listings.length, listings });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
