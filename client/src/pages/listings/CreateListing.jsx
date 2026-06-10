@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
+import ImageUpload from '../../components/common/ImageUpload';
 import './CreateListing.scss';
 
 const CreateListing = () => {
@@ -37,6 +38,7 @@ const CreateListing = () => {
     unit: 'lb',
     quantityAvailable: 1,
     harvestDate: '',
+    photos: [], // Start with an empty array for photo URLs
   });
 
   const [error, setError] = useState('');
@@ -61,6 +63,10 @@ const CreateListing = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleImageUpload = (url) => {
+    setFormData({ ...formData, photos: [...formData.photos, url] });
   };
 
   // -------------------------------------------------------------------
@@ -265,6 +271,14 @@ const CreateListing = () => {
                 onChange={handleChange}
               />
             </div>
+          </div>
+
+          {/* Photo upload */}
+          <div className="create-listing__field">
+            <ImageUpload
+              onUpload={handleImageUpload}
+              label="Product photo (optional)"
+            />
           </div>
 
           {/* Submit button */}

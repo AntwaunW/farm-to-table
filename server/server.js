@@ -31,6 +31,7 @@ app.use('/api/farms', require('./routes/farms'));       // Farm profile CRUD
 app.use('/api/listings', require('./routes/listings')); // Product listing CRUD
 app.use('/api/orders', require('./routes/orders'));     // Order placement and management
 app.use('/api/payments', require('./routes/payments')); // Stripe payment flow and webhooks
+app.use('/api/upload', require('./routes/upload'));   // Image upload to Cloudinary
 
 // Simple health check — confirms the API server is running
 app.get('/', (req, res) => {

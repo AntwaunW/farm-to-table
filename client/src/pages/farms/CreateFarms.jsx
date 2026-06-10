@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
+import ImageUpload from '../../components/common/ImageUpload';
 import './CreateFarms.scss';
 
 const CreateFarm = () => {
@@ -35,6 +36,7 @@ const CreateFarm = () => {
       zip: '',
     },
     category: [],
+    photos: [],
   });
 
   // Stores any error message to show the user
@@ -116,6 +118,12 @@ const CreateFarm = () => {
       });
     }
   };
+
+     // Called when ImageUpload component finishes uploading
+    // Adds the new Cloudinary URL to our photos array
+    const handleImageUpload = (url) => {
+        setFormData({ ...formData, photos: [...formData.photos, url] });
+        };
 
   // -------------------------------------------------------------------
   // 🎓 WHAT IS handleSubmit?
@@ -280,6 +288,14 @@ const CreateFarm = () => {
               ))}
             </div>
           </div>
+
+            {/* Photo upload */}
+            <div className="create-farm__field">
+                <ImageUpload
+                    onUpload={handleImageUpload}
+                    label="Farm photo (optional)"
+                />
+            </div>
 
           {/* Submit button */}
           <button
