@@ -26,36 +26,38 @@ const FarmerDashboard = () => {
 
   // Fetch all farmer data when component mounts
   useEffect(() => {
-    const fetchFarmerData = async () => {
-      try {
-        // Fetch farm, listings, and orders simultaneously
-        const [farmsRes, ordersRes] = await Promise.all([
-          api.get('/farms'),
+  const fetchFarmerData = async () => {
+    try {
+      // Fetch all farms and find this farmer's farm
+      const farmsRes = await api.get('/farms');
+      const myFarm = farmsRes.data.farms.find(
+        (f) => f.owner._id === user.id
+      );
+
+      if (myFarm) {
+        setFarm(myFarm);
+
+        // Only fetch listings and orders if farm exists
+        const [listingsRes, ordersRes] = await Promise.all([
+          api.get(`/listings/farm/${myFarm._id}`),
           api.get('/orders/farm/me'),
         ]);
 
-        // Find the farm that belongs to this farmer
-        const myFarm = farmsRes.data.farms.find(
-          (f) => f.owner._id === user.id
-        );
-
-        if (myFarm) {
-          setFarm(myFarm);
-          // Fetch listings for this specific farm
-          const listingsRes = await api.get(`/listings/farm/${myFarm._id}`);
-          setListings(listingsRes.data.listings);
-        }
-
+        setListings(listingsRes.data.listings);
         setOrders(ordersRes.data.orders);
-      } catch (err) {
-        setError('Failed to load dashboard data.');
-      } finally {
-        setLoading(false);
       }
-    };
+      // If no farm exists we just leave farm as null
+      // The dashboard will show the "Create farm profile" prompt
 
-    fetchFarmerData();
-  }, [user.id]);
+    } catch (err) {
+      setError('Failed to load dashboard data.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchFarmerData();
+}, [user.id]);
 
   // Update order status handler
   const handleStatusUpdate = async (orderId, status) => {

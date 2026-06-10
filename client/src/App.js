@@ -16,6 +16,7 @@ import FarmerDashboard from './pages/dashboard/FarmerDashboard';
 import ConsumerDashboard from './pages/dashboard/ConsumerDashboard';
 import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/orders/OrderConfirmation';
+import CreateFarm from './pages/farms/CreateFarms';
 
 // Checks user role and renders the correct dashboard component
 const DashboardRouter = () => {
@@ -37,11 +38,13 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/farms/:id" element={<FarmProfile />} />
 
+
           {/* Protected route - must be logged in */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardRouter />} />
             <Route path="/checkout/:orderId" element={<Checkout />} />
             <Route path="/orders/:orderId/confirmation" element={<OrderConfirmation />} />
+            <Route path="/farms/create" element={<CreateFarm />} />
           </Route>
         </Routes>
       </Layout>

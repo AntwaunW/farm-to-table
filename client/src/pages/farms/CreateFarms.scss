@@ -1,0 +1,145 @@
+// CreateFarm page styles
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.create-farm {
+  padding: $spacing-xl 0;
+  background: $background;
+  min-height: calc(100vh - 60px);
+
+  // -------------------------------------------
+  // The main content area — centered and
+  // max width so it doesn't stretch too wide
+  // -------------------------------------------
+  &__container {
+    @include container;
+    max-width: 640px;
+  }
+
+  // Page title section
+  &__header {
+    margin-bottom: $spacing-lg;
+  }
+
+  &__title {
+    font-size: $text-3xl;
+    color: $text-dark;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__subtitle {
+    font-size: $text-md;
+    color: $text-muted;
+  }
+
+  // Error message box
+  &__error {
+    background: rgba($error, 0.1);
+    color: $error;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $radius-md;
+    font-size: $text-sm;
+    margin-bottom: $spacing-md;
+    border: 1px solid rgba($error, 0.2);
+  }
+
+  // Access denied page
+  &__error-page {
+    @include flex-center;
+    flex-direction: column;
+    min-height: 60vh;
+    gap: $spacing-md;
+    text-align: center;
+
+    h2 {
+      font-size: $text-2xl;
+      color: $error;
+    }
+
+    p {
+      color: $text-muted;
+    }
+  }
+
+  // The form itself
+  &__form {
+    @include card;
+    padding: $spacing-lg;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  // Individual form field wrapper
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+
+  // Side by side fields (state + zip)
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-md;
+  }
+
+  &__label {
+    font-size: $text-sm;
+    font-weight: 500;
+    color: $text-dark;
+  }
+
+  &__input {
+    @include input-base;
+  }
+
+  // Textarea specific styles
+  &__textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.6;
+  }
+
+  // Category toggle buttons
+  &__categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+    margin-top: $spacing-xs;
+  }
+
+  &__cat-btn {
+    @include button-base;
+    background: #ffffff;
+    color: $text-muted;
+    border: 1px solid $border;
+    font-size: $text-sm;
+    padding: $spacing-xs $spacing-md;
+
+    &:hover {
+      border-color: $primary;
+      color: $primary;
+    }
+
+    // Active state — selected category
+    &--active {
+      background: $primary;
+      color: #ffffff;
+      border-color: $primary;
+
+      &:hover {
+        background: $primary-dark;
+      }
+    }
+  }
+
+  // Submit button
+  &__submit {
+    @include button-primary;
+    width: 100%;
+    padding: $spacing-md;
+    font-size: $text-md;
+    margin-top: $spacing-sm;
+  }
+}
