@@ -17,6 +17,7 @@ import ConsumerDashboard from './pages/dashboard/ConsumerDashboard';
 import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/orders/OrderConfirmation';
 import CreateFarm from './pages/farms/CreateFarms';
+import CreateListing from './pages/listings/CreateListing';
 
 // Checks user role and renders the correct dashboard component
 const DashboardRouter = () => {
@@ -45,6 +46,7 @@ function App() {
             <Route path="/checkout/:orderId" element={<Checkout />} />
             <Route path="/orders/:orderId/confirmation" element={<OrderConfirmation />} />
             <Route path="/farms/create" element={<CreateFarm />} />
+            <Route path="/listings/create" element={<CreateListing />} />
           </Route>
         </Routes>
       </Layout>

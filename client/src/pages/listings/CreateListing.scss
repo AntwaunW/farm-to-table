@@ -1,0 +1,110 @@
+// CreateListing page styles
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.create-listing {
+  padding: $spacing-xl 0;
+  background: $background;
+  min-height: calc(100vh - 60px);
+
+  &__container {
+    @include container;
+    max-width: 640px;
+  }
+
+  &__header {
+    margin-bottom: $spacing-lg;
+  }
+
+  &__title {
+    font-size: $text-3xl;
+    color: $text-dark;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__subtitle {
+    font-size: $text-md;
+    color: $text-muted;
+  }
+
+  &__error {
+    background: rgba($error, 0.1);
+    color: $error;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $radius-md;
+    font-size: $text-sm;
+    margin-bottom: $spacing-md;
+    border: 1px solid rgba($error, 0.2);
+  }
+
+  &__error-page {
+    @include flex-center;
+    flex-direction: column;
+    min-height: 60vh;
+    gap: $spacing-md;
+    text-align: center;
+
+    h2 {
+      font-size: $text-2xl;
+      color: $error;
+    }
+
+    p {
+      color: $text-muted;
+    }
+  }
+
+  &__form {
+    @include card;
+    padding: $spacing-lg;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-md;
+
+    @include respond-to(mobile) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__label {
+    font-size: $text-sm;
+    font-weight: 500;
+    color: $text-dark;
+  }
+
+  &__optional {
+    font-weight: 400;
+    color: $text-muted;
+    font-size: $text-xs;
+  }
+
+  &__input {
+    @include input-base;
+  }
+
+  &__textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.6;
+  }
+
+  &__submit {
+    @include button-primary;
+    width: 100%;
+    padding: $spacing-md;
+    font-size: $text-md;
+    margin-top: $spacing-sm;
+  }
+}
