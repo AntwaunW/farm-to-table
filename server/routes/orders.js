@@ -11,6 +11,9 @@ const router = express.Router();
 const Order = require('../models/Order');
 const Listing = require('../models/Listing');
 const { protect, authorizeRoles } = require('../middleware/auth');
+const { sendOrderConfirmation, sendNewOrderAlert } = require('../utils/email');
+const User = require('../models/User');
+const Farm = require('../models/Farm');
 
 // @route   POST /api/orders
 // @desc    Place a new order — validates inventory, calculates totals, and creates the order
@@ -52,9 +55,22 @@ router.post('/', protect, authorizeRoles('consumer'), async (req, res) => {
       });
     }
 
+    // Send emails to consumer and farmer
+try {
+  const farmer = await User.findById(farm.owner);
+  sendOrderConfirmation(order, req.user);
+  sendNewOrderAlert(order, farmer, farm);
+} catch (emailErr) {
+  console.error('Email notification failed:', emailErr);
+}
+
     // Calculate the 4% platform fee and what the farmer receives after the fee
     const platformFee = parseFloat((totalAmount * 0.04).toFixed(2));
     const farmerPayout = parseFloat((totalAmount - platformFee).toFixed(2));
+
+    // Get the farm for email notifications
+    const Farm = require('../models/Farm');
+    const farm = await Farm.findById(farmId);
 
     // Create the order document — paymentStatus starts as 'unpaid' until Stripe webhook fires
     const order = await Order.create({

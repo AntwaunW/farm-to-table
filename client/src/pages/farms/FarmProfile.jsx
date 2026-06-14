@@ -138,7 +138,7 @@ const FarmProfile = () => {
           ) : (
             <div className="farm-profile__listings-grid">
               {listings.map((listing) => (
-                <ListingCard key={listing._id} listing={listing} />
+                <ListingCard key={listing._id} listing={listing} farm={farm} />
               ))}
             </div>
           )}

@@ -18,6 +18,7 @@ import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/orders/OrderConfirmation';
 import CreateFarm from './pages/farms/CreateFarms';
 import CreateListing from './pages/listings/CreateListing';
+import Cart from './pages/Cart';
 
 // Checks user role and renders the correct dashboard component
 const DashboardRouter = () => {
@@ -47,6 +48,7 @@ function App() {
             <Route path="/orders/:orderId/confirmation" element={<OrderConfirmation />} />
             <Route path="/farms/create" element={<CreateFarm />} />
             <Route path="/listings/create" element={<CreateListing />} />
+            <Route path="/cart" element={<Cart />} />
           </Route>
         </Routes>
       </Layout>

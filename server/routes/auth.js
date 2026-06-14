@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
+const { sendWelcomeEmail } = require('../utils/email');
 
 // @route   POST /api/auth/register
 // @desc    Register a new user (farmer or consumer)
@@ -30,6 +31,9 @@ router.post('/register', async (req, res) => {
       role,
       location,
     });
+
+    // Send a welcome email - non blocking
+      sendWelcomeEmail(user);
 
     // Sign a JWT with the user's ID and role
     // The role is embedded in the token so protect/authorizeRoles can decode it without a DB hit

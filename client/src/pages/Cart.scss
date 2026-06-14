@@ -1,0 +1,180 @@
+@import '../styles/variables';
+@import '../styles/mixins';
+
+.cart {
+  padding: $spacing-xl 0;
+  min-height: calc(100vh - 60px);
+  background: $background;
+
+  &__container {
+    @include container;
+    max-width: 720px;
+  }
+
+  &__title {
+    font-size: $text-3xl;
+    color: $text-dark;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__farm {
+    font-size: $text-md;
+    color: $text-muted;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__error {
+    color: $error;
+    font-size: $text-sm;
+    margin-bottom: $spacing-md;
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__item {
+    @include card;
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-md;
+  }
+
+  &__item-info {
+    flex: 1;
+  }
+
+  &__item-title {
+    font-size: $text-md;
+    font-weight: 500;
+    color: $text-dark;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__item-price {
+    font-size: $text-sm;
+    color: $text-muted;
+  }
+
+  &__item-controls {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+  }
+
+  &__qty-btn {
+    @include button-base;
+    width: 28px;
+    height: 28px;
+    background: $background;
+    border: 1px solid $border;
+    color: $text-dark;
+    font-size: $text-lg;
+    padding: 0;
+
+    &:hover {
+      border-color: $primary;
+      color: $primary;
+    }
+  }
+
+  &__qty {
+    font-size: $text-md;
+    font-weight: 600;
+    min-width: 24px;
+    text-align: center;
+  }
+
+  &__item-subtotal {
+    font-size: $text-md;
+    font-weight: 600;
+    color: $primary;
+    min-width: 80px;
+    text-align: right;
+  }
+
+  &__remove-btn {
+    @include button-base;
+    background: none;
+    color: $text-muted;
+    font-size: $text-md;
+    padding: $spacing-xs;
+
+    &:hover {
+      color: $error;
+    }
+  }
+
+  &__summary {
+    @include card;
+    padding: $spacing-lg;
+  }
+
+  &__total {
+    @include flex-between;
+    font-size: $text-xl;
+    font-weight: 700;
+    color: $text-dark;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__fee-note {
+    font-size: $text-sm;
+    color: $text-muted;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__checkout-btn {
+    @include button-primary;
+    width: 100%;
+    padding: $spacing-md;
+    font-size: $text-md;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__clear-btn {
+    @include button-base;
+    width: 100%;
+    background: none;
+    color: $text-muted;
+    font-size: $text-sm;
+
+    &:hover {
+      color: $error;
+    }
+  }
+
+  &__empty {
+    @include flex-center;
+    min-height: calc(100vh - 60px);
+  }
+
+  &__empty-content {
+    text-align: center;
+
+    h2 {
+      font-size: $text-2xl;
+      color: $text-dark;
+      margin: $spacing-md 0 $spacing-sm;
+    }
+
+    p {
+      color: $text-muted;
+      margin-bottom: $spacing-lg;
+    }
+  }
+
+  &__empty-icon {
+    font-size: 64px;
+  }
+
+  &__browse-btn {
+    @include button-primary;
+    padding: $spacing-sm $spacing-lg;
+    font-size: $text-md;
+  }
+}

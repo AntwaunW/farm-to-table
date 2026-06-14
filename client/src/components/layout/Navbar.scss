@@ -72,4 +72,22 @@
       gap: $spacing-sm;
     }
   }
+
+&__cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
 }
+
+&__cart-badge {
+  background: $error;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: $radius-full;
+  @include flex-center;
+  }
+};

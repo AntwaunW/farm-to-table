@@ -1,5 +1,4 @@
 // AuthContext — global authentication state for the entire app
-//
 // Provides: user, token, loading, login(), logout()
 // Persists session to localStorage so the user stays logged in after a page refresh
 // The loading flag prevents pages from flashing "not logged in" while the

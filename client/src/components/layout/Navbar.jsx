@@ -7,10 +7,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './Navbar.scss';
+import { useCart } from '../../context/CartContext';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { cartCount } = useCart();
 
   // Clear the session and send the user back to the home page
   const handleLogout = () => {
@@ -43,8 +45,17 @@ const Navbar = () => {
           {/* Consumer nav — access to order history */}
           {user && user.role === 'consumer' && (
             <>
+              <Link to="/browse" className="navbar__link">Browse</Link>
+              <Link to="/cart" className="navbar__link navbar__cart">
+                🛒 Cart
+                {cartCount > 0 && (
+                  <span className="navbar__cart-badge">{cartCount}</span>
+                )}
+              </Link>
               <Link to="/orders" className="navbar__link">My orders</Link>
-              <button onClick={handleLogout} className="navbar__link navbar__link--logout">Logout</button>
+              <button onClick={handleLogout} className="navbar__link navbar__link--logout">
+                Logout
+              </button>
             </>
           )}
 
