@@ -1,21 +1,19 @@
 // Consumer Dashboard — shows order history for logged in consumers
 
 import { useState, useEffect } from 'react';
+import ReviewForm from '../../components/common/ReviewForm';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import api from '../../utils/api';
 import './ConsumerDashboard.scss';
 
 const ConsumerDashboard = () => {
-  // Get logged in consumer from auth context
   const { user } = useAuth();
-
-  // State for consumer's orders
   const [orders, setOrders] = useState([]);
-
-  // Loading and error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [reviewableOrders, setReviewableOrders] = useState({});
+  const [openReviewForms, setOpenReviewForms] = useState({});
 
   // Fetch orders when component mounts
   useEffect(() => {
@@ -29,9 +27,33 @@ const ConsumerDashboard = () => {
         setLoading(false);
       }
     };
-
     fetchOrders();
   }, []);
+
+  // Check which completed orders can be reviewed
+  useEffect(() => {
+    const checkReviewable = async () => {
+      const reviewable = {};
+      for (const order of orders) {
+        if (order.status === 'completed') {
+          try {
+            const res = await api.get(`/reviews/can-review/${order._id}`);
+            reviewable[order._id] = res.data.canReview;
+          } catch {
+            reviewable[order._id] = false;
+          }
+        }
+      }
+      setReviewableOrders(reviewable);
+    };
+    if (orders.length > 0) checkReviewable();
+  }, [orders]);
+
+  // Called when a review is successfully submitted
+  const handleReviewSubmitted = (orderId) => {
+    setOpenReviewForms({ ...openReviewForms, [orderId]: false });
+    setReviewableOrders({ ...reviewableOrders, [orderId]: false });
+  };
 
   if (loading) return <div className="consumer-dashboard__loading">Loading orders...</div>;
   if (error) return <div className="consumer-dashboard__error">{error}</div>;
@@ -99,11 +121,9 @@ const ConsumerDashboard = () => {
                       </p>
                     </div>
                     <div className="consumer-dashboard__order-actions">
-                      {/* Status badge */}
                       <span className={`consumer-dashboard__status consumer-dashboard__status--${order.status}`}>
                         {order.status}
                       </span>
-                      {/* Pay now button — only shows on unpaid orders */}
                       {order.paymentStatus === 'unpaid' && (
                         <Link
                           to={`/checkout/${order._id}`}
@@ -133,6 +153,28 @@ const ConsumerDashboard = () => {
                       Total: ${order.totalAmount}
                     </p>
                   </div>
+
+                  {/* Review button for completed orders */}
+                  {reviewableOrders[order._id] && (
+                    <button
+                      className="consumer-dashboard__review-btn"
+                      onClick={() => setOpenReviewForms({
+                        ...openReviewForms,
+                        [order._id]: !openReviewForms[order._id]
+                      })}
+                    >
+                      {openReviewForms[order._id] ? 'Cancel' : 'Leave a review'}
+                    </button>
+                  )}
+
+                  {/* Review form */}
+                  {openReviewForms[order._id] && (
+                    <ReviewForm
+                      orderId={order._id}
+                      farmId={order.farm?._id}
+                      onReviewSubmitted={() => handleReviewSubmitted(order._id)}
+                    />
+                  )}
 
                 </div>
               ))}

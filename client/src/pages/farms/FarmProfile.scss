@@ -154,4 +154,27 @@
     text-align: center;
     padding: $spacing-xl;
   }
+
+&__reviews {
+  padding: $spacing-xl 0;
+  background: $background;
+
+  &-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+
+    @include respond-to(mobile) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+&__rating-badge {
+  font-size: $text-lg;
+  color: $secondary;
+  margin-left: $spacing-md;
+  font-family: $font-main;
+  font-weight: 500;
+  }
 }

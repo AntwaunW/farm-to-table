@@ -17,6 +17,12 @@ const Cart = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Redirect to login if the user is not authenticated — the order API requires a logged-in consumer
+  if (!user) {
+    navigate('/login');
+    return null;
+  }
+
   // -------------------------------------------------------------------
   // 🎓 PLACING THE ORDER
   // When the consumer clicks "Place order":
@@ -96,7 +102,7 @@ const Cart = () => {
                   className="cart__qty-btn"
                   onClick={() => updateQuantity(item.listingId, item.quantity - 1)}
                 >
-                  −
+                −
                 </button>
                 <span className="cart__qty">{item.quantity}</span>
                 <button

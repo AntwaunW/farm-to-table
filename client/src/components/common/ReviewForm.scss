@@ -1,0 +1,56 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.review-form {
+  @include card;
+  padding: $spacing-md;
+  margin-top: $spacing-md;
+
+  &__title {
+    font-size: $text-lg;
+    color: $text-dark;
+    margin-bottom: $spacing-md;
+  }
+
+  &__error {
+    color: $error;
+    font-size: $text-sm;
+    margin-bottom: $spacing-sm;
+  }
+
+  // Interactive star rating
+  &__stars {
+    display: flex;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-md;
+    cursor: pointer;
+  }
+
+  &__star {
+    font-size: 32px;
+    color: $border;
+    transition: $transition;
+    user-select: none;
+
+    &--active {
+      color: $secondary;
+    }
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  &__textarea {
+    @include input-base;
+    resize: vertical;
+    min-height: 80px;
+    margin-bottom: $spacing-md;
+    line-height: 1.6;
+  }
+
+  &__submit {
+    @include button-primary;
+    padding: $spacing-sm $spacing-lg;
+  }
+}

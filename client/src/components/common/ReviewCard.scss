@@ -1,0 +1,44 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.review-card {
+  @include card;
+  padding: $spacing-md;
+
+  &__header {
+    @include flex-between;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__stars {
+    display: flex;
+    gap: 2px;
+  }
+
+  &__star {
+    font-size: $text-lg;
+    color: $border;
+
+    &--filled {
+      color: $secondary;
+    }
+  }
+
+  &__date {
+    font-size: $text-xs;
+    color: $text-muted;
+  }
+
+  &__comment {
+    font-size: $text-sm;
+    color: $text-dark;
+    line-height: 1.6;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__author {
+    font-size: $text-sm;
+    color: $text-muted;
+    font-style: italic;
+  }
+}

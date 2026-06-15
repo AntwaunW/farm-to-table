@@ -183,4 +183,11 @@
   font-size: $text-sm;
   padding: $spacing-xs $spacing-md;
     }
+
+&__review-btn {
+  @include button-secondary;
+  font-size: $text-sm;
+  padding: $spacing-xs $spacing-md;
+  margin-top: $spacing-sm;
+  }
 }

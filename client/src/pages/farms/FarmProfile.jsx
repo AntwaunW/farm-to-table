@@ -7,8 +7,9 @@ import { useParams, Link } from 'react-router-dom';
 // Our axios instance for API calls
 import api from '../../utils/api';
 
-// Reusable listing card component
+// Reusable components
 import ListingCard from '../../components/common/ListingCard';
+import ReviewCard from '../../components/common/ReviewCard';
 
 // Page styles
 import './FarmProfile.scss';
@@ -23,23 +24,27 @@ const FarmProfile = () => {
   // State for the farm's listings
   const [listings, setListings] = useState([]);
 
+  // State for the farm's reviews
+  const [reviews, setReviews] = useState([]);
+
   // Loading and error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Fetch farm and listings when the component mounts
-  // or when the ID in the URL changes
+  // Fetch farm, listings and reviews when component mounts
   useEffect(() => {
     const fetchFarmData = async () => {
       try {
-        // Fetch both farm details and listings at the same time
-        const [farmRes, listingsRes] = await Promise.all([
+        // Fetch farm details, listings and reviews all at the same time
+        const [farmRes, listingsRes, reviewsRes] = await Promise.all([
           api.get(`/farms/${id}`),
           api.get(`/listings/farm/${id}`),
+          api.get(`/reviews/farm/${id}`),
         ]);
 
         setFarm(farmRes.data.farm);
         setListings(listingsRes.data.listings);
+        setReviews(reviewsRes.data.reviews);
       } catch (err) {
         setError('Failed to load farm. Please try again.');
       } finally {
@@ -130,7 +135,6 @@ const FarmProfile = () => {
             Available products
           </h2>
 
-          {/* Show message if no listings */}
           {listings.length === 0 ? (
             <p className="farm-profile__empty">
               This farm has no active listings right now.
@@ -139,6 +143,32 @@ const FarmProfile = () => {
             <div className="farm-profile__listings-grid">
               {listings.map((listing) => (
                 <ListingCard key={listing._id} listing={listing} farm={farm} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="farm-profile__reviews">
+        <div className="farm-profile__listings-container">
+          <h2 className="farm-profile__listings-title">
+            Customer reviews
+            {farm.rating && (
+              <span className="farm-profile__rating-badge">
+                ★ {farm.rating}
+              </span>
+            )}
+          </h2>
+
+          {reviews.length === 0 ? (
+            <p className="farm-profile__empty">
+              No reviews yet — be the first to review this farm!
+            </p>
+          ) : (
+            <div className="farm-profile__reviews-grid">
+              {reviews.map((review) => (
+                <ReviewCard key={review._id} review={review} />
               ))}
             </div>
           )}
