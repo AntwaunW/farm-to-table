@@ -12,9 +12,9 @@ const Footer = () => {
 
         {/* Brand column — logo and one-line tagline */}
         <div className="footer__brand">
-          <span className="footer__logo">🌿 FarmTable</span>
+          <span className="footer__logo">Cattle &amp; Crop</span>
           <p className="footer__tagline">
-            Connecting Texas farmers directly with local families.
+            Skip the store. Know your farmer.
           </p>
         </div>
 
@@ -43,7 +43,7 @@ const Footer = () => {
 
       {/* Bottom bar — copyright */}
       <div className="footer__bottom">
-        <p className="footer__copy">© 2026 FarmTable. All rights reserved.</p>
+        <p className="footer__copy">© 2026 Cattle &amp; Crop. All rights reserved.</p>
       </div>
     </footer>
   );

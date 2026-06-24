@@ -64,7 +64,9 @@ const Home = () => {
             Fresh from the ranch,<br />straight to your table
           </h1>
           <p className="hero__subtitle">
-            Buy directly from local Texas farms and ranchers. Grass-fed beef, fresh produce, raw dairy, and more.
+            Skip the store. Know your farmer. Buy directly from local
+            Texas farms and ranchers — grass-fed beef, fresh produce,
+            raw dairy, and more.
           </p>
           <div className="hero__btns">
             <Link to="/browse" className="hero__btn hero__btn--white">Browse farms</Link>

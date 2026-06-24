@@ -42,7 +42,7 @@ const Login = () => {
       <div className="auth__card">
         <div className="auth__header">
           <h1 className="auth__title">Welcome back</h1>
-          <p className="auth__subtitle">Sign in to your FarmToTable account</p>
+          <p className="auth__subtitle">Sign in to your Cattle &amp; Crop account</p>
         </div>
 
         {/* Show server-side or validation errors above the form */}

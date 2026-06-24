@@ -72,7 +72,7 @@ const Register = () => {
       <div className="auth__card">
         <div className="auth__header">
           <h1 className="auth__title">Create an account</h1>
-          <p className="auth__subtitle">Join FarmTable today</p>
+          <p className="auth__subtitle">Join Cattle &amp; Crop today</p>
         </div>
 
         {/* Show server-side or validation errors above the form */}

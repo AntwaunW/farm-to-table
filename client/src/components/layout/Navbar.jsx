@@ -26,8 +26,7 @@ const Navbar = () => {
 
         {/* Logo — always links back to the home page */}
         <Link to="/" className="navbar__logo">
-          <span className="navbar__logo-icon">🌿</span>
-          FarmToTable
+          Cattle &amp; Crop
         </Link>
 
         <div className="navbar__links">

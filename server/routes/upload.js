@@ -72,7 +72,7 @@ router.post('/', protect, upload.single('image'), async (req, res) => {
     const uploadResult = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          folder: 'farm-to-table', // organize uploads in a folder
+          folder: 'cattle-and-crop', // organize uploads in a folder
           transformation: [
             { width: 1200, crop: 'limit' }, // max width 1200px
             { quality: 'auto' },            // auto optimize quality

@@ -36,7 +36,7 @@ app.use('/api/reviews', require('./routes/reviews')); // Farm reviews by consume
 
 // Simple health check — confirms the API server is running
 app.get('/', (req, res) => {
-  res.send('Farm-to-Table API running');
+  res.send('Cattle & Crop API running');
 });
 
 const PORT = process.env.PORT || 5000;

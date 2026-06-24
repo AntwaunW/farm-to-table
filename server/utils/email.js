@@ -35,16 +35,16 @@ const sendWelcomeEmail = async (user) => {
   const msg = {
     to: user.email,
     from: FROM_EMAIL,
-    subject: 'Welcome to FarmTable! 🌿',
+    subject: 'Welcome to Cattle & Crop!',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: #1b4332; padding: 24px; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0;">🌿 FarmTable</h1>
+          <h1 style="color: #ffffff; margin: 0;">Cattle &amp; Crop</h1>
         </div>
         <div style="padding: 32px; background: #ffffff;">
           <h2 style="color: #1b1b1b;">Welcome, ${user.name}!</h2>
           <p style="color: #6b7280; line-height: 1.6;">
-            Thanks for joining FarmTable. You now have access to fresh,
+            Thanks for joining Cattle &amp; Crop. You now have access to fresh,
             locally grown food directly from Texas farms and ranchers.
           </p>
           ${user.role === 'farmer' ? `
@@ -71,7 +71,7 @@ const sendWelcomeEmail = async (user) => {
           `}
         </div>
         <div style="padding: 16px; text-align: center; color: #6b7280; font-size: 12px;">
-          <p>© 2026 FarmTable. All rights reserved.</p>
+          <p>© 2026 Cattle &amp; Crop. All rights reserved.</p>
         </div>
       </div>
     `,
@@ -115,11 +115,11 @@ const sendOrderConfirmation = async (order, consumer) => {
   const msg = {
     to: consumer.email,
     from: FROM_EMAIL,
-    subject: 'Order confirmed — FarmTable 🌿',
+    subject: 'Order confirmed — Cattle & Crop',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: #1b4332; padding: 24px; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0;">🌿 FarmTable</h1>
+          <h1 style="color: #ffffff; margin: 0;">Cattle &amp; Crop</h1>
         </div>
         <div style="padding: 32px; background: #ffffff;">
           <h2 style="color: #1b1b1b;">Order confirmed!</h2>
@@ -170,7 +170,7 @@ const sendOrderConfirmation = async (order, consumer) => {
           </a>
         </div>
         <div style="padding: 16px; text-align: center; color: #6b7280; font-size: 12px;">
-          <p>© 2026 FarmTable. All rights reserved.</p>
+          <p>© 2026 Cattle &amp; Crop. All rights reserved.</p>
         </div>
       </div>
     `,
@@ -201,7 +201,7 @@ const sendNewOrderAlert = async (order, farmer, farm) => {
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: #1b4332; padding: 24px; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0;">🌿 FarmTable</h1>
+          <h1 style="color: #ffffff; margin: 0;">Cattle &amp; Crop</h1>
         </div>
         <div style="padding: 32px; background: #ffffff;">
           <h2 style="color: #1b1b1b;">You have a new order!</h2>
@@ -231,7 +231,7 @@ const sendNewOrderAlert = async (order, farmer, farm) => {
           </a>
         </div>
         <div style="padding: 16px; text-align: center; color: #6b7280; font-size: 12px;">
-          <p>© 2026 FarmTable. All rights reserved.</p>
+          <p>© 2026 Cattle &amp; Crop. All rights reserved.</p>
         </div>
       </div>
     `,
