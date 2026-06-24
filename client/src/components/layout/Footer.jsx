@@ -34,16 +34,20 @@ const Footer = () => {
 
           <div className="footer__col">
             <h4 className="footer__col-title">Legal</h4>
-            <Link to="/terms" className="footer__link">Terms</Link>
-            <Link to="/privacy" className="footer__link">Privacy</Link>
+            <Link to="/terms" className="footer__link">Terms of Service</Link>
+            <Link to="/privacy" className="footer__link">Privacy Policy</Link>
+            <Link to="/trademark" className="footer__link">Trademark Notice</Link>
           </div>
-        </div>
+        </div>  
 
       </div>
 
       {/* Bottom bar — copyright */}
       <div className="footer__bottom">
-        <p className="footer__copy">© 2026 Cattle &amp; Crop. All rights reserved.</p>
+        <p className="footer__copy">
+          © 2026 Cattle & Crop™. All rights reserved. 
+          "Skip the store. Know your farmer."™
+        </p>
       </div>
     </footer>
   );

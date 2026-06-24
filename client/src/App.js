@@ -19,6 +19,9 @@ import OrderConfirmation from './pages/orders/OrderConfirmation';
 import CreateFarm from './pages/farms/CreateFarms';
 import CreateListing from './pages/listings/CreateListing';
 import Cart from './pages/Cart';
+import Terms from './pages/legal/Terms';
+import Privacy from './pages/legal/Privacy';
+import Trademark from './pages/legal/Trademark';
 
 // Checks user role and renders the correct dashboard component
 const DashboardRouter = () => {
@@ -39,7 +42,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/farms/:id" element={<FarmProfile />} />
-
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/trademark" element={<Trademark />} />
 
           {/* Protected route - must be logged in */}
           <Route element={<ProtectedRoute />}>
