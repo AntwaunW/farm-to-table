@@ -2,13 +2,14 @@
 // Loads environment variables, connects to MongoDB, registers middleware and routes,
 // then starts listening on the configured port
 
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 
-// Load variables from .env (MONGO_URI, JWT_SECRET, STRIPE keys, PORT)
-dotenv.config();
+// Always load .env from the server/ directory, regardless of where the process is started from
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 // Connect to MongoDB before the server starts handling requests
 connectDB();
@@ -33,6 +34,7 @@ app.use('/api/orders', require('./routes/orders'));     // Order placement and m
 app.use('/api/payments', require('./routes/payments')); // Stripe payment flow and webhooks
 app.use('/api/upload', require('./routes/upload'));   // Image upload to Cloudinary
 app.use('/api/reviews', require('./routes/reviews')); // Farm reviews by consumers
+app.use('/api/contact', require('./routes/contact')); // Contact form submissions
 
 // Simple health check — confirms the API server is running
 app.get('/', (req, res) => {

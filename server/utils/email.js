@@ -13,9 +13,6 @@ const sgMail = require('@sendgrid/mail');
 // -------------------------------------------------------------------
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-// The email address all our emails come FROM
-const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL;
-
 // -------------------------------------------------------------------
 // 🎓 HOW DO ALL THESE FUNCTIONS WORK?
 // Each function below is responsible for one type of email.
@@ -34,7 +31,10 @@ const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL;
 const sendWelcomeEmail = async (user) => {
   const msg = {
     to: user.email,
-    from: FROM_EMAIL,
+    from: {
+      email: process.env.SENDGRID_FROM_EMAIL,
+      name: 'Cattle & Crop',
+    },
     subject: 'Welcome to Cattle & Crop!',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -114,7 +114,10 @@ const sendOrderConfirmation = async (order, consumer) => {
 
   const msg = {
     to: consumer.email,
-    from: FROM_EMAIL,
+    from: {
+      email: process.env.SENDGRID_FROM_EMAIL,
+      name: 'Cattle & Crop',
+    },
     subject: 'Order confirmed — Cattle & Crop',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -196,7 +199,10 @@ const sendNewOrderAlert = async (order, farmer, farm) => {
 
   const msg = {
     to: farmer.email,
-    from: FROM_EMAIL,
+    from: {
+      email: process.env.SENDGRID_FROM_EMAIL,
+      name: 'Cattle & Crop',
+    },
     subject: `New order received — ${farm.farmName} 🌿`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -245,8 +251,73 @@ const sendNewOrderAlert = async (order, farmer, farm) => {
   }
 };
 
+// -------------------------------------------------------------------
+// Contact form — sent to the business inbox when a visitor submits
+// the contact page form. Set CONTACT_EMAIL in .env to your inbox.
+// -------------------------------------------------------------------
+const sendContactEmail = async ({ name, email, phone, subject, message }) => {
+  const to = process.env.CONTACT_EMAIL || process.env.SENDGRID_FROM_EMAIL;
+
+  const msg = {
+    to,
+    from: {
+      email: process.env.SENDGRID_FROM_EMAIL,
+      name: 'Cattle & Crop',
+    },
+    replyTo: { email, name },
+    subject: `Contact: ${subject || 'General inquiry'} — from ${name}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: #1b4332; padding: 24px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0;">Cattle &amp; Crop</h1>
+          <p style="color: rgba(255,255,255,0.7); margin: 8px 0 0; font-size: 14px;">New contact form submission</p>
+        </div>
+        <div style="padding: 32px; background: #ffffff;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; font-weight: 600; color: #1b1b1b; width: 120px;">Name</td>
+              <td style="padding: 8px 0; color: #6b7280;">${name}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; font-weight: 600; color: #1b1b1b;">Email</td>
+              <td style="padding: 8px 0; color: #6b7280;"><a href="mailto:${email}">${email}</a></td>
+            </tr>
+            ${phone ? `
+            <tr>
+              <td style="padding: 8px 0; font-weight: 600; color: #1b1b1b;">Phone</td>
+              <td style="padding: 8px 0; color: #6b7280;">${phone}</td>
+            </tr>` : ''}
+            <tr>
+              <td style="padding: 8px 0; font-weight: 600; color: #1b1b1b;">Subject</td>
+              <td style="padding: 8px 0; color: #6b7280;">${subject || 'Not specified'}</td>
+            </tr>
+          </table>
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
+          <h3 style="color: #1b1b1b; margin: 0 0 12px;">Message</h3>
+          <p style="color: #6b7280; line-height: 1.7; white-space: pre-wrap;">${message}</p>
+          <p style="margin-top: 24px; font-size: 13px; color: #9ca3af;">
+            Reply directly to this email to respond to ${name}.
+          </p>
+        </div>
+        <div style="padding: 16px; text-align: center; color: #6b7280; font-size: 12px;">
+          <p>© 2026 Cattle &amp; Crop. All rights reserved.</p>
+        </div>
+      </div>
+    `,
+  };
+
+  try {
+    await sgMail.send(msg);
+    console.log(`Contact form email sent from ${email}`);
+  } catch (error) {
+    console.error('Contact email failed:', error.message);
+    throw error;
+  }
+};
+
 module.exports = {
   sendWelcomeEmail,
   sendOrderConfirmation,
   sendNewOrderAlert,
+  sendContactEmail,
 };

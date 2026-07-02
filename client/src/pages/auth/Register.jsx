@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
+import PasswordInput from '../../components/common/PasswordInput';
 import './Register.scss';
 
 const Register = () => {
@@ -163,9 +164,8 @@ const Register = () => {
 
           <div className="auth__field">
             <label className="auth__label">Password</label>
-            <input
+            <PasswordInput
               className="auth__input"
-              type="password"
               name="password"
               placeholder="At least 6 characters"
               value={formData.password}
@@ -176,9 +176,8 @@ const Register = () => {
 
           <div className="auth__field">
             <label className="auth__label">Confirm password</label>
-            <input
+            <PasswordInput
               className="auth__input"
-              type="password"
               name="confirmPassword"
               placeholder="Re-enter your password"
               value={formData.confirmPassword}

@@ -1,0 +1,309 @@
+@import '../styles/variables';
+@import '../styles/mixins';
+
+.about {
+
+  &__hero {
+    background: $primary-dark;
+    padding: $spacing-xl 0;
+    text-align: center;
+
+    &-container {
+      @include container;
+    }
+
+    &-tag {
+      display: inline-block;
+      background: rgba($primary-light, 0.2);
+      color: $primary-light;
+      font-size: $text-sm;
+      font-weight: 500;
+      padding: $spacing-xs $spacing-md;
+      border-radius: $radius-full;
+      margin-bottom: $spacing-md;
+    }
+
+    &-title {
+      font-size: $text-4xl;
+      color: #ffffff;
+      line-height: 1.2;
+      margin-bottom: $spacing-md;
+
+      @include respond-to(tablet) {
+        font-size: $text-3xl;
+      }
+    }
+
+    &-subtitle {
+      font-size: $text-lg;
+      color: rgba(255, 255, 255, 0.72);
+      max-width: 540px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+  }
+
+  &__container {
+    @include container;
+  }
+
+  // ── Mission ──────────────────────────────────────────────
+  &__mission {
+    padding: $spacing-xl 0;
+    background: $surface;
+    text-align: center;
+  }
+
+  &__mission-label {
+    font-size: $text-sm;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $primary;
+    margin-bottom: $spacing-md;
+  }
+
+  &__mission-quote {
+    font-family: $font-heading;
+    font-size: $text-xl;
+    color: $text-dark;
+    line-height: 1.7;
+    max-width: 680px;
+    margin: 0 auto;
+    font-style: italic;
+    border: none;
+    padding: 0;
+
+    @include respond-to(tablet) {
+      font-size: $text-lg;
+    }
+  }
+
+  // ── Values ───────────────────────────────────────────────
+  &__values {
+    padding: $spacing-xl 0;
+    background: $background;
+  }
+
+  &__section-title {
+    font-size: $text-2xl;
+    color: $text-dark;
+    margin-bottom: $spacing-lg;
+
+    &--center {
+      text-align: center;
+    }
+  }
+
+  &__values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-md;
+
+    @include respond-to(tablet) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__value-card {
+    background: $surface;
+    border-radius: $radius-lg;
+    padding: $spacing-lg;
+    box-shadow: $shadow-sm;
+    border: 1px solid $border;
+    transition: $transition;
+
+    &:hover {
+      box-shadow: $shadow-md;
+      transform: translateY(-2px);
+    }
+  }
+
+  &__value-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: $spacing-md;
+  }
+
+  &__value-title {
+    font-size: $text-lg;
+    color: $text-dark;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__value-body {
+    font-size: $text-md;
+    color: $text-muted;
+    line-height: 1.7;
+  }
+
+  // ── Story ────────────────────────────────────────────────
+  &__story {
+    padding: $spacing-xl 0;
+    background: $surface;
+  }
+
+  &__story-container {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: $spacing-xl;
+    align-items: start;
+
+    @include respond-to(tablet) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__story-text {
+    p {
+      font-size: $text-md;
+      color: $text-muted;
+      line-height: 1.8;
+      margin-bottom: $spacing-md;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  &__story-stat-col {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+
+    @include respond-to(tablet) {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+
+  &__stat {
+    background: $background;
+    border-radius: $radius-lg;
+    padding: $spacing-md;
+    border-left: 4px solid $primary;
+
+    @include respond-to(tablet) {
+      flex: 1 1 160px;
+    }
+  }
+
+  &__stat-number {
+    display: block;
+    font-size: $text-2xl;
+    font-weight: 700;
+    color: $primary;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__stat-label {
+    font-size: $text-sm;
+    color: $text-muted;
+    line-height: 1.4;
+  }
+
+  // ── Why Support ──────────────────────────────────────────
+  &__support {
+    padding: $spacing-xl 0;
+    background: $background;
+  }
+
+  &__support-lead {
+    font-size: $text-lg;
+    color: $text-muted;
+    line-height: 1.7;
+    max-width: 640px;
+    margin: 0 auto $spacing-lg;
+    text-align: center;
+  }
+
+  &__support-list {
+    list-style: none;
+    padding: 0;
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+
+    li {
+      font-size: $text-md;
+      color: $text-muted;
+      line-height: 1.6;
+      padding-left: $spacing-lg;
+      position: relative;
+
+      &::before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        color: $primary;
+        font-weight: 700;
+      }
+    }
+  }
+
+  // ── CTA ──────────────────────────────────────────────────
+  &__cta {
+    background: $primary-dark;
+    padding: $spacing-xl 0;
+  }
+
+  &__cta-inner {
+    @include flex-between;
+
+    @include respond-to(tablet) {
+      flex-direction: column;
+      gap: $spacing-lg;
+      text-align: center;
+    }
+  }
+
+  &__cta-title {
+    font-size: $text-2xl;
+    color: #ffffff;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__cta-subtitle {
+    font-size: $text-md;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  &__cta-btns {
+    display: flex;
+    gap: $spacing-md;
+    flex-shrink: 0;
+
+    @include respond-to(mobile) {
+      flex-direction: column;
+      width: 100%;
+    }
+  }
+
+  &__cta-btn {
+    @include button-base;
+    font-size: $text-md;
+    padding: $spacing-sm $spacing-lg;
+
+    &--primary {
+      background: #ffffff;
+      color: $primary-dark;
+
+      &:hover {
+        background: $background;
+      }
+    }
+
+    &--outline {
+      background: transparent;
+      color: #ffffff;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+
+      &:hover {
+        border-color: #ffffff;
+      }
+    }
+  }
+}

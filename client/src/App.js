@@ -22,6 +22,8 @@ import Cart from './pages/Cart';
 import Terms from './pages/legal/Terms';
 import Privacy from './pages/legal/Privacy';
 import Trademark from './pages/legal/Trademark';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
 // Checks user role and renders the correct dashboard component
 const DashboardRouter = () => {
@@ -45,6 +47,8 @@ function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/trademark" element={<Trademark />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
 
           {/* Protected route - must be logged in */}
           <Route element={<ProtectedRoute />}>

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
+import PasswordInput from '../../components/common/PasswordInput';
 import './Login.scss';
 
 const Login = () => {
@@ -64,9 +65,8 @@ const Login = () => {
 
           <div className="auth__field">
             <label className="auth__label">Password</label>
-            <input
+            <PasswordInput
               className="auth__input"
-              type="password"
               name="password"
               placeholder="Enter your password"
               value={formData.password}
