@@ -53,6 +53,7 @@ router.post('/register', async (req, res) => {
         email: user.email,
         role: user.role,
         location: user.location,
+        avatar: user.avatar || '',
       },
     });
   } catch (error) {
@@ -97,6 +98,7 @@ router.post('/login', async (req, res) => {
         email: user.email,
         role: user.role,
         location: user.location,
+        avatar: user.avatar || '',
       },
     });
   } catch (error) {
@@ -113,6 +115,23 @@ router.get('/me', protect, async (req, res) => {
     // req.user is populated by the protect middleware
     const user = await User.findById(req.user.id);
     res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   PUT /api/auth/avatar
+// @desc    Update the logged-in user's profile picture URL
+// @access  Private
+router.put('/avatar', protect, async (req, res) => {
+  const { avatarUrl } = req.body;
+  if (!avatarUrl) {
+    return res.status(400).json({ message: 'Avatar URL is required' });
+  }
+  try {
+    await User.findByIdAndUpdate(req.user.id, { avatar: avatarUrl });
+    res.json({ success: true, avatarUrl });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });

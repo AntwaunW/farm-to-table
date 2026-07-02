@@ -18,6 +18,14 @@
 
     &-container {
       @include container;
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+
+      @include respond-to(mobile) {
+        flex-direction: column;
+        text-align: center;
+      }
     }
   }
 
@@ -85,6 +93,13 @@
     &-title {
       font-size: $text-xl;
       color: $text-dark;
+    }
+
+    // Subtitle line under a section title (e.g. gallery photo limit reminder)
+    &-hint {
+      font-size: $text-sm;
+      color: $text-muted;
+      margin-top: $spacing-xs;
     }
   }
 

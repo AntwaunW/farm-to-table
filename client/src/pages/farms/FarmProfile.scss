@@ -121,6 +121,161 @@
     max-width: 600px;
   }
 
+  // ── Photo Gallery ────────────────────────────────────────────────────────────
+  // Public read-only grid; clicking a thumbnail opens the lightbox
+  &__gallery {
+    padding: $spacing-xl 0;
+    background: $background;
+
+    &-container {
+      @include container;
+    }
+
+    &-title {
+      font-size: $text-2xl;
+      color: $text-dark;
+      margin-bottom: $spacing-lg;
+    }
+
+    // Responsive square-thumbnail grid matching the dashboard's FarmGallery component
+    &-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: $spacing-sm;
+
+      @include respond-to(mobile) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    // Each cell is a button so it is keyboard-accessible
+    &-cell {
+      aspect-ratio: 1;
+      border: none;
+      padding: 0;
+      background: $border;
+      border-radius: $radius-md;
+      overflow: hidden;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+
+      &:hover .farm-profile__gallery-img {
+        transform: scale(1.05);
+      }
+    }
+
+    // Image fills the square cell without distortion
+    &-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.22s ease;
+    }
+  }
+
+  // ── Lightbox ──────────────────────────────────────────────────────────────
+  // Full-screen overlay that shows one photo at a time with prev/next controls
+  &__lightbox {
+    position: fixed;
+    inset: 0;               // covers the full viewport
+    background: rgba(0, 0, 0, 0.88);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: $spacing-md;
+
+    // The inner box sits on top of the backdrop and doesn't close on click
+    &-inner {
+      position: relative;
+      max-width: min(900px, 90vw);
+      max-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    // The full-size photo
+    &-img {
+      max-width: 100%;
+      max-height: 80vh;
+      border-radius: $radius-md;
+      display: block;
+      object-fit: contain;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    // Close (✕) button — top right corner
+    &-close {
+      position: absolute;
+      top: -48px;
+      right: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: $radius-full;
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    // Shared styles for the prev and next arrow buttons
+    &-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: $radius-full;
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border: none;
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      // Position the arrows outside the photo on wider screens
+      &--prev { left: -56px; }
+      &--next { right: -56px; }
+
+      // On narrow screens collapse them onto the image edges
+      @include respond-to(mobile) {
+        &--prev { left: $spacing-xs; }
+        &--next { right: $spacing-xs; }
+      }
+    }
+
+    // "3 / 8" counter below the photo
+    &-counter {
+      position: absolute;
+      bottom: -36px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: $text-sm;
+      color: rgba(255, 255, 255, 0.65);
+      white-space: nowrap;
+    }
+  }
+
   // Listings section
   &__listings {
     padding: $spacing-xl 0;

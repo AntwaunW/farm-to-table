@@ -1,0 +1,150 @@
+// FarmGallery styles
+// Renders a responsive square-thumbnail grid with an add-photo slot
+// and a hover-reveal remove button on each photo
+
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.farm-gallery {
+
+  // ── Grid ──────────────────────────────────────────────────────────────
+  // Auto-fill columns that are at least 140px wide so the grid
+  // adapts naturally from mobile (2 cols) to desktop (4+ cols)
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: $spacing-sm;
+    margin-bottom: $spacing-sm;
+  }
+
+  // ── Photo cell ────────────────────────────────────────────────────────
+  // position: relative lets us absolutely position the remove button
+  &__cell {
+    position: relative;
+    aspect-ratio: 1;      // always a perfect square
+    border-radius: $radius-md;
+    overflow: hidden;
+    background: $border;  // shown briefly while the image loads
+
+    // Reveal the remove button on hover
+    &:hover .farm-gallery__remove {
+      opacity: 1;
+    }
+  }
+
+  // Fills the square cell without distorting the image
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.2s ease;
+
+    // Slight zoom on hover to hint the photo is interactive
+    .farm-gallery__cell:hover & {
+      transform: scale(1.04);
+    }
+  }
+
+  // ── Remove button ─────────────────────────────────────────────────────
+  // Sits in the top-right corner, hidden by default, revealed on hover
+  &__remove {
+    position: absolute;
+    top: $spacing-xs;
+    right: $spacing-xs;
+    width: 26px;
+    height: 26px;
+    border-radius: $radius-full;
+    background: rgba(0, 0, 0, 0.65);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.18s ease, background 0.18s ease;
+    line-height: 1;
+
+    &:hover {
+      background: $error;
+      opacity: 1;
+    }
+  }
+
+  // ── Add-photo cell ────────────────────────────────────────────────────
+  // Styled like the photo cells but with a dashed border and centered content
+  &__add {
+    aspect-ratio: 1;
+    border-radius: $radius-md;
+    border: 2px dashed $border;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-xs;
+    cursor: pointer;
+    transition: $transition;
+    color: $text-muted;
+    background: transparent;
+
+    &:hover {
+      border-color: $primary;
+      color: $primary;
+      background: rgba($primary, 0.04);
+    }
+
+    // Dim the cell while an upload is running
+    &--loading {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+
+  &__plus {
+    font-size: 1.75rem;
+    line-height: 1;
+    font-weight: 300;
+  }
+
+  &__add-label {
+    font-size: $text-xs;
+    font-weight: 500;
+  }
+
+  // ── Upload spinner ────────────────────────────────────────────────────
+  &__spinner {
+    display: block;
+    width: 24px;
+    height: 24px;
+    border: 2px solid $border;
+    border-top-color: $primary;
+    border-radius: $radius-full;
+    animation: gallery-spin 0.65s linear infinite;
+  }
+
+  // Hidden — only the label above is visible and clickable
+  &__input {
+    display: none;
+  }
+
+  // ── Error message ─────────────────────────────────────────────────────
+  &__error {
+    font-size: $text-sm;
+    color: $error;
+    margin-bottom: $spacing-sm;
+  }
+
+  // ── Photo count ───────────────────────────────────────────────────────
+  &__count {
+    font-size: $text-xs;
+    color: $text-muted;
+    margin-top: $spacing-xs;
+  }
+}
+
+@keyframes gallery-spin {
+  to { transform: rotate(360deg); }
+}

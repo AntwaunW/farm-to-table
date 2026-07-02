@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ReviewForm from '../../components/common/ReviewForm';
+import AvatarUpload from '../../components/common/AvatarUpload';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import api from '../../utils/api';
@@ -64,12 +65,15 @@ const ConsumerDashboard = () => {
       {/* Header */}
       <div className="consumer-dashboard__header">
         <div className="consumer-dashboard__header-container">
-          <h1 className="consumer-dashboard__title">
-            Welcome, {user.name}
-          </h1>
-          <p className="consumer-dashboard__subtitle">
-            Track your orders and purchases
-          </p>
+          <AvatarUpload />
+          <div>
+            <h1 className="consumer-dashboard__title">
+              Welcome, {user.name}
+            </h1>
+            <p className="consumer-dashboard__subtitle">
+              Track your orders and purchases
+            </p>
+          </div>
         </div>
       </div>
 

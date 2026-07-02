@@ -134,4 +134,77 @@ router.delete('/:id', protect, authorizeRoles('farmer'), async (req, res) => {
   }
 });
 
+// @route   POST /api/farms/:id/photos
+// @desc    Add one photo URL to this farm's gallery (photos array)
+//          The URL comes from Cloudinary after the frontend uploads it
+//          via the /api/upload route — we just store the resulting URL here
+// @access  Private (farm owner only)
+router.post('/:id/photos', protect, authorizeRoles('farmer'), async (req, res) => {
+  try {
+    const { photoUrl } = req.body;
+
+    if (!photoUrl) {
+      return res.status(400).json({ message: 'Photo URL is required' });
+    }
+
+    const farm = await Farm.findById(req.params.id);
+
+    if (!farm) {
+      return res.status(404).json({ message: 'Farm not found' });
+    }
+
+    // Only the farm's owner can add photos
+    if (farm.owner.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    // Cap the gallery at 12 photos so Cloudinary storage stays reasonable
+    if (farm.photos.length >= 12) {
+      return res.status(400).json({ message: 'Gallery limit of 12 photos reached' });
+    }
+
+    farm.photos.push(photoUrl);
+    await farm.save();
+
+    res.json({ success: true, photos: farm.photos });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   DELETE /api/farms/:id/photos
+// @desc    Remove a specific photo URL from this farm's gallery
+//          The client sends the URL to remove in the request body
+// @access  Private (farm owner only)
+router.delete('/:id/photos', protect, authorizeRoles('farmer'), async (req, res) => {
+  try {
+    const { photoUrl } = req.body;
+
+    if (!photoUrl) {
+      return res.status(400).json({ message: 'Photo URL is required' });
+    }
+
+    const farm = await Farm.findById(req.params.id);
+
+    if (!farm) {
+      return res.status(404).json({ message: 'Farm not found' });
+    }
+
+    // Only the farm's owner can remove photos
+    if (farm.owner.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    // Filter out the URL to remove — this handles duplicates too
+    farm.photos = farm.photos.filter((p) => p !== photoUrl);
+    await farm.save();
+
+    res.json({ success: true, photos: farm.photos });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;

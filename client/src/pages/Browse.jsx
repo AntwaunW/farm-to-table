@@ -62,7 +62,7 @@ const Browse = () => {
             className="browse__search"
           />
           <div className="browse__categories">
-            {['', 'beef', 'produce', 'dairy', 'eggs', 'honey', 'pork', 'lamb', 'poultry'].map((cat) => (
+            {['', 'beef', 'produce', 'dairy', 'eggs', 'honey', 'pork', 'lamb', 'poultry', 'other'].map((cat) => (
               <button
                 key={cat}
                 className={`browse__cat-btn ${category === cat ? 'browse__cat-btn--active' : ''}`}

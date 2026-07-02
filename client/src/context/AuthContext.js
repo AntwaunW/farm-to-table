@@ -38,6 +38,13 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('token', tokenData);
   };
 
+  // Merges updated fields into the current user object in state and localStorage
+  const updateUser = (updatedFields) => {
+    const updated = { ...user, ...updatedFields };
+    setUser(updated);
+    localStorage.setItem('user', JSON.stringify(updated));
+  };
+
   // Clears all auth state and removes the session from localStorage
   const logout = () => {
     setUser(null);
@@ -48,7 +55,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     // Expose auth state and actions to any component in the tree via useAuth()
-    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

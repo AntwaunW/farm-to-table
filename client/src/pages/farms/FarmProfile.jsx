@@ -1,5 +1,5 @@
 // React core imports
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 // React Router hooks for URL params and navigation
 import { useParams, Link } from 'react-router-dom';
@@ -30,6 +30,42 @@ const FarmProfile = () => {
   // Loading and error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Lightbox state — null means the lightbox is closed
+  // When open, this holds the index of the photo currently displayed
+  const [lightboxIndex, setLightboxIndex] = useState(null);
+
+  // Open the lightbox at a specific photo index
+  const openLightbox = (index) => setLightboxIndex(index);
+
+  // Close the lightbox
+  const closeLightbox = () => setLightboxIndex(null);
+
+  // Navigate to the previous photo, wrapping from first → last
+  const prevPhoto = useCallback(() => {
+    if (!farm) return;
+    setLightboxIndex((i) => (i - 1 + farm.photos.length) % farm.photos.length);
+  }, [farm]);
+
+  // Navigate to the next photo, wrapping from last → first
+  const nextPhoto = useCallback(() => {
+    if (!farm) return;
+    setLightboxIndex((i) => (i + 1) % farm.photos.length);
+  }, [farm]);
+
+  // Keyboard controls for the lightbox (Escape closes, arrows navigate)
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+
+    const handleKey = (e) => {
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') prevPhoto();
+      if (e.key === 'ArrowRight') nextPhoto();
+    };
+
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [lightboxIndex, prevPhoto, nextPhoto]);
 
   // Fetch farm, listings and reviews when component mounts
   useEffect(() => {
@@ -127,6 +163,100 @@ const FarmProfile = () => {
 
         </div>
       </div>
+
+      {/* Photo Gallery Section — only rendered when the farm has uploaded photos */}
+      {farm.photos.length > 0 && (
+        <div className="farm-profile__gallery">
+          <div className="farm-profile__gallery-container">
+            <h2 className="farm-profile__gallery-title">Photo gallery</h2>
+
+            {/* Square-thumbnail grid — clicking any photo opens the lightbox */}
+            <div className="farm-profile__gallery-grid">
+              {farm.photos.map((url, index) => (
+                <button
+                  key={url}
+                  className="farm-profile__gallery-cell"
+                  onClick={() => openLightbox(index)}
+                  type="button"
+                  aria-label={`View photo ${index + 1} of ${farm.photos.length}`}
+                >
+                  <img
+                    src={url}
+                    alt={`${farm.farmName} — photo ${index + 1}`}
+                    className="farm-profile__gallery-img"
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/*
+        Lightbox overlay — shown when the farmer has clicked a photo.
+        Clicking the dark backdrop closes it; arrow buttons step through photos.
+      */}
+      {lightboxIndex !== null && farm.photos.length > 0 && (
+        <div
+          className="farm-profile__lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Photo viewer"
+          onClick={closeLightbox}  // clicking the backdrop closes the lightbox
+        >
+          {/* Stop click propagation on the inner box so only the backdrop closes */}
+          <div
+            className="farm-profile__lightbox-inner"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              className="farm-profile__lightbox-close"
+              onClick={closeLightbox}
+              type="button"
+              aria-label="Close photo viewer"
+            >
+              ✕
+            </button>
+
+            {/* Previous photo button — only shown when there is more than one photo */}
+            {farm.photos.length > 1 && (
+              <button
+                className="farm-profile__lightbox-nav farm-profile__lightbox-nav--prev"
+                onClick={prevPhoto}
+                type="button"
+                aria-label="Previous photo"
+              >
+                ‹
+              </button>
+            )}
+
+            {/* The full-size photo */}
+            <img
+              src={farm.photos[lightboxIndex]}
+              alt={`${farm.farmName} — photo ${lightboxIndex + 1}`}
+              className="farm-profile__lightbox-img"
+            />
+
+            {/* Next photo button */}
+            {farm.photos.length > 1 && (
+              <button
+                className="farm-profile__lightbox-nav farm-profile__lightbox-nav--next"
+                onClick={nextPhoto}
+                type="button"
+                aria-label="Next photo"
+              >
+                ›
+              </button>
+            )}
+
+            {/* Counter — e.g. "3 / 8" */}
+            <p className="farm-profile__lightbox-counter">
+              {lightboxIndex + 1} / {farm.photos.length}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Listings Section */}
       <div className="farm-profile__listings">

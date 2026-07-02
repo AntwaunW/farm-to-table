@@ -95,6 +95,7 @@ const Home = () => {
               <option value="pork">Pork</option>
               <option value="lamb">Lamb</option>
               <option value="poultry">Poultry</option>
+              <option value="other">Other</option>
             </select>
             <button type="submit" className="hero__search-btn">Search</button>
           </form>

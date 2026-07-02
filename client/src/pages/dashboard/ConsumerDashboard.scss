@@ -17,6 +17,14 @@
 
     &-container {
       @include container;
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+
+      @include respond-to(mobile) {
+        flex-direction: column;
+        text-align: center;
+      }
     }
   }
 

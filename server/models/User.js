@@ -36,6 +36,10 @@ const UserSchema = new mongoose.Schema({
     state: { type: String },
     zip: { type: String },
   },
+  avatar: {
+    type: String,
+    default: '',
+  },
   createdAt: {
     type: Date,
     default: Date.now,

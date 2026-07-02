@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
+import AvatarUpload from '../../components/common/AvatarUpload';
+import FarmGallery from '../../components/common/FarmGallery';
 import './FarmerDashboard.scss';
 
 const FarmerDashboard = () => {
@@ -81,12 +83,15 @@ const FarmerDashboard = () => {
       {/* Dashboard Header */}
       <div className="farmer-dashboard__header">
         <div className="farmer-dashboard__header-container">
-          <h1 className="farmer-dashboard__title">
-            Welcome back, {user.name}
-          </h1>
-          <p className="farmer-dashboard__subtitle">
-            Manage your farm, listings, and orders
-          </p>
+          <AvatarUpload />
+          <div>
+            <h1 className="farmer-dashboard__title">
+              Welcome back, {user.name}
+            </h1>
+            <p className="farmer-dashboard__subtitle">
+              Manage your farm, listings, and orders
+            </p>
+          </div>
         </div>
       </div>
 
@@ -143,6 +148,32 @@ const FarmerDashboard = () => {
             </div>
           )}
         </div>
+
+        {/* Farm Gallery Section — only shown once the farmer has a farm profile */}
+        {farm && (
+          <div className="farmer-dashboard__section">
+            <div className="farmer-dashboard__section-header">
+              <div>
+                <h2 className="farmer-dashboard__section-title">Farm gallery</h2>
+                {/* Remind the farmer where these photos appear publicly */}
+                <p className="farmer-dashboard__section-hint">
+                  Photos appear on your public farm profile. Up to 12 photos.
+                </p>
+              </div>
+            </div>
+
+            {/*
+              FarmGallery handles upload + remove interactions.
+              onUpdate keeps the local farm state in sync so the photo
+              count in the section header stays accurate without a page reload.
+            */}
+            <FarmGallery
+              farmId={farm._id}
+              photos={farm.photos}
+              onUpdate={(updatedPhotos) => setFarm({ ...farm, photos: updatedPhotos })}
+            />
+          </div>
+        )}
 
         {/* Listings Section */}
         <div className="farmer-dashboard__section">
