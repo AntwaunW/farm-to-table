@@ -103,7 +103,7 @@ const FarmGallery = ({ farmId, photos: initialPhotos, onUpdate }) => {
           <div key={url} className="farm-gallery__cell">
             <img
               src={url}
-              alt={`Farm photo ${index + 1}`}
+              alt={`View ${index + 1}`}
               className="farm-gallery__img"
             />
 

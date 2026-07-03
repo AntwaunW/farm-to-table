@@ -30,19 +30,6 @@ const FarmerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Controls whether the inline "New listing" form is visible
-  const [showListingForm, setShowListingForm] = useState(false);
-
-  // Form data for creating a new listing inline
-  const [listingForm, setListingForm] = useState({
-    title: '', description: '', category: '',
-    pricePerUnit: '', unit: '', quantityAvailable: '', harvestDate: '',
-  });
-
-  // State for the inline listing form submission
-  const [listingFormError, setListingFormError] = useState('');
-  const [listingFormLoading, setListingFormLoading] = useState(false);
-
   // Fetch all farmer data when component mounts
   useEffect(() => {
   const fetchFarmerData = async () => {
@@ -90,37 +77,6 @@ const FarmerDashboard = () => {
       ));
     } catch (err) {
       alert('Failed to update order status.');
-    }
-  };
-
-  // Category and unit options for the inline create form
-  const CATEGORIES = ['beef', 'produce', 'dairy', 'eggs', 'honey', 'pork', 'lamb', 'poultry', 'other'];
-  const UNITS = ['lb', 'dozen', 'bundle', 'whole', 'quarter', 'half', 'each', 'gallon'];
-
-  // Handle input changes in the new listing form
-  const handleListingFormChange = (e) => {
-    setListingForm({ ...listingForm, [e.target.name]: e.target.value });
-  };
-
-  // Submit the new listing — POSTs to /api/listings and prepends the result to local state
-  const handleCreateListing = async (e) => {
-    e.preventDefault();
-    setListingFormError('');
-    setListingFormLoading(true);
-    try {
-      const res = await api.post('/listings', listingForm);
-      // Prepend the new listing so it appears at the top of the list immediately
-      setListings([res.data.listing, ...listings]);
-      // Reset and close the form
-      setListingForm({
-        title: '', description: '', category: '',
-        pricePerUnit: '', unit: '', quantityAvailable: '', harvestDate: '',
-      });
-      setShowListingForm(false);
-    } catch (err) {
-      setListingFormError(err.response?.data?.message || 'Failed to create listing.');
-    } finally {
-      setListingFormLoading(false);
     }
   };
 
