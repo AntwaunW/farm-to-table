@@ -18,9 +18,12 @@ const app = express();
 
 // Allow cross-origin requests from the React frontend (localhost:3000 in dev)
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? 'https://www.cattleandcrop.com'
-    : 'http://localhost:3000',
+  origin: [
+    'http://localhost:3000',
+    'https://cattle-and-crop.vercel.app',
+    'https://www.cattleandcrop.com',
+    'https://cattleandcrop.com',
+  ],
   credentials: true,
 }));
 
