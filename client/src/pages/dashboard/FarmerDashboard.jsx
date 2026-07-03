@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
 import AvatarUpload from '../../components/common/AvatarUpload';
 import FarmGallery from '../../components/common/FarmGallery';
+import ReviewCard from '../../components/common/ReviewCard';
 import './FarmerDashboard.scss';
 
 const FarmerDashboard = () => {
@@ -22,9 +23,25 @@ const FarmerDashboard = () => {
   // State for incoming orders
   const [orders, setOrders] = useState([]);
 
+  // State for comments/reviews left by consumers about this farm
+  const [reviews, setReviews] = useState([]);
+
   // Loading and error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Controls whether the inline "New listing" form is visible
+  const [showListingForm, setShowListingForm] = useState(false);
+
+  // Form data for creating a new listing inline
+  const [listingForm, setListingForm] = useState({
+    title: '', description: '', category: '',
+    pricePerUnit: '', unit: '', quantityAvailable: '', harvestDate: '',
+  });
+
+  // State for the inline listing form submission
+  const [listingFormError, setListingFormError] = useState('');
+  const [listingFormLoading, setListingFormLoading] = useState(false);
 
   // Fetch all farmer data when component mounts
   useEffect(() => {
@@ -39,14 +56,16 @@ const FarmerDashboard = () => {
       if (myFarm) {
         setFarm(myFarm);
 
-        // Only fetch listings and orders if farm exists
-        const [listingsRes, ordersRes] = await Promise.all([
+        // Only fetch listings, orders, and reviews if farm exists
+        const [listingsRes, ordersRes, reviewsRes] = await Promise.all([
           api.get(`/listings/farm/${myFarm._id}`),
           api.get('/orders/farm/me'),
+          api.get(`/reviews/farm/${myFarm._id}`),
         ]);
 
         setListings(listingsRes.data.listings);
         setOrders(ordersRes.data.orders);
+        setReviews(reviewsRes.data.reviews);
       }
       // If no farm exists we just leave farm as null
       // The dashboard will show the "Create farm profile" prompt
@@ -71,6 +90,37 @@ const FarmerDashboard = () => {
       ));
     } catch (err) {
       alert('Failed to update order status.');
+    }
+  };
+
+  // Category and unit options for the inline create form
+  const CATEGORIES = ['beef', 'produce', 'dairy', 'eggs', 'honey', 'pork', 'lamb', 'poultry', 'other'];
+  const UNITS = ['lb', 'dozen', 'bundle', 'whole', 'quarter', 'half', 'each', 'gallon'];
+
+  // Handle input changes in the new listing form
+  const handleListingFormChange = (e) => {
+    setListingForm({ ...listingForm, [e.target.name]: e.target.value });
+  };
+
+  // Submit the new listing — POSTs to /api/listings and prepends the result to local state
+  const handleCreateListing = async (e) => {
+    e.preventDefault();
+    setListingFormError('');
+    setListingFormLoading(true);
+    try {
+      const res = await api.post('/listings', listingForm);
+      // Prepend the new listing so it appears at the top of the list immediately
+      setListings([res.data.listing, ...listings]);
+      // Reset and close the form
+      setListingForm({
+        title: '', description: '', category: '',
+        pricePerUnit: '', unit: '', quantityAvailable: '', harvestDate: '',
+      });
+      setShowListingForm(false);
+    } catch (err) {
+      setListingFormError(err.response?.data?.message || 'Failed to create listing.');
+    } finally {
+      setListingFormLoading(false);
     }
   };
 
@@ -223,7 +273,13 @@ const FarmerDashboard = () => {
                     <p>{order.consumer?.email}</p>
                     <p>Total: ${order.totalAmount}</p>
                     <p>Payout: ${order.farmerPayout}</p>
-                    <p>Pickup: {order.pickupDate ? new Date(order.pickupDate).toLocaleDateString() : 'TBD'}</p>
+                    <p>
+                      {order.pickupOrDelivery === 'delivery' ? '🚚 Delivery' : '📍 Pickup'}:{' '}
+                      {order.pickupDate ? new Date(order.pickupDate).toLocaleDateString() : 'TBD'}
+                    </p>
+                    {order.pickupOrDelivery === 'delivery' && order.deliveryAddress && (
+                      <p>Deliver to: {order.deliveryAddress}</p>
+                    )}
                   </div>
                   <div className="farmer-dashboard__order-actions">
                     {/* Show status badge */}
@@ -261,6 +317,27 @@ const FarmerDashboard = () => {
             </div>
           )}
         </div>
+
+        {/* Reviews Section — comments consumers have left about this farm */}
+        {farm && (
+          <div className="farmer-dashboard__section">
+            <div className="farmer-dashboard__section-header">
+              <h2 className="farmer-dashboard__section-title">Customer reviews</h2>
+            </div>
+
+            {reviews.length === 0 ? (
+              <p className="farmer-dashboard__empty-text">
+                No reviews yet.
+              </p>
+            ) : (
+              <div className="farmer-dashboard__reviews">
+                {reviews.map((review) => (
+                  <ReviewCard key={review._id} review={review} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
       </div>
     </div>

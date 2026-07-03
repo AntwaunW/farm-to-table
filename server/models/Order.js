@@ -1,6 +1,7 @@
 // Order model — represents a consumer's purchase from a single farm
 //
-// Fee structure: platform takes 4% of totalAmount, farmer receives the remaining 96%
+// Fee structure: platform takes 4% of the item subtotal, farmer receives the remaining 96%
+//                plus the full delivery fee on delivery orders (pickup orders have none)
 // Payment flow: order is created (unpaid) → Stripe payment intent created →
 //               Stripe webhook fires on success → paymentStatus set to 'paid', status to 'confirmed'
 //
@@ -37,17 +38,22 @@ const OrderSchema = new mongoose.Schema({
       subtotal: { type: Number, required: true }, // pricePerUnit * quantity
     },
   ],
-  // Sum of all item subtotals
+  // Sum of all item subtotals, plus the delivery fee if applicable
   totalAmount: {
     type: Number,
     required: true,
   },
-  // 4% of totalAmount — kept in the DB for accounting purposes
+  // 4% of the item subtotal (excludes the delivery fee) — kept in the DB for accounting purposes
   platformFee: {
     type: Number,
     required: true,
   },
-  // totalAmount - platformFee — what the farmer receives
+  // Flat fee added to delivery orders — 0 for pickup orders. Goes entirely to the farmer.
+  deliveryFee: {
+    type: Number,
+    default: 0,
+  },
+  // totalAmount - platformFee — what the farmer receives (includes the full delivery fee)
   farmerPayout: {
     type: Number,
     required: true,
@@ -77,6 +83,10 @@ const OrderSchema = new mongoose.Schema({
   // When the consumer wants to pick up or expects delivery
   pickupDate: {
     type: Date,
+  },
+  // Required when pickupOrDelivery is 'delivery' — where the farmer should deliver the order
+  deliveryAddress: {
+    type: String,
   },
   // Optional message from the consumer to the farmer (special requests, etc.)
   notes: {

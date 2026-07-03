@@ -107,6 +107,26 @@ router.get('/farm/:farmId', async (req, res) => {
   }
 });
 
+// @route   GET /api/reviews/consumer/me
+// @desc    Get all reviews the logged-in consumer has left
+// @access  Private (consumers only)
+router.get('/consumer/me', protect, authorizeRoles('consumer'), async (req, res) => {
+  try {
+    const reviews = await Review.find({ consumer: req.user.id })
+      .populate('farm', 'farmName')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: reviews.length,
+      reviews,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   GET /api/reviews/can-review/:orderId
 // @desc    Check if a consumer can review a specific order
 // @access  Private (consumers only)

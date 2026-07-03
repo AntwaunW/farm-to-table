@@ -2,7 +2,7 @@
 // Layout wraps all routes so the Navbar and Footer appear on every page
 // Routes with placeholder <h1> tags are pages not yet built
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import './index.scss';
 import Login from './pages/auth/Login';
@@ -24,12 +24,15 @@ import Privacy from './pages/legal/Privacy';
 import Trademark from './pages/legal/Trademark';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import ListingDetail from './pages/listings/ListingDetail';
+import MyListings from './pages/listings/MyListings';
 
-// Checks user role and renders the correct dashboard component
+// Farmers get their dashboard here; consumers are sent to /orders,
+// which is their equivalent "My orders" page
 const DashboardRouter = () => {
   const { user } = useAuth();
   if (user?.role === 'farmer') return <FarmerDashboard />;
-  return <ConsumerDashboard />;
+  return <Navigate to="/orders" replace />;
 };
 
 function App() {
@@ -44,6 +47,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/farms/:id" element={<FarmProfile />} />
+          <Route path="/listings/:id" element={<ListingDetail />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/trademark" element={<Trademark />} />
@@ -57,7 +61,9 @@ function App() {
             <Route path="/orders/:orderId/confirmation" element={<OrderConfirmation />} />
             <Route path="/farms/create" element={<CreateFarm />} />
             <Route path="/listings/create" element={<CreateListing />} />
+            <Route path="/listings" element={<MyListings />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/orders" element={<ConsumerDashboard />} />
           </Route>
         </Routes>
       </Layout>

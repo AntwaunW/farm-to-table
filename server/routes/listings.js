@@ -39,6 +39,23 @@ router.get('/', async (req, res) => {
   }
 });
 
+// @route   GET /api/listings/my
+// @desc    Get ALL listings owned by the logged-in farmer — including unavailable ones
+//          Used on the farmer's "My Listings" management page so they can see and edit everything
+// @access  Private (farmers only)
+// NOTE: Must be defined before /:id so "my" is not treated as a MongoDB ObjectId
+router.get('/my', protect, authorizeRoles('farmer'), async (req, res) => {
+  try {
+    const listings = await Listing.find({ owner: req.user.id })
+      .sort({ createdAt: -1 }); // newest first
+
+    res.json({ success: true, count: listings.length, listings });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   GET /api/listings/farm/:farmId
 // @desc    Get all available listings for a specific farm (used on the farm profile page)
 // @access  Public
@@ -83,7 +100,7 @@ router.get('/:id', async (req, res) => {
 // @access  Private (farmers only)
 router.post('/', protect, authorizeRoles('farmer'), async (req, res) => {
   try {
-    const { title, description, category, pricePerUnit, unit, quantityAvailable, harvestDate } = req.body;
+    const { title, description, category, pricePerUnit, unit, quantityAvailable, harvestDate, photos } = req.body;
 
     // A farmer must have a farm profile before they can create listings
     const farm = await Farm.findOne({ owner: req.user.id });
@@ -101,6 +118,7 @@ router.post('/', protect, authorizeRoles('farmer'), async (req, res) => {
       unit,
       quantityAvailable,
       harvestDate,
+      photos,
     });
 
     res.status(201).json({ success: true, listing });

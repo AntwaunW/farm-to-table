@@ -29,6 +29,13 @@ const protect = async (req, res, next) => {
       // -password ensures the hashed password is never exposed on req.user
       req.user = await User.findById(decoded.id).select('-password');
 
+      // The token is valid but the account behind it no longer exists (deleted
+      // after the token was issued) — reject cleanly instead of letting
+      // downstream handlers crash on a null req.user
+      if (!req.user) {
+        return res.status(401).json({ message: 'Not authorized, user no longer exists' });
+      }
+
       next();
     } catch (error) {
       // Token is expired, tampered, or otherwise invalid

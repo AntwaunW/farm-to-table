@@ -4,7 +4,9 @@
 //       → consumer pays via Stripe → webhook updates to 'confirmed' / 'paid'
 //       → farmer updates status through 'ready' → 'completed'
 //
-// Platform fee: 4% of totalAmount is calculated here and stored on the order
+// Platform fee: 4% of the item subtotal is calculated here and stored on the order
+// Delivery fee: a flat fee added on top for delivery orders — the farmer keeps it in full
+// since it covers their driving time, while pickup orders have no such fee
 
 const express = require('express');
 const router = express.Router();
@@ -15,34 +17,83 @@ const { sendOrderConfirmation, sendNewOrderAlert } = require('../utils/email');
 const User = require('../models/User');
 const Farm = require('../models/Farm');
 
+const DELIVERY_FEE = 5.99;
+
+// Gives back inventory that was already claimed when a later step in order
+// placement fails, so a rejected order never leaves stock short
+const rollbackDecrements = async (decremented) => {
+  for (const { listingId, quantity } of decremented) {
+    await Listing.findByIdAndUpdate(listingId, { $inc: { quantityAvailable: quantity } });
+  }
+};
+
 // @route   POST /api/orders
 // @desc    Place a new order — validates inventory, calculates totals, and creates the order
 // @access  Private (consumers only)
 router.post('/', protect, authorizeRoles('consumer'), async (req, res) => {
   try {
-    const { farmId, items, pickupOrDelivery, pickupDate, notes } = req.body;
+    const { farmId, items, pickupOrDelivery, pickupDate, deliveryAddress, notes } = req.body;
 
-    let totalAmount = 0;
+    // Delivery orders need somewhere to deliver to
+    if (pickupOrDelivery === 'delivery' && !deliveryAddress?.trim()) {
+      return res.status(400).json({ message: 'Delivery address is required for delivery orders' });
+    }
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: 'Order must include at least one item' });
+    }
+
+    // Reject bad quantities up front, before anything touches inventory
+    for (const item of items) {
+      if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
+        return res.status(400).json({ message: 'Item quantity must be a positive whole number' });
+      }
+    }
+
+    const farm = await Farm.findById(farmId);
+    if (!farm) {
+      return res.status(404).json({ message: 'Farm not found' });
+    }
+
+    let itemsTotal = 0;
     const orderItems = [];
+    const decremented = [];
 
-    // Validate each item in the cart and build the order items array
     for (const item of items) {
       const listing = await Listing.findById(item.listingId);
 
       if (!listing) {
+        await rollbackDecrements(decremented);
         return res.status(404).json({ message: `Listing ${item.listingId} not found` });
       }
 
       if (!listing.isAvailable) {
+        await rollbackDecrements(decremented);
         return res.status(400).json({ message: `${listing.title} is no longer available` });
       }
 
-      if (listing.quantityAvailable < item.quantity) {
+      if (listing.farm.toString() !== farmId) {
+        await rollbackDecrements(decremented);
+        return res.status(400).json({ message: `${listing.title} does not belong to this farm` });
+      }
+
+      // Atomically claim inventory — the $gte guard means this fails instead of going
+      // negative if another order already took the last units out from under us
+      const updatedListing = await Listing.findOneAndUpdate(
+        { _id: item.listingId, quantityAvailable: { $gte: item.quantity } },
+        { $inc: { quantityAvailable: -item.quantity } },
+        { new: true }
+      );
+
+      if (!updatedListing) {
+        await rollbackDecrements(decremented);
         return res.status(400).json({ message: `Not enough quantity available for ${listing.title}` });
       }
 
+      decremented.push({ listingId: item.listingId, quantity: item.quantity });
+
       const subtotal = listing.pricePerUnit * item.quantity;
-      totalAmount += subtotal;
+      itemsTotal += subtotal;
 
       // Snapshot listing data into the order so it's preserved even if the listing changes later
       orderItems.push({
@@ -55,41 +106,43 @@ router.post('/', protect, authorizeRoles('consumer'), async (req, res) => {
       });
     }
 
-    // Send emails to consumer and farmer
-try {
-  const farmer = await User.findById(farm.owner);
-  sendOrderConfirmation(order, req.user);
-  sendNewOrderAlert(order, farmer, farm);
-} catch (emailErr) {
-  console.error('Email notification failed:', emailErr);
-}
+    // Delivery orders carry a flat delivery fee on top of the items — pickup orders don't
+    const deliveryFee = pickupOrDelivery === 'delivery' ? DELIVERY_FEE : 0;
+    const totalAmount = parseFloat((itemsTotal + deliveryFee).toFixed(2));
 
-    // Calculate the 4% platform fee and what the farmer receives after the fee
-    const platformFee = parseFloat((totalAmount * 0.04).toFixed(2));
+    // Platform fee applies only to the item subtotal — the farmer keeps the full delivery fee
+    const platformFee = parseFloat((itemsTotal * 0.04).toFixed(2));
     const farmerPayout = parseFloat((totalAmount - platformFee).toFixed(2));
 
-    // Get the farm for email notifications
-    const Farm = require('../models/Farm');
-    const farm = await Farm.findById(farmId);
-
     // Create the order document — paymentStatus starts as 'unpaid' until Stripe webhook fires
-    const order = await Order.create({
-      consumer: req.user.id,
-      farm: farmId,
-      items: orderItems,
-      totalAmount,
-      platformFee,
-      farmerPayout,
-      pickupOrDelivery: pickupOrDelivery || 'pickup',
-      pickupDate,
-      notes,
-    });
-
-    // Decrement inventory for each item so it's not double-sold
-    for (const item of items) {
-      await Listing.findByIdAndUpdate(item.listingId, {
-        $inc: { quantityAvailable: -item.quantity },
+    let order;
+    try {
+      order = await Order.create({
+        consumer: req.user.id,
+        farm: farmId,
+        items: orderItems,
+        totalAmount,
+        platformFee,
+        deliveryFee,
+        farmerPayout,
+        pickupOrDelivery: pickupOrDelivery || 'pickup',
+        pickupDate,
+        deliveryAddress: pickupOrDelivery === 'delivery' ? deliveryAddress : undefined,
+        notes,
       });
+    } catch (createErr) {
+      // Inventory was already claimed above — give it back since no order was actually placed
+      await rollbackDecrements(decremented);
+      throw createErr;
+    }
+
+    // Send emails to consumer and farmer
+    try {
+      const farmer = await User.findById(farm.owner);
+      sendOrderConfirmation(order, req.user);
+      sendNewOrderAlert(order, farmer, farm);
+    } catch (emailErr) {
+      console.error('Email notification failed:', emailErr);
     }
 
     res.status(201).json({ success: true, order });

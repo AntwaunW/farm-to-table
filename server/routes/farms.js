@@ -57,7 +57,7 @@ router.get('/:id', async (req, res) => {
 // @access  Private (farmers only)
 router.post('/', protect, authorizeRoles('farmer'), async (req, res) => {
   try {
-    const { farmName, description, location, category } = req.body;
+    const { farmName, description, location, category, photos } = req.body;
 
     // Enforce the one-farm-per-farmer rule
     const existingFarm = await Farm.findOne({ owner: req.user.id });
@@ -71,6 +71,7 @@ router.post('/', protect, authorizeRoles('farmer'), async (req, res) => {
       description,
       location,
       category,
+      photos,
     });
 
     res.status(201).json({ success: true, farm });

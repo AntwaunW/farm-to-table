@@ -4,12 +4,17 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import './Home.scss';
 import FarmCard from '../components/common/FarmCard';
 import ListingCard from '../components/common/ListingCard';
 
 const Home = () => {
+  const { user } = useAuth();
+  // Consumers are here to find farms, not list one — only show that CTA
+  // to logged-out visitors and farmers
+  const showFarmerCta = !user || user.role === 'farmer';
   const [farms, setFarms] = useState([]);
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +75,9 @@ const Home = () => {
           </p>
           <div className="hero__btns">
             <Link to="/browse" className="hero__btn hero__btn--white">Browse farms</Link>
-            <Link to="/register" className="hero__btn hero__btn--outline">List your farm</Link>
+            {showFarmerCta && (
+              <Link to="/register" className="hero__btn hero__btn--outline">List your farm</Link>
+            )}
           </div>
           {/* Search redirects to /browse with the terms pre-filled */}
           <form className="hero__search" onSubmit={handleSearch}>
@@ -153,17 +160,20 @@ const Home = () => {
       </section>
 
       {/* Farmer CTA Section — encourages farmers to sign up and list their products */}
-      <section className="home__cta">
-        <div className="home__cta-container">
-          <div className="home__cta-text">
-            <h2 className="home__cta-title">Are you a Texas farmer or rancher?</h2>
-            <p className="home__cta-subtitle">
-              List your products and reach thousands of local buyers directly.
-            </p>
+      {/* Hidden for logged-in consumers — they're here to buy, not sell */}
+      {showFarmerCta && (
+        <section className="home__cta">
+          <div className="home__cta-container">
+            <div className="home__cta-text">
+              <h2 className="home__cta-title">Are you a Texas farmer or rancher?</h2>
+              <p className="home__cta-subtitle">
+                List your products and reach thousands of local buyers directly.
+              </p>
+            </div>
+            <Link to="/register" className="home__cta-btn">List your farm →</Link>
           </div>
-          <Link to="/register" className="home__cta-btn">List your farm →</Link>
-        </div>
-      </section>
+        </section>
+      )}
 
     </div>
   );

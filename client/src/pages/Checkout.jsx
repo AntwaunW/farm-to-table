@@ -124,8 +124,14 @@ const Checkout = () => {
     initializeCheckout();
   }, [orderId]);
 
-  // Called when payment succeeds
-  const handlePaymentSuccess = () => {
+  // Called when payment succeeds — syncs the order's paid status with Stripe
+  // immediately rather than waiting on the webhook, so "Pay now" doesn't linger
+  const handlePaymentSuccess = async () => {
+    try {
+      await api.post('/payments/confirm', { orderId });
+    } catch (err) {
+      // Non-fatal — the webhook will still sync the order if this fails
+    }
     navigate(`/orders/${orderId}/confirmation`);
   };
 
@@ -190,8 +196,14 @@ const Checkout = () => {
           <div className="checkout__totals">
             <div className="checkout__total-row">
               <span>Subtotal</span>
-              <span>${order?.totalAmount}</span>
+              <span>${order?.items.reduce((sum, item) => sum + item.subtotal, 0).toFixed(2)}</span>
             </div>
+            {order?.pickupOrDelivery === 'delivery' && order?.deliveryFee > 0 && (
+              <div className="checkout__total-row">
+                <span>Delivery fee</span>
+                <span>${order.deliveryFee}</span>
+              </div>
+            )}
             <div className="checkout__total-row">
               <span>Platform fee (4%)</span>
               <span>${order?.platformFee}</span>
@@ -208,6 +220,9 @@ const Checkout = () => {
             <p>{order?.pickupOrDelivery === 'pickup' ? '📍 Pickup' : '🚚 Delivery'}</p>
             {order?.pickupDate && (
               <p>{new Date(order.pickupDate).toLocaleDateString()}</p>
+            )}
+            {order?.pickupOrDelivery === 'delivery' && order?.deliveryAddress && (
+              <p>{order.deliveryAddress}</p>
             )}
             {order?.notes && <p>Note: {order.notes}</p>}
           </div>

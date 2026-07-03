@@ -2,7 +2,7 @@
 // Links shown depend on auth state and user role:
 //   - Logged out: Login + Sign up
 //   - Consumer: My orders + Logout
-//   - Farmer: Dashboard + My listings + Logout
+//   - Farmer: Dashboard + Listings + Logout
 
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -44,7 +44,6 @@ const Navbar = () => {
           {/* Consumer nav — access to order history */}
           {user && user.role === 'consumer' && (
             <>
-              <Link to="/browse" className="navbar__link">Browse</Link>
               <Link to="/cart" className="navbar__link navbar__cart">
                 🛒 Cart
                 {cartCount > 0 && (
@@ -62,7 +61,7 @@ const Navbar = () => {
           {user && user.role === 'farmer' && (
             <>
               <Link to="/dashboard" className="navbar__link">Dashboard</Link>
-              <Link to="/listings/new" className="navbar__link">My listings</Link>
+              <Link to="/listings" className="navbar__link">Listings</Link>
               <button onClick={handleLogout} className="navbar__link navbar__link--logout">Logout</button>
             </>
           )}

@@ -21,6 +21,16 @@ const connectDB = async () => {
 
 const seedData = async () => {
   try {
+    // This script wipes all farms and listings — refuse to run it against
+    // production unless the caller explicitly opts in with --force
+    if (process.env.NODE_ENV === 'production' && !process.argv.includes('--force')) {
+      console.error(
+        'Refusing to run seed.js with NODE_ENV=production (it deletes all farms/listings). ' +
+        'Re-run with --force if this is really what you want.'
+      );
+      process.exit(1);
+    }
+
     await connectDB();
 
     // Step 1 — Clear existing farms and listings (keep users intact)

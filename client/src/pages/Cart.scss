@@ -120,12 +120,60 @@
     font-weight: 700;
     color: $text-dark;
     margin-bottom: $spacing-xs;
+
+    &--grand {
+      font-size: $text-md;
+      color: $primary;
+      margin-bottom: $spacing-lg;
+    }
   }
 
   &__fee-note {
     font-size: $text-sm;
     color: $text-muted;
     margin-bottom: $spacing-lg;
+  }
+
+  &__fulfillment {
+    margin-bottom: $spacing-lg;
+  }
+
+  &__fulfillment-label {
+    font-size: $text-sm;
+    font-weight: 500;
+    color: $text-dark;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__fulfillment-options {
+    display: flex;
+    gap: $spacing-lg;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__fulfillment-option {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    font-size: $text-sm;
+    color: $text-dark;
+    cursor: pointer;
+  }
+
+  &__delivery-address {
+    width: 100%;
+    min-height: 70px;
+    padding: $spacing-sm;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    font-family: inherit;
+    font-size: $text-sm;
+    resize: vertical;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+    }
   }
 
   &__checkout-btn {

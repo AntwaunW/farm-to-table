@@ -2,6 +2,7 @@
 // Shows a category icon, product name, farm name, and price
 // Used on the Home page (fresh listings) and the Browse page
 
+import { Link } from 'react-router-dom';
 import './ListingCard.scss';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -41,26 +42,34 @@ const ListingCard = ({ listing, farm }) => {
 
   return (
     <div className="listing-card">
-      <div className="listing-card__icon">
-        {getCategoryIcon(listing.category)}
-      </div>
-      <div className="listing-card__info">
-        <h4 className="listing-card__title">{listing.title}</h4>
-        <p className="listing-card__farm">{listing.farm?.farmName}</p>
-        <p className="listing-card__price">
-          ${listing.pricePerUnit}
-          <span className="listing-card__unit"> / {listing.unit}</span>
-        </p>
-        {/* Only show Add to cart for logged in consumers */}
-        {user && user.role === 'consumer' && farm && (
-          <button
-            className="listing-card__add-btn"
-            onClick={handleAddToCart}
-          >
-            + Add to cart
-          </button>
-        )}
-      </div>
+      {/*
+        The inner link wraps the visual content so clicking the card navigates
+        to the listing detail page. The Add to cart button lives outside this
+        link so it doesn't count as a nested interactive element.
+      */}
+      <Link to={`/listings/${listing._id}`} className="listing-card__link">
+        <div className="listing-card__icon">
+          {getCategoryIcon(listing.category)}
+        </div>
+        <div className="listing-card__info">
+          <h4 className="listing-card__title">{listing.title}</h4>
+          <p className="listing-card__farm">{listing.farm?.farmName}</p>
+          <p className="listing-card__price">
+            ${listing.pricePerUnit}
+            <span className="listing-card__unit"> / {listing.unit}</span>
+          </p>
+        </div>
+      </Link>
+
+      {/* Only show Add to cart for logged-in consumers */}
+      {user && user.role === 'consumer' && farm && (
+        <button
+          className="listing-card__add-btn"
+          onClick={handleAddToCart}
+        >
+          + Add to cart
+        </button>
+      )}
     </div>
   );
 };

@@ -182,7 +182,7 @@ const FarmProfile = () => {
                 >
                   <img
                     src={url}
-                    alt={`${farm.farmName} — photo ${index + 1}`}
+                    alt={`${farm.farmName} — ${index + 1}`}
                     className="farm-profile__gallery-img"
                   />
                 </button>
@@ -234,7 +234,7 @@ const FarmProfile = () => {
             {/* The full-size photo */}
             <img
               src={farm.photos[lightboxIndex]}
-              alt={`${farm.farmName} — photo ${lightboxIndex + 1}`}
+              alt={`${farm.farmName} — ${lightboxIndex + 1}`}
               className="farm-profile__lightbox-img"
             />
 

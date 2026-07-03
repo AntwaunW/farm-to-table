@@ -1,0 +1,227 @@
+// ListingDetail page styles
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.listing-detail {
+
+  // Loading and error states
+  &__loading,
+  &__error {
+    @include flex-center;
+    flex-direction: column;
+    min-height: 60vh;
+    gap: $spacing-md;
+    color: $text-muted;
+    font-size: $text-lg;
+
+    a {
+      color: $primary;
+      text-decoration: underline;
+    }
+  }
+
+  // ── Breadcrumb ──────────────────────────────────────────────────────────
+  &__breadcrumb {
+    background: $background;
+    border-bottom: 1px solid $border;
+    padding: $spacing-sm 0;
+
+    &-inner {
+      @include container;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      flex-wrap: wrap;
+      font-size: $text-sm;
+      color: $text-muted;
+
+      a {
+        color: $primary;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      // The current page segment is plain text — no link
+      span:last-child {
+        color: $text-dark;
+        font-weight: 500;
+      }
+    }
+
+    &-sep {
+      color: $border;
+      font-size: $text-md;
+    }
+  }
+
+  // ── Two-column layout ───────────────────────────────────────────────────
+  &__container {
+    @include container;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: $spacing-xl;
+    padding-top: $spacing-xl;
+    padding-bottom: $spacing-xl;
+    align-items: flex-start;
+
+    @include respond-to(tablet) {
+      grid-template-columns: 1fr;
+      gap: $spacing-lg;
+    }
+  }
+
+  // ── Left column — category icon ─────────────────────────────────────────
+  &__visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $spacing-sm;
+
+    @include respond-to(tablet) {
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+  }
+
+  // Large emoji icon in a rounded card
+  &__icon {
+    width: 140px;
+    height: 140px;
+    border-radius: $radius-lg;
+    background: #f0f7f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+
+    @include respond-to(tablet) {
+      width: 80px;
+      height: 80px;
+      font-size: 2.5rem;
+    }
+  }
+
+  &__category {
+    font-size: $text-sm;
+    font-weight: 600;
+    color: $primary;
+    background: #e8f5e0;
+    padding: $spacing-xs $spacing-md;
+    border-radius: $radius-full;
+    text-transform: capitalize;
+  }
+
+  // ── Right column — all text details ─────────────────────────────────────
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__title {
+    font-family: $font-heading;
+    font-size: $text-3xl;
+    color: $text-dark;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  // Farm name + location link
+  &__farm-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: $text-md;
+    color: $primary;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__farm-location {
+    color: $text-muted;
+    font-weight: 400;
+  }
+
+  // Price display
+  &__price-row {
+    display: flex;
+    align-items: baseline;
+    gap: $spacing-sm;
+  }
+
+  &__price {
+    font-size: $text-3xl;
+    font-weight: 700;
+    color: $text-dark;
+  }
+
+  &__unit {
+    font-size: $text-md;
+    color: $text-muted;
+  }
+
+  // Available quantity
+  &__qty {
+    font-size: $text-sm;
+    color: $text-muted;
+    margin: 0;
+
+    strong {
+      color: $text-dark;
+    }
+  }
+
+  // Harvest date line
+  &__harvest {
+    font-size: $text-sm;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  // Full description paragraph
+  &__description {
+    font-size: $text-md;
+    color: $text-dark;
+    line-height: 1.7;
+    margin: 0;
+    padding: $spacing-md;
+    background: $background;
+    border-radius: $radius-md;
+    border-left: 3px solid $primary-light;
+  }
+
+  // Add to cart button
+  &__add-btn {
+    @include button-primary;
+    align-self: flex-start;
+    padding: $spacing-md $spacing-lg;
+    font-size: $text-md;
+  }
+
+  // Login / register prompt for guests
+  &__login-prompt {
+    font-size: $text-sm;
+    color: $text-muted;
+
+    a {
+      color: $primary;
+      text-decoration: underline;
+    }
+  }
+
+  // Unavailable notice
+  &__unavailable {
+    font-size: $text-sm;
+    color: $error;
+    background: #fde8e8;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $radius-md;
+  }
+}

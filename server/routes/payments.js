@@ -64,6 +64,49 @@ router.post('/create-intent', protect, async (req, res) => {
   }
 });
 
+// @route   POST /api/payments/confirm
+// @desc    Verify a payment's status directly with Stripe and sync the order
+//          Fallback to the webhook — covers local dev (no webhook forwarding) and
+//          any lag between the client's confirmPayment and the webhook arriving
+// @access  Private (consumer who owns the order)
+router.post('/confirm', protect, async (req, res) => {
+  try {
+    const { orderId } = req.body;
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    if (order.consumer.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+
+    if (order.paymentStatus === 'paid') {
+      return res.status(200).json({ success: true, order });
+    }
+
+    if (!order.stripePaymentIntentId) {
+      return res.status(400).json({ message: 'No payment has been initiated for this order' });
+    }
+
+    // Ask Stripe directly rather than trusting the client's word that payment succeeded
+    const paymentIntent = await stripe.paymentIntents.retrieve(order.stripePaymentIntentId);
+
+    if (paymentIntent.status === 'succeeded') {
+      order.paymentStatus = 'paid';
+      order.status = 'confirmed';
+      await order.save();
+    }
+
+    res.status(200).json({ success: true, order });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   POST /api/payments/webhook
 // @desc    Receive and handle Stripe webhook events
 // @access  Public (Stripe servers only — verified by signature)

@@ -233,6 +233,17 @@
     padding: $spacing-xs $spacing-md;
   }
 
+  // Reviews grid
+  &__reviews {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+
+    @include respond-to(mobile) {
+      grid-template-columns: 1fr;
+    }
+  }
+
   // Empty states
   &__empty {
     text-align: center;

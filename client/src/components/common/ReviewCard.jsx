@@ -3,7 +3,7 @@
 
 import './ReviewCard.scss';
 
-const ReviewCard = ({ review }) => {
+const ReviewCard = ({ review, showFarmName = false }) => {
   // -------------------------------------------------------------------
   // 🎓 RENDERING STARS
   // We convert the numeric rating into visual stars.
@@ -32,7 +32,11 @@ const ReviewCard = ({ review }) => {
         </span>
       </div>
       <p className="review-card__comment">{review.comment}</p>
-      <p className="review-card__author">— {review.consumer?.name}</p>
+      {showFarmName ? (
+        <p className="review-card__author">For: {review.farm?.farmName}</p>
+      ) : (
+        <p className="review-card__author">— {review.consumer?.name}</p>
+      )}
     </div>
   );
 };

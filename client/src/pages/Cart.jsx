@@ -8,6 +8,9 @@ import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import './Cart.scss';
 
+// Flat delivery fee — must match DELIVERY_FEE in server/routes/orders.js
+const DELIVERY_FEE = 5.99;
+
 const Cart = () => {
   const { cartItems, cartTotal, cartFarmId, cartFarmName,
           updateQuantity, removeFromCart, clearCart } = useCart();
@@ -16,6 +19,10 @@ const Cart = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Fulfillment choice — defaults to pickup, address only required for delivery
+  const [pickupOrDelivery, setPickupOrDelivery] = useState('pickup');
+  const [deliveryAddress, setDeliveryAddress] = useState('');
 
   // Redirect to login if the user is not authenticated — the order API requires a logged-in consumer
   if (!user) {
@@ -33,8 +40,14 @@ const Cart = () => {
   // 5. Redirect to checkout to complete payment
   // -------------------------------------------------------------------
   const handlePlaceOrder = async () => {
-    setLoading(true);
     setError('');
+
+    if (pickupOrDelivery === 'delivery' && !deliveryAddress.trim()) {
+      setError('Please enter a delivery address.');
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const orderData = {
@@ -43,7 +56,8 @@ const Cart = () => {
           listingId: item.listingId,
           quantity: item.quantity,
         })),
-        pickupOrDelivery: 'pickup',
+        pickupOrDelivery,
+        deliveryAddress: pickupOrDelivery === 'delivery' ? deliveryAddress.trim() : undefined,
       };
 
       const res = await api.post('/orders', orderData);
@@ -136,6 +150,49 @@ const Cart = () => {
           <p className="cart__fee-note">
             A 4% platform fee will be added at checkout
           </p>
+
+          {/* Pickup or delivery choice */}
+          <div className="cart__fulfillment">
+            <p className="cart__fulfillment-label">How would you like to get your order?</p>
+            <div className="cart__fulfillment-options">
+              <label className="cart__fulfillment-option">
+                <input
+                  type="radio"
+                  name="pickupOrDelivery"
+                  value="pickup"
+                  checked={pickupOrDelivery === 'pickup'}
+                  onChange={() => setPickupOrDelivery('pickup')}
+                />
+                📍 Pickup
+              </label>
+              <label className="cart__fulfillment-option">
+                <input
+                  type="radio"
+                  name="pickupOrDelivery"
+                  value="delivery"
+                  checked={pickupOrDelivery === 'delivery'}
+                  onChange={() => setPickupOrDelivery('delivery')}
+                />
+                🚚 Delivery (+${DELIVERY_FEE.toFixed(2)})
+              </label>
+            </div>
+
+            {pickupOrDelivery === 'delivery' && (
+              <textarea
+                className="cart__delivery-address"
+                placeholder="Enter your delivery address"
+                value={deliveryAddress}
+                onChange={(e) => setDeliveryAddress(e.target.value)}
+              />
+            )}
+          </div>
+
+          {pickupOrDelivery === 'delivery' && (
+            <div className="cart__total cart__total--grand">
+              <span>Total with delivery</span>
+              <span>${(cartTotal + DELIVERY_FEE).toFixed(2)}</span>
+            </div>
+          )}
 
           <button
             className="cart__checkout-btn"

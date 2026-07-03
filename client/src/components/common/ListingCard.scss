@@ -12,8 +12,34 @@
   gap: $spacing-md;
   transition: $transition;
 
+  // The link wraps the icon and info so the whole card body is clickable
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    flex: 1;
+    text-decoration: none;
+    color: inherit;
+    min-width: 0; // prevents flex children from overflowing
+
+    &:hover ~ .listing-card__add-btn,
+    &:hover {
+      color: inherit;
+    }
+  }
+
   &:hover {
     box-shadow: $shadow-md;
+    border-color: $primary-light;
+  }
+
+  // "Add to cart" sits outside the link — at the bottom of the card
+  &__add-btn {
+    @include button-primary;
+    font-size: $text-sm;
+    padding: $spacing-xs $spacing-md;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   &__icon {

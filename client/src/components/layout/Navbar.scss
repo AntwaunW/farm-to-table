@@ -21,6 +21,9 @@
     font-weight: 600;
     color: $primary;
     text-decoration: none;
+    background: #e8f5e0;
+    border-radius: $radius-md;
+    padding: $spacing-xs $spacing-sm;
 
     &:hover {
       color: $primary-dark;

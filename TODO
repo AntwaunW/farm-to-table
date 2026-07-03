@@ -21,25 +21,13 @@ Switch frontend key from pk_test_ to pk_live_
 Main Fixes:
 
 overall:
-fix pricing for real revenue
 
 
 
 
 farmer profile:
-My listings shows up blank page
-should be able to delete listings
-should be able to edit listings
-cant see comments left for farmer as the farmer
-uploaded pictures arent showing up
 
 consumer profile:
--allow users to see how much avalilabilty a product has
--need a pick up and delivery option
--taxes need to be added for payment
--my orders is blank
--list your farm should not show up on consumer profile
--nowhere for consumer to be directed to their dashboard. Should not see browse and browse farms
--once payment process is complete, pay now should not show up again
--user should be able to see the comments they have left
--add to cart button should be rounded and the sam green as the app with white letters
+
+
+

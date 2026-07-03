@@ -13,6 +13,10 @@ const sgMail = require('@sendgrid/mail');
 // -------------------------------------------------------------------
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+// Base URL for links inside emails — set CLIENT_URL in .env for each environment
+// (falls back to localhost so local dev keeps working without extra setup)
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
+
 // -------------------------------------------------------------------
 // 🎓 HOW DO ALL THESE FUNCTIONS WORK?
 // Each function below is responsible for one type of email.
@@ -52,7 +56,7 @@ const sendWelcomeEmail = async (user) => {
               As a farmer, you can create your farm profile and start
               listing your products for local buyers to find.
             </p>
-            <a href="http://localhost:3000/dashboard"
+            <a href="${CLIENT_URL}/dashboard"
                style="display: inline-block; background: #2d6a4f; color: #ffffff;
                       padding: 12px 24px; border-radius: 8px; text-decoration: none;
                       margin-top: 16px;">
@@ -62,7 +66,7 @@ const sendWelcomeEmail = async (user) => {
             <p style="color: #6b7280; line-height: 1.6;">
               Start browsing local farms and fresh products near you.
             </p>
-            <a href="http://localhost:3000/browse"
+            <a href="${CLIENT_URL}/browse"
                style="display: inline-block; background: #2d6a4f; color: #ffffff;
                       padding: 12px 24px; border-radius: 8px; text-decoration: none;
                       margin-top: 16px;">
@@ -165,7 +169,7 @@ const sendOrderConfirmation = async (order, consumer) => {
             ` : ''}
           </div>
 
-          <a href="http://localhost:3000/dashboard"
+          <a href="${CLIENT_URL}/orders"
              style="display: inline-block; background: #2d6a4f; color: #ffffff;
                     padding: 12px 24px; border-radius: 8px; text-decoration: none;
                     margin-top: 24px;">
@@ -229,7 +233,7 @@ const sendNewOrderAlert = async (order, farmer, farm) => {
             Log in to your dashboard to confirm this order.
           </p>
 
-          <a href="http://localhost:3000/dashboard"
+          <a href="${CLIENT_URL}/dashboard"
              style="display: inline-block; background: #2d6a4f; color: #ffffff;
                     padding: 12px 24px; border-radius: 8px; text-decoration: none;
                     margin-top: 8px;">
