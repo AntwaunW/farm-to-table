@@ -158,7 +158,11 @@ const FarmerDashboard = () => {
           </div>
           <div className="farmer-dashboard__stat">
             <span className="farmer-dashboard__stat-number">
-              ${orders.reduce((sum, o) => sum + o.farmerPayout, 0).toFixed(2)}
+              $
+              {orders
+                .filter((o) => o.paymentStatus === 'paid' && o.status !== 'cancelled')
+                .reduce((sum, o) => sum + o.farmerPayout, 0)
+                .toFixed(2)}
             </span>
             <span className="farmer-dashboard__stat-label">Total earnings</span>
           </div>

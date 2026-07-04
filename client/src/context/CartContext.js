@@ -1,13 +1,31 @@
 // CartContext — manages the shopping cart state for the entire app
 // Works exactly like AuthContext but for cart data instead of user data
 // Any component can access the cart by calling useCart()
-// Persists the cart to localStorage so it survives a page refresh or closed tab
+// Persists the cart to localStorage, scoped per logged-in user, so it survives
+// a page refresh but never leaks from one account into another on the same browser
 
 import { createContext, useState, useContext, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
 
+// Only logged-in consumers can ever add to a cart (see ListingCard/ListingDetail),
+// so scoping by user id is enough — there's no legitimate anonymous cart to preserve
+const getCartStorageKey = (userId) => `cartItems_${userId || 'guest'}`;
+
+const loadCart = (userId) => {
+  try {
+    const stored = localStorage.getItem(getCartStorageKey(userId));
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    // Corrupted or unreadable storage — fall back to an empty cart rather than crashing
+    return [];
+  }
+};
+
 export const CartProvider = ({ children }) => {
+  const { user } = useAuth();
+
   // -------------------------------------------------------------------
   // 🎓 WHAT DOES THE CART LOOK LIKE?
   // The cart is an array of items. Each item looks like this:
@@ -25,21 +43,20 @@ export const CartProvider = ({ children }) => {
   // A consumer can't order from two different farms in one order.
   // -------------------------------------------------------------------
   // Initialize straight from localStorage so a refresh doesn't briefly show an empty cart
-  const [cartItems, setCartItems] = useState(() => {
-    try {
-      const stored = localStorage.getItem('cartItems');
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      // Corrupted or unreadable storage — fall back to an empty cart rather than crashing
-      return [];
-    }
-  });
+  const [cartItems, setCartItems] = useState(() => loadCart(user?.id));
+
+  // Whenever the logged-in user changes (login, logout, or switching accounts),
+  // reload the cart that belongs to that specific user instead of whatever
+  // was left behind by whoever was using this browser before
+  useEffect(() => {
+    setCartItems(loadCart(user?.id));
+  }, [user?.id]);
 
   // Keep localStorage in sync any time the cart changes, regardless of which
   // action caused it (add, remove, update quantity, clear)
   useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-  }, [cartItems]);
+    localStorage.setItem(getCartStorageKey(user?.id), JSON.stringify(cartItems));
+  }, [cartItems, user?.id]);
 
   // -------------------------------------------------------------------
   // 🎓 addToCart

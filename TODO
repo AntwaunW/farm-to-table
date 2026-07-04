@@ -1,3 +1,8 @@
+Questions to ask AI:
+
+1) What are you least confident about right now?
+2) Whats the biggest thing I'm missing about the situation right now? What don't I realize?
+
 Test logins
 
 Consumer:
@@ -29,8 +34,11 @@ https://dnschecker.org/#A/cattleandcrop.com
 farmer profile:
 
 consumer profile:
-- added to cart notification should pop up letting user know item is in their cart
-- consumer should see how many items are left when adding product to cart
+- needs to be a way for consumer to be given location of farm or the location the farmer wants consumer to pick items up from if they choose to pickup delivery
+
+- should be able to cancel order after placing if process hasnt moved out of pending state yet
+
+- should have filter feature when looking for farms
 
 
 

@@ -1,0 +1,65 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.order-progress {
+  display: flex;
+  align-items: flex-start;
+  margin: $spacing-md 0;
+
+  &--cancelled {
+    font-size: $text-sm;
+    color: $error;
+    background: #fde8e8;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $radius-md;
+  }
+
+  &__step {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    // Connecting line to the next step
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 7px;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: $border;
+      z-index: 0;
+    }
+
+    &--done:not(:last-child)::after {
+      background: $primary;
+    }
+  }
+
+  &__dot {
+    width: 16px;
+    height: 16px;
+    border-radius: $radius-full;
+    background: $border;
+    margin-bottom: $spacing-xs;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__step--done &__dot {
+    background: $primary;
+  }
+
+  &__label {
+    font-size: $text-xs;
+    color: $text-muted;
+  }
+
+  &__step--done &__label {
+    color: $text-dark;
+    font-weight: 500;
+  }
+}

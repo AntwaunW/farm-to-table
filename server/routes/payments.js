@@ -38,20 +38,39 @@ router.post('/create-intent', protect, async (req, res) => {
       return res.status(400).json({ message: 'Order has already been paid' });
     }
 
-    // Stripe amounts are in the smallest currency unit (cents for USD)
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(order.totalAmount * 100),
-      currency: 'usd',
-      // Metadata links the Stripe payment back to our order when the webhook fires
-      metadata: {
-        orderId: order._id.toString(),
-        consumerId: req.user.id,
-      },
-    });
+    // Reuse an existing open PaymentIntent for this order instead of creating a new
+    // one every time this endpoint is hit (e.g. React StrictMode double-invoking this
+    // effect in dev, or the consumer simply refreshing the checkout page). Without this,
+    // the consumer can end up paying through a PaymentIntent that isn't the one saved on
+    // the order, so the order never gets marked paid even though the charge succeeded.
+    let paymentIntent;
+    if (order.stripePaymentIntentId) {
+      try {
+        const existing = await stripe.paymentIntents.retrieve(order.stripePaymentIntentId);
+        if (['requires_payment_method', 'requires_confirmation', 'requires_action'].includes(existing.status)) {
+          paymentIntent = existing;
+        }
+      } catch {
+        // Intent no longer exists or isn't retrievable — fall through and create a new one
+      }
+    }
 
-    // Save the intent ID so we can reference it if a refund is needed later
-    order.stripePaymentIntentId = paymentIntent.id;
-    await order.save();
+    if (!paymentIntent) {
+      // Stripe amounts are in the smallest currency unit (cents for USD)
+      paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(order.totalAmount * 100),
+        currency: 'usd',
+        // Metadata links the Stripe payment back to our order when the webhook fires
+        metadata: {
+          orderId: order._id.toString(),
+          consumerId: req.user.id,
+        },
+      });
+
+      // Save the intent ID so we can reference it if a refund is needed later
+      order.stripePaymentIntentId = paymentIntent.id;
+      await order.save();
+    }
 
     // The clientSecret is passed to the frontend to initialize Stripe's payment UI
     res.status(200).json({

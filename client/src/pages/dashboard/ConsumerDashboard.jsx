@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import ReviewForm from '../../components/common/ReviewForm';
 import ReviewCard from '../../components/common/ReviewCard';
 import AvatarUpload from '../../components/common/AvatarUpload';
+import OrderProgress from '../../components/common/OrderProgress';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import api from '../../utils/api';
@@ -97,7 +98,7 @@ const ConsumerDashboard = () => {
           <span className={`consumer-dashboard__status consumer-dashboard__status--${order.status}`}>
             {order.status}
           </span>
-          {order.paymentStatus === 'unpaid' && (
+          {order.paymentStatus === 'unpaid' && order.status !== 'cancelled' && (
             <Link
               to={`/checkout/${order._id}`}
               className="consumer-dashboard__pay-btn"
@@ -107,6 +108,11 @@ const ConsumerDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Fulfillment progress — only meaningful once paid, or if cancelled */}
+      {(order.paymentStatus === 'paid' || order.status === 'cancelled') && (
+        <OrderProgress status={order.status} />
+      )}
 
       {/* Order items */}
       <div className="consumer-dashboard__items">
