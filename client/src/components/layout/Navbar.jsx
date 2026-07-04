@@ -4,6 +4,7 @@
 //   - Consumer: My orders + Logout
 //   - Farmer: Dashboard + Listings + Logout
 
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './Navbar.scss';
@@ -14,8 +15,13 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { cartCount } = useCart();
 
+  // Controls the mobile dropdown — only relevant below the tablet breakpoint,
+  // where the link row no longer fits and collapses into a hamburger menu
+  const [menuOpen, setMenuOpen] = useState(false);
+
   // Clear the session and send the user back to the home page
   const handleLogout = () => {
+    setMenuOpen(false);
     logout();
     navigate('/');
   };
@@ -29,7 +35,23 @@ const Navbar = () => {
           Cattle &amp; Crop
         </Link>
 
-        <div className="navbar__links">
+        {/* Hamburger toggle — only shown on mobile via CSS */}
+        <button
+          className="navbar__hamburger"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+          type="button"
+        >
+          {menuOpen ? '✕' : '☰'}
+        </button>
+
+        {/* Clicking any link inside closes the mobile dropdown so it never
+            stays open after navigating */}
+        <div
+          className={`navbar__links ${menuOpen ? 'navbar__links--open' : ''}`}
+          onClick={() => setMenuOpen(false)}
+        >
           {/* Browse is always visible regardless of auth state */}
           <Link to="/browse" className="navbar__link">Browse farms</Link>
 

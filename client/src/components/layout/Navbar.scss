@@ -12,6 +12,7 @@
     @include container;
     @include flex-between;
     height: 60px;
+    position: relative; // anchors the mobile dropdown panel
   }
 
   &__logo {
@@ -70,9 +71,57 @@
     padding: $spacing-xs $spacing-md;
   }
 
+  // Hamburger toggle — hidden on desktop, shown only once links no longer fit
+  &__hamburger {
+    display: none;
+    background: none;
+    border: none;
+    font-size: $text-xl;
+    color: $text-dark;
+    cursor: pointer;
+    padding: $spacing-xs;
+    line-height: 1;
+  }
+
   @include respond-to(tablet) {
+    &__hamburger {
+      display: block;
+    }
+
+    // Collapse the link row into a dropdown panel below the navbar
     &__links {
-      gap: $spacing-sm;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      background: #ffffff;
+      border-bottom: 1px solid $border;
+      box-shadow: $shadow-md;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: $transition;
+
+      &--open {
+        max-height: 400px;
+        opacity: 1;
+      }
+    }
+
+    &__link,
+    &__btn {
+      width: 100%;
+      padding: $spacing-md;
+      text-align: left;
+      border-radius: 0;
+      border-bottom: 1px solid $border;
+    }
+
+    &__cart {
+      padding: $spacing-md;
     }
   }
 

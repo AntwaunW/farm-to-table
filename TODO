@@ -27,6 +27,7 @@ Main Fixes:
 
 overall:
 
+
 Checks how far my DNS has spread worldwide:
 https://dnschecker.org/#A/cattleandcrop.com
 
@@ -39,6 +40,8 @@ consumer profile:
 - should be able to cancel order after placing if process hasnt moved out of pending state yet
 
 - should have filter feature when looking for farms
+
+- should be able to leave multiple reviews on farmers previously purchased from
 
 
 
