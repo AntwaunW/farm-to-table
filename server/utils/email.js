@@ -133,6 +133,10 @@ const sendOrderConfirmation = async (order, consumer) => {
           <p style="color: #6b7280;">
             Hi ${consumer.name}, your order has been placed successfully.
           </p>
+          <p style="color: #1b1b1b; font-size: 14px;">
+            <strong>Order #${order._id}</strong><br />
+            <span style="color: #6b7280;">Keep this number handy if you need to contact us about this order.</span>
+          </p>
 
           <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
             <thead>
@@ -217,6 +221,9 @@ const sendNewOrderAlert = async (order, farmer, farm) => {
           <h2 style="color: #1b1b1b;">You have a new order!</h2>
           <p style="color: #6b7280;">
             Hi ${farmer.name}, someone just placed an order from ${farm.farmName}.
+          </p>
+          <p style="color: #1b1b1b; font-size: 14px;">
+            <strong>Order #${order._id}</strong>
           </p>
 
           <div style="background: #f9fafb; padding: 16px; border-radius: 8px; margin: 24px 0;">

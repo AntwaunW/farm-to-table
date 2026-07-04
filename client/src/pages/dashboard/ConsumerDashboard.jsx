@@ -91,6 +91,7 @@ const ConsumerDashboard = () => {
           <p className="consumer-dashboard__order-date">
             Ordered: {new Date(order.createdAt).toLocaleDateString()}
           </p>
+          <p className="consumer-dashboard__order-id">Order #{order._id}</p>
         </div>
         <div className="consumer-dashboard__order-actions">
           <span className={`consumer-dashboard__status consumer-dashboard__status--${order.status}`}>

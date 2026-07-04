@@ -246,11 +246,20 @@ router.put('/:id/status', protect, authorizeRoles('farmer'), async (req, res) =>
     }
 
     // Make sure only the farmer who owns the farm can update this order's status
-    const Farm = require('../models/Farm');
     const farm = await Farm.findById(order.farm);
 
     if (farm.owner.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized to update this order' });
+    }
+
+    // Cancelling releases the inventory this order had claimed back to each listing
+    // so it becomes sellable again — otherwise a cancelled order permanently locks stock
+    if (status === 'cancelled' && order.status !== 'cancelled') {
+      for (const item of order.items) {
+        await Listing.findByIdAndUpdate(item.listing, {
+          $inc: { quantityAvailable: item.quantity },
+        });
+      }
     }
 
     order.status = status;

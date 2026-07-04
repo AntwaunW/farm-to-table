@@ -315,6 +315,7 @@ const FarmerDashboard = () => {
                   <div className="farmer-dashboard__order-info">
                     <h4>{order.consumer?.name}</h4>
                     <p>{order.consumer?.email}</p>
+                    <p className="farmer-dashboard__order-id">Order #{order._id}</p>
                     <p>Total: ${order.totalAmount}</p>
                     <p>Payout: ${order.farmerPayout}</p>
                     <p>

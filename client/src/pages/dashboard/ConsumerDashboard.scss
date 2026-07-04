@@ -183,6 +183,13 @@
     color: $text-muted;
   }
 
+  &__order-id {
+    font-family: monospace;
+    font-size: $text-xs;
+    color: $text-muted;
+    word-break: break-all;
+  }
+
   // Order line items
   &__items {
     padding: $spacing-md;
