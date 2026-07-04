@@ -1,8 +1,9 @@
 // CartContext — manages the shopping cart state for the entire app
 // Works exactly like AuthContext but for cart data instead of user data
 // Any component can access the cart by calling useCart()
+// Persists the cart to localStorage so it survives a page refresh or closed tab
 
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 
 const CartContext = createContext();
 
@@ -23,19 +24,34 @@ export const CartProvider = ({ children }) => {
   // We store farmId and farmName because an order belongs to ONE farm.
   // A consumer can't order from two different farms in one order.
   // -------------------------------------------------------------------
-  const [cartItems, setCartItems] = useState([]);
+  // Initialize straight from localStorage so a refresh doesn't briefly show an empty cart
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      const stored = localStorage.getItem('cartItems');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      // Corrupted or unreadable storage — fall back to an empty cart rather than crashing
+      return [];
+    }
+  });
+
+  // Keep localStorage in sync any time the cart changes, regardless of which
+  // action caused it (add, remove, update quantity, clear)
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]);
 
   // -------------------------------------------------------------------
   // 🎓 addToCart
-  // Adds a listing to the cart.
-  // If the item is already in the cart we increase the quantity.
+  // Adds a listing to the cart in the chosen quantity (defaults to 1).
+  // If the item is already in the cart we increase the quantity by that amount.
   // If it's new we add it as a fresh item.
   //
   // Think of it like a physical shopping basket:
-  // - First time you grab eggs → put them in the basket
-  // - Second time you grab eggs → just add another dozen to what's there
+  // - First time you grab eggs → put a dozen in the basket
+  // - Second time you grab eggs → add another dozen to what's there
   // -------------------------------------------------------------------
-  const addToCart = (listing, farm) => {
+  const addToCart = (listing, farm, quantity = 1) => {
     setCartItems((prevItems) => {
       // Check if this listing is already in the cart
       const existingItem = prevItems.find(
@@ -43,10 +59,10 @@ export const CartProvider = ({ children }) => {
       );
 
       if (existingItem) {
-        // Already in cart — increase quantity by 1
+        // Already in cart — increase quantity by the amount chosen
         return prevItems.map((item) =>
           item.listingId === listing._id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       }
@@ -59,7 +75,7 @@ export const CartProvider = ({ children }) => {
           title: listing.title,
           pricePerUnit: listing.pricePerUnit,
           unit: listing.unit,
-          quantity: 1,
+          quantity,
           farmId: farm._id,
           farmName: farm.farmName,
         },

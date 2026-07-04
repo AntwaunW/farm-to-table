@@ -2,14 +2,26 @@
 // Shows a category icon, product name, farm name, and price
 // Used on the Home page (fresh listings) and the Browse page
 
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './ListingCard.scss';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import ConfirmAddToCartModal from './ConfirmAddToCartModal';
 
 const ListingCard = ({ listing, farm }) => {
   const { user } = useAuth();
   const { addToCart, cartFarmId } = useCart();
+
+  // Falls back to the farm populated on the listing itself (e.g. Home page's
+  // "Fresh listings" grid, which doesn't pass a separate farm prop)
+  const effectiveFarm = farm || listing.farm;
+
+  // How many units the consumer wants to add at once
+  const [quantity, setQuantity] = useState(1);
+
+  // Controls the confirm-quantity modal shown before anything is actually added
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const getCategoryIcon = (category) => {
   const icons = {
@@ -32,12 +44,20 @@ const ListingCard = ({ listing, farm }) => {
   // they can't add items from Blue Bonnet Dairy until they checkout.
   // This prevents mixed-farm orders which our backend doesn't support.
   // -------------------------------------------------------------------
+  // Clicking "Add to cart" opens a confirm-quantity modal rather than adding right away,
+  // so a mis-typed quantity can be caught before it's actually in the cart
   const handleAddToCart = () => {
-    if (cartFarmId && cartFarmId !== farm?._id) {
+    if (cartFarmId && cartFarmId !== effectiveFarm?._id) {
       alert('You can only order from one farm at a time. Please checkout or clear your cart first.');
       return;
     }
-    addToCart(listing, farm);
+    setShowConfirm(true);
+  };
+
+  // Called from the modal's "Add to cart" button — this is what actually mutates the cart
+  const handleConfirmAdd = () => {
+    addToCart(listing, effectiveFarm, quantity);
+    setShowConfirm(false);
   };
 
   return (
@@ -58,17 +78,48 @@ const ListingCard = ({ listing, farm }) => {
             ${listing.pricePerUnit}
             <span className="listing-card__unit"> / {listing.unit}</span>
           </p>
+          {/* Lets shoppers see how many units the farmer has left before choosing a quantity */}
+          <p className="listing-card__stock">
+            {listing.quantityAvailable > 0
+              ? `${listing.quantityAvailable} ${listing.unit}(s) available`
+              : 'Sold out'}
+          </p>
         </div>
       </Link>
 
-      {/* Only show Add to cart for logged-in consumers */}
-      {user && user.role === 'consumer' && farm && (
-        <button
-          className="listing-card__add-btn"
-          onClick={handleAddToCart}
-        >
-          + Add to cart
-        </button>
+      {/* Only show the quantity selector + Add to cart for logged-in consumers, and only when in stock */}
+      {user && user.role === 'consumer' && effectiveFarm && listing.isAvailable && listing.quantityAvailable > 0 && (
+        <div className="listing-card__add-row">
+          <input
+            type="number"
+            className="listing-card__qty-input"
+            min={1}
+            max={listing.quantityAvailable}
+            value={quantity}
+            onChange={(e) => {
+              // Clamp between 1 and however many units the farmer has in stock
+              const value = Math.max(1, Math.min(listing.quantityAvailable, Number(e.target.value) || 1));
+              setQuantity(value);
+            }}
+            aria-label={`Quantity of ${listing.title}`}
+          />
+          <button
+            className="listing-card__add-btn"
+            onClick={handleAddToCart}
+          >
+            + Add to cart
+          </button>
+        </div>
+      )}
+
+      {showConfirm && (
+        <ConfirmAddToCartModal
+          title={listing.title}
+          quantity={quantity}
+          unit={listing.unit}
+          onBack={() => setShowConfirm(false)}
+          onConfirm={handleConfirmAdd}
+        />
       )}
     </div>
   );

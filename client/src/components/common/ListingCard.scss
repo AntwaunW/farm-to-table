@@ -33,13 +33,39 @@
     border-color: $primary-light;
   }
 
-  // "Add to cart" sits outside the link — at the bottom of the card
+  // Quantity input + "Add to cart" sit outside the link, on the right of the card
+  &__add-row {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    flex-shrink: 0;
+  }
+
+  &__qty-input {
+    width: 52px;
+    padding: $spacing-xs;
+    border: 1px solid $border;
+    border-radius: $radius-sm;
+    font-size: $text-sm;
+    text-align: center;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+    }
+  }
+
   &__add-btn {
     @include button-primary;
     font-size: $text-sm;
     padding: $spacing-xs $spacing-md;
     white-space: nowrap;
     flex-shrink: 0;
+  }
+
+  &__stock {
+    font-size: $text-xs;
+    color: $text-muted;
   }
 
   &__icon {

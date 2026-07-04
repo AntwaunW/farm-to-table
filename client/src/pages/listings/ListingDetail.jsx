@@ -7,6 +7,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import ConfirmAddToCartModal from '../../components/common/ConfirmAddToCartModal';
 import './ListingDetail.scss';
 
 // Maps a category string to an emoji icon — same map used in ListingCard
@@ -37,6 +38,12 @@ const ListingDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // How many units the consumer wants to add at once
+  const [quantity, setQuantity] = useState(1);
+
+  // Controls the confirm-quantity modal shown before anything is actually added
+  const [showConfirm, setShowConfirm] = useState(false);
+
   // Fetch the listing when the component mounts or the ID changes
   useEffect(() => {
     const fetchListing = async () => {
@@ -54,13 +61,20 @@ const ListingDetail = () => {
     fetchListing();
   }, [id]);
 
-  // Handle Add to cart — same one-farm rule as ListingCard
+  // Clicking "Add to cart" opens a confirm-quantity modal rather than adding right away,
+  // so a mis-typed quantity can be caught before it's actually in the cart
   const handleAddToCart = () => {
     if (cartFarmId && cartFarmId !== listing.farm?._id) {
       alert('You can only order from one farm at a time. Please checkout or clear your cart first.');
       return;
     }
-    addToCart(listing, listing.farm);
+    setShowConfirm(true);
+  };
+
+  // Called from the modal's "Add to cart" button — this is what actually mutates the cart
+  const handleConfirmAdd = () => {
+    addToCart(listing, listing.farm, quantity);
+    setShowConfirm(false);
     // Navigate to cart after adding so the user can see it was added
     navigate('/cart');
   };
@@ -158,14 +172,31 @@ const ListingDetail = () => {
             <p className="listing-detail__description">{listing.description}</p>
           )}
 
-          {/* Add to cart — only shown to logged-in consumers */}
-          {user && user.role === 'consumer' && listing.isAvailable && (
-            <button
-              className="listing-detail__add-btn"
-              onClick={handleAddToCart}
-            >
-              + Add to cart
-            </button>
+          {/* Add to cart — only shown to logged-in consumers, and only when in stock */}
+          {user && user.role === 'consumer' && listing.isAvailable && listing.quantityAvailable > 0 && (
+            <div className="listing-detail__add-row">
+              <label className="listing-detail__qty-label">
+                Qty
+                <input
+                  type="number"
+                  className="listing-detail__qty-input"
+                  min={1}
+                  max={listing.quantityAvailable}
+                  value={quantity}
+                  onChange={(e) => {
+                    // Clamp between 1 and however many units the farmer has in stock
+                    const value = Math.max(1, Math.min(listing.quantityAvailable, Number(e.target.value) || 1));
+                    setQuantity(value);
+                  }}
+                />
+              </label>
+              <button
+                className="listing-detail__add-btn"
+                onClick={handleAddToCart}
+              >
+                + Add to cart
+              </button>
+            </div>
           )}
 
           {/* Prompt non-logged-in visitors to register */}
@@ -176,8 +207,8 @@ const ListingDetail = () => {
             </p>
           )}
 
-          {/* Unavailable notice */}
-          {!listing.isAvailable && (
+          {/* Unavailable notice — either the farmer disabled it or stock has run out */}
+          {(!listing.isAvailable || listing.quantityAvailable === 0) && (
             <p className="listing-detail__unavailable">
               This listing is currently unavailable.
             </p>
@@ -185,6 +216,16 @@ const ListingDetail = () => {
         </div>
 
       </div>
+
+      {showConfirm && (
+        <ConfirmAddToCartModal
+          title={listing.title}
+          quantity={quantity}
+          unit={listing.unit}
+          onBack={() => setShowConfirm(false)}
+          onConfirm={handleConfirmAdd}
+        />
+      )}
     </div>
   );
 };

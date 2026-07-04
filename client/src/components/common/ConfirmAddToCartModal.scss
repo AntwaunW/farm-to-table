@@ -1,0 +1,57 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.confirm-add-modal {
+  position: fixed;
+  inset: 0;
+  z-index: $z-modal;
+  @include flex-center;
+  padding: $spacing-md;
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  &__box {
+    position: relative;
+    background: #ffffff;
+    border-radius: $radius-lg;
+    padding: $spacing-lg;
+    max-width: 360px;
+    width: 100%;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+  }
+
+  &__message {
+    font-size: $text-md;
+    color: $text-dark;
+    line-height: 1.5;
+    margin-bottom: $spacing-lg;
+    text-align: center;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
+  &__back-btn {
+    @include button-base;
+    flex: 1;
+    background: none;
+    color: $text-muted;
+    border: 1px solid $border;
+
+    &:hover {
+      color: $text-dark;
+      border-color: $text-muted;
+    }
+  }
+
+  &__confirm-btn {
+    @include button-primary;
+    flex: 1;
+  }
+}

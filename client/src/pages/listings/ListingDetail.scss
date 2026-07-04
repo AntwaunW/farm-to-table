@@ -197,10 +197,38 @@
     border-left: 3px solid $primary-light;
   }
 
+  // Quantity selector + Add to cart button, side by side
+  &__add-row {
+    display: flex;
+    align-items: flex-end;
+    gap: $spacing-md;
+    align-self: flex-start;
+  }
+
+  &__qty-label {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    font-size: $text-sm;
+    color: $text-muted;
+  }
+
+  &__qty-input {
+    width: 70px;
+    padding: $spacing-xs $spacing-sm;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    font-size: $text-md;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+    }
+  }
+
   // Add to cart button
   &__add-btn {
     @include button-primary;
-    align-self: flex-start;
     padding: $spacing-md $spacing-lg;
     font-size: $text-md;
   }
