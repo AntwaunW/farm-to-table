@@ -30,6 +30,12 @@ const FarmerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // Bio (farm description) inline edit state
+  const [editingBio, setEditingBio] = useState(false);
+  const [bioDraft, setBioDraft] = useState('');
+  const [bioSaving, setBioSaving] = useState(false);
+  const [bioError, setBioError] = useState('');
+
   // Fetch all farmer data when component mounts
   useEffect(() => {
   const fetchFarmerData = async () => {
@@ -77,6 +83,39 @@ const FarmerDashboard = () => {
       ));
     } catch (err) {
       alert('Failed to update order status.');
+    }
+  };
+
+  // Opens the bio editor, pre-filled with the farm's current description
+  const startEditingBio = () => {
+    setBioError('');
+    setBioDraft(farm.description || '');
+    setEditingBio(true);
+  };
+
+  const cancelEditingBio = () => {
+    setEditingBio(false);
+    setBioError('');
+  };
+
+  // Saves the edited bio — PUTs only the description field to /api/farms/:id
+  const handleSaveBio = async () => {
+    if (!bioDraft.trim()) {
+      setBioError('Bio cannot be empty.');
+      return;
+    }
+
+    setBioSaving(true);
+    setBioError('');
+
+    try {
+      const res = await api.put(`/farms/${farm._id}`, { description: bioDraft.trim() });
+      setFarm(res.data.farm);
+      setEditingBio(false);
+    } catch (err) {
+      setBioError(err.response?.data?.message || 'Failed to save bio. Please try again.');
+    } finally {
+      setBioSaving(false);
     }
   };
 
@@ -151,6 +190,55 @@ const FarmerDashboard = () => {
               <p className="farmer-dashboard__subscription">
                 Plan: <strong>{farm.subscriptionTier}</strong>
               </p>
+
+              {/* Bio (farm description) — shown on the public farm profile */}
+              <div className="farmer-dashboard__bio">
+                <div className="farmer-dashboard__bio-header">
+                  <h4>Bio</h4>
+                  {!editingBio && (
+                    <button
+                      className="farmer-dashboard__bio-edit-btn"
+                      onClick={startEditingBio}
+                      type="button"
+                    >
+                      Edit bio
+                    </button>
+                  )}
+                </div>
+
+                {editingBio ? (
+                  <div className="farmer-dashboard__bio-form">
+                    <textarea
+                      className="farmer-dashboard__bio-textarea"
+                      value={bioDraft}
+                      onChange={(e) => setBioDraft(e.target.value)}
+                      rows={4}
+                      disabled={bioSaving}
+                    />
+                    {bioError && <p className="farmer-dashboard__bio-error">{bioError}</p>}
+                    <div className="farmer-dashboard__bio-actions">
+                      <button
+                        className="farmer-dashboard__btn"
+                        onClick={handleSaveBio}
+                        disabled={bioSaving}
+                        type="button"
+                      >
+                        {bioSaving ? 'Saving...' : 'Save'}
+                      </button>
+                      <button
+                        className="farmer-dashboard__bio-cancel-btn"
+                        onClick={cancelEditingBio}
+                        disabled={bioSaving}
+                        type="button"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="farmer-dashboard__bio-text">{farm.description}</p>
+                )}
+              </div>
             </div>
           )}
         </div>

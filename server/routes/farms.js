@@ -97,7 +97,16 @@ router.put('/:id', protect, authorizeRoles('farmer'), async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to update this farm' });
     }
 
-    farm = await Farm.findByIdAndUpdate(req.params.id, req.body, {
+    // Whitelist editable fields — keeps a farmer from self-assigning rating/owner/isActive
+    // (photos have their own dedicated /:id/photos endpoint, so they're excluded here too)
+    const { farmName, description, location, category } = req.body;
+    const updates = {};
+    if (farmName !== undefined) updates.farmName = farmName;
+    if (description !== undefined) updates.description = description;
+    if (location !== undefined) updates.location = location;
+    if (category !== undefined) updates.category = category;
+
+    farm = await Farm.findByIdAndUpdate(req.params.id, updates, {
       new: true,           // Return the updated document
       runValidators: true, // Run schema validators on the updated fields
     });
