@@ -142,7 +142,7 @@ const Terms = () => {
           <h2>13. Contact</h2>
           <p>
             For questions about these Terms of Service please contact us at
-            legal@cattleandcrop.com
+            hello@cattleandcrop.com
           </p>
         </section>
 

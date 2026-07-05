@@ -84,7 +84,7 @@ const Privacy = () => {
             <li>Opt out of non-essential communications</li>
           </ul>
           <p>
-            To exercise these rights contact us at privacy@cattleandcrop.com
+            To exercise these rights contact us at hello@cattleandcrop.com
           </p>
         </section>
 
@@ -108,7 +108,7 @@ const Privacy = () => {
           <h2>10. Contact</h2>
           <p>
             For privacy related questions contact us at
-            privacy@cattleandcrop.com
+            hello@cattleandcrop.com
           </p>
         </section>
 

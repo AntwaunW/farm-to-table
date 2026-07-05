@@ -68,7 +68,7 @@ const Trademark = () => {
           <p>
             If you believe someone is infringing on Cattle & Crop's
             intellectual property please contact us immediately at
-            legal@cattleandcrop.com
+            hello@cattleandcrop.com
           </p>
         </section>
 
