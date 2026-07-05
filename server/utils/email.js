@@ -15,7 +15,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Base URL for links inside emails — set CLIENT_URL in .env for each environment
 // (falls back to localhost so local dev keeps working without extra setup)
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
+const CLIENT_URL = process.env.CLIENT_URL || 'http://cattleandcrop.com';
 
 // -------------------------------------------------------------------
 // 🎓 HOW DO ALL THESE FUNCTIONS WORK?
