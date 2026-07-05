@@ -30,9 +30,10 @@ const FarmerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Bio (farm description) inline edit state
+  // Bio (farm description + street address) inline edit state
   const [editingBio, setEditingBio] = useState(false);
   const [bioDraft, setBioDraft] = useState('');
+  const [streetDraft, setStreetDraft] = useState('');
   const [bioSaving, setBioSaving] = useState(false);
   const [bioError, setBioError] = useState('');
 
@@ -76,20 +77,31 @@ const FarmerDashboard = () => {
   // Update order status handler
   const handleStatusUpdate = async (orderId, status) => {
     try {
-      await api.put(`/orders/${orderId}/status`, { status });
-      // Update order in local state without refetching
+      const res = await api.put(`/orders/${orderId}/status`, { status });
+      // Update order in local state without refetching — pulls the whole order back
+      // so paymentStatus reflects an automatic refund if one was issued
       setOrders(orders.map((order) =>
-        order._id === orderId ? { ...order, status } : order
+        order._id === orderId ? res.data.order : order
       ));
     } catch (err) {
-      alert('Failed to update order status.');
+      alert(err.response?.data?.message || 'Failed to update order status.');
     }
   };
 
-  // Opens the bio editor, pre-filled with the farm's current description
+  // Cancelling refunds the consumer automatically if the order was already paid,
+  // so confirm first since this can't be undone
+  const handleCancelOrder = (orderId) => {
+    if (!window.confirm('Cancel this order? If the consumer already paid, they will be refunded automatically.')) {
+      return;
+    }
+    handleStatusUpdate(orderId, 'cancelled');
+  };
+
+  // Opens the bio editor, pre-filled with the farm's current description + street address
   const startEditingBio = () => {
     setBioError('');
     setBioDraft(farm.description || '');
+    setStreetDraft(farm.location.street || '');
     setEditingBio(true);
   };
 
@@ -98,7 +110,8 @@ const FarmerDashboard = () => {
     setBioError('');
   };
 
-  // Saves the edited bio — PUTs only the description field to /api/farms/:id
+  // Saves the edited bio and street address — location must be sent as a whole
+  // object since the server replaces it wholesale, so city/state/zip are preserved
   const handleSaveBio = async () => {
     if (!bioDraft.trim()) {
       setBioError('Bio cannot be empty.');
@@ -109,7 +122,10 @@ const FarmerDashboard = () => {
     setBioError('');
 
     try {
-      const res = await api.put(`/farms/${farm._id}`, { description: bioDraft.trim() });
+      const res = await api.put(`/farms/${farm._id}`, {
+        description: bioDraft.trim(),
+        location: { ...farm.location, street: streetDraft.trim() },
+      });
       setFarm(res.data.farm);
       setEditingBio(false);
     } catch (err) {
@@ -185,7 +201,10 @@ const FarmerDashboard = () => {
           ) : (
             <div className="farmer-dashboard__farm-card">
               <h3>{farm.farmName}</h3>
-              <p>📍 {farm.location.city}, {farm.location.state}</p>
+              <p>
+                📍 {farm.location.street ? `${farm.location.street}, ` : ''}
+                {farm.location.city}, {farm.location.state}
+              </p>
               <div className="farmer-dashboard__farm-tags">
                 {farm.category.map((cat) => (
                   <span key={cat} className="farmer-dashboard__tag">{cat}</span>
@@ -212,6 +231,21 @@ const FarmerDashboard = () => {
 
                 {editingBio ? (
                   <div className="farmer-dashboard__bio-form">
+                    <label className="farmer-dashboard__bio-field-label">
+                      Street address
+                      <span className="farmer-dashboard__bio-field-hint">
+                        {' '}— used for "Get directions" on pickup orders
+                      </span>
+                    </label>
+                    <input
+                      className="farmer-dashboard__bio-street-input"
+                      type="text"
+                      value={streetDraft}
+                      onChange={(e) => setStreetDraft(e.target.value)}
+                      placeholder="123 Ranch Road"
+                      disabled={bioSaving}
+                    />
+                    <label className="farmer-dashboard__bio-field-label">Bio</label>
                     <textarea
                       className="farmer-dashboard__bio-textarea"
                       value={bioDraft}
@@ -358,6 +392,15 @@ const FarmerDashboard = () => {
                         onClick={() => handleStatusUpdate(order._id, 'completed')}
                       >
                         Complete order
+                      </button>
+                    )}
+                    {/* Cancellation is available up until the order is completed */}
+                    {order.status !== 'completed' && order.status !== 'cancelled' && (
+                      <button
+                        className="farmer-dashboard__cancel-btn"
+                        onClick={() => handleCancelOrder(order._id)}
+                      >
+                        Cancel order
                       </button>
                     )}
                   </div>

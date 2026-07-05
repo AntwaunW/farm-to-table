@@ -10,6 +10,7 @@
 
 const express = require('express');
 const router = express.Router();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Order = require('../models/Order');
 const Listing = require('../models/Listing');
 const { protect, authorizeRoles } = require('../middleware/auth');
@@ -226,18 +227,14 @@ router.get('/:id', protect, async (req, res) => {
 });
 
 // @route   PUT /api/orders/:id/status
-// @desc    Update the fulfillment status of an order (farmer moves it through the pipeline)
-// @access  Private (farmers only)
-router.put('/:id/status', protect, authorizeRoles('farmer'), async (req, res) => {
+// @desc    Update the fulfillment status of an order. Farmers move it through the
+//          pipeline (or cancel it at any point before completion). Consumers can only
+//          cancel their own order, and only while it's still pending (unpaid/unconfirmed) —
+//          once a farmer has started on it, the consumer has to go through the farmer.
+// @access  Private (farmers and consumers)
+router.put('/:id/status', protect, authorizeRoles('farmer', 'consumer'), async (req, res) => {
   try {
     const { status } = req.body;
-
-    // Farmers can only move orders to these statuses — 'pending' is set at creation, 'paid' via webhook
-    const validStatuses = ['confirmed', 'ready', 'completed', 'cancelled'];
-
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({ message: 'Invalid status' });
-    }
 
     const order = await Order.findById(req.params.id);
 
@@ -245,11 +242,37 @@ router.put('/:id/status', protect, authorizeRoles('farmer'), async (req, res) =>
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    // Make sure only the farmer who owns the farm can update this order's status
-    const farm = await Farm.findById(order.farm);
+    if (req.user.role === 'farmer') {
+      // Make sure only the farmer who owns the farm can update this order's status
+      const farm = await Farm.findById(order.farm);
 
-    if (farm.owner.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'Not authorized to update this order' });
+      if (farm.owner.toString() !== req.user.id) {
+        return res.status(403).json({ message: 'Not authorized to update this order' });
+      }
+
+      const validStatuses = ['confirmed', 'ready', 'completed', 'cancelled'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Invalid status' });
+      }
+
+      if (order.status === 'completed' || order.status === 'cancelled') {
+        return res.status(400).json({ message: 'This order is already finalized' });
+      }
+    } else {
+      // Consumers may only cancel their own order, and only while still pending
+      if (order.consumer.toString() !== req.user.id) {
+        return res.status(403).json({ message: 'Not authorized to update this order' });
+      }
+
+      if (status !== 'cancelled') {
+        return res.status(400).json({ message: 'Consumers can only cancel an order' });
+      }
+
+      if (order.status !== 'pending') {
+        return res.status(400).json({
+          message: 'This order can no longer be cancelled — please contact the farmer',
+        });
+      }
     }
 
     // Cancelling releases the inventory this order had claimed back to each listing
@@ -259,6 +282,19 @@ router.put('/:id/status', protect, authorizeRoles('farmer'), async (req, res) =>
         await Listing.findByIdAndUpdate(item.listing, {
           $inc: { quantityAvailable: item.quantity },
         });
+      }
+
+      // Already paid? Refund it automatically through Stripe rather than leaving the
+      // consumer's money sitting there with a cancelled order
+      if (order.paymentStatus === 'paid' && order.stripePaymentIntentId) {
+        try {
+          await stripe.refunds.create({ payment_intent: order.stripePaymentIntentId });
+          order.paymentStatus = 'refunded';
+        } catch (refundErr) {
+          // Don't block the cancellation on a refund failure — log it so it can be
+          // handled manually, since the customer still needs their order cancelled
+          console.error('Refund failed for order', order._id.toString(), refundErr);
+        }
       }
     }
 

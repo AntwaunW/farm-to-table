@@ -21,6 +21,9 @@ const FarmSchema = new mongoose.Schema({
     required: [true, 'Please add a description'],
   },
   location: {
+    // Optional so existing farms created before this field existed don't fail
+    // validation — used to build a "Get directions" link for pickup orders
+    street: { type: String },
     city: { type: String, required: true },
     state: { type: String, required: true },
     zip: { type: String, required: true },

@@ -8,23 +8,35 @@ const Farm = require('../models/Farm');
 const { protect, authorizeRoles } = require('../middleware/auth');
 
 // @route   GET /api/farms
-// @desc    Get all active farms — supports filtering by category, city, and state
+// @desc    Get all active farms — supports filtering by category (comma-separated
+//          for multi-select), city, and state, plus a sort order
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const { category, city, state } = req.query;
+    const { category, city, state, sort } = req.query;
 
     // Only return active farms (isActive: true excludes soft-deleted farms)
     let query = { isActive: true };
 
-    // Apply optional query filters
-    if (category) query.category = category;
+    // Apply optional query filters. category can be a comma-separated list
+    // (e.g. "beef,dairy") — $in matches a farm that sells ANY of the selected categories
+    if (category) {
+      const categories = category.split(',').filter(Boolean);
+      if (categories.length > 0) {
+        query.category = { $in: categories };
+      }
+    }
     if (city) query['location.city'] = new RegExp(city, 'i');   // case-insensitive
     if (state) query['location.state'] = new RegExp(state, 'i');
 
+    // Default to newest first; support rating and name as alternate sort orders
+    let sortOption = { createdAt: -1 };
+    if (sort === 'rating') sortOption = { rating: -1 };
+    else if (sort === 'name') sortOption = { farmName: 1 };
+
     const farms = await Farm.find(query)
       .populate('owner', 'name email') // Attach owner name and email to each farm
-      .sort({ createdAt: -1 });        // Newest farms first
+      .sort(sortOption);
 
     res.status(200).json({ success: true, count: farms.length, farms });
   } catch (error) {

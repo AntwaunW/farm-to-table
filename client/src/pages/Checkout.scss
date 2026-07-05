@@ -129,6 +129,19 @@
     }
   }
 
+  &__directions-link {
+    display: inline-block;
+    font-size: $text-sm;
+    color: $primary;
+    font-weight: 500;
+    text-decoration: none;
+    margin-bottom: $spacing-xs;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
   // Payment form section
   &__payment {
     @include card;

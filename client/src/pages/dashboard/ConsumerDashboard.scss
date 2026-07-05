@@ -213,6 +213,7 @@
   // Order footer with total
   &__order-footer {
     @include flex-between;
+    align-items: flex-start; // fulfillment-info can wrap onto multiple lines
     padding: $spacing-md;
     background: $background;
     border-top: 1px solid $border;
@@ -220,10 +221,27 @@
     color: $text-muted;
   }
 
+  &__fulfillment-info {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+
+  &__directions-link {
+    color: $primary;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
   &__total {
     font-size: $text-md;
     font-weight: 600;
     color: $text-dark;
+    white-space: nowrap;
   }
 
   // Status badges
@@ -260,6 +278,19 @@
   font-size: $text-sm;
   padding: $spacing-xs $spacing-md;
     }
+
+&__cancel-btn {
+  @include button-base;
+  background: none;
+  color: $error;
+  border: 1px solid $error;
+  font-size: $text-sm;
+  padding: $spacing-xs $spacing-md;
+
+  &:hover {
+    background: #fde8e8;
+  }
+}
 
 &__review-btn {
   @include button-secondary;

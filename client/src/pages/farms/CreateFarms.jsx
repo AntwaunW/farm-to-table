@@ -31,6 +31,7 @@ const CreateFarm = () => {
     farmName: '',
     description: '',
     location: {
+      street: '',
       city: '',
       state: '',
       zip: '',
@@ -76,7 +77,7 @@ const CreateFarm = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (['city', 'state', 'zip'].includes(name)) {
+    if (['street', 'city', 'state', 'zip'].includes(name)) {
       // Update nested location object
       setFormData({
         ...formData,
@@ -219,6 +220,19 @@ const CreateFarm = () => {
           </div>
 
           {/* Location */}
+          <div className="create-farm__field">
+            <label className="create-farm__label">Street address (optional)</label>
+            {/* Used to build a "Get directions" link for consumers picking up an order */}
+            <input
+              className="create-farm__input"
+              type="text"
+              name="street"
+              placeholder="123 Ranch Road"
+              value={formData.location.street}
+              onChange={handleChange}
+            />
+          </div>
+
           <div className="create-farm__field">
             <label className="create-farm__label">City</label>
             <input

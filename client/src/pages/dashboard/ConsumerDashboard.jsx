@@ -8,6 +8,7 @@ import OrderProgress from '../../components/common/OrderProgress';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import api from '../../utils/api';
+import { getDirectionsUrl } from '../../utils/directions';
 import './ConsumerDashboard.scss';
 
 const ConsumerDashboard = () => {
@@ -74,6 +75,19 @@ const ConsumerDashboard = () => {
     fetchMyReviews();
   };
 
+  // Cancelling is only allowed while pending — once the farmer or payment has
+  // moved it along, the consumer has to go through the farmer instead
+  const handleCancelOrder = async (orderId) => {
+    if (!window.confirm('Cancel this order? This cannot be undone.')) return;
+
+    try {
+      const res = await api.put(`/orders/${orderId}/status`, { status: 'cancelled' });
+      setOrders(orders.map((order) => (order._id === orderId ? res.data.order : order)));
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to cancel order.');
+    }
+  };
+
   // An order stays "current" until it's fully wrapped up (received) or cancelled
   const ACTIVE_STATUSES = ['pending', 'confirmed', 'ready'];
   const currentOrders = orders.filter((o) => ACTIVE_STATUSES.includes(o.status));
@@ -106,6 +120,14 @@ const ConsumerDashboard = () => {
               Pay now
             </Link>
           )}
+          {order.status === 'pending' && (
+            <button
+              className="consumer-dashboard__cancel-btn"
+              onClick={() => handleCancelOrder(order._id)}
+            >
+              Cancel order
+            </button>
+          )}
         </div>
       </div>
 
@@ -127,13 +149,25 @@ const ConsumerDashboard = () => {
 
       {/* Order footer */}
       <div className="consumer-dashboard__order-footer">
-        <p>
-          {order.pickupOrDelivery === 'delivery' ? '🚚 Delivery' : '📍 Pickup'}:{' '}
-          {order.pickupDate ? new Date(order.pickupDate).toLocaleDateString() : 'TBD'}
-        </p>
-        {order.pickupOrDelivery === 'delivery' && order.deliveryAddress && (
-          <p>{order.deliveryAddress}</p>
-        )}
+        <div className="consumer-dashboard__fulfillment-info">
+          <p>
+            {order.pickupOrDelivery === 'delivery' ? '🚚 Delivery' : '📍 Pickup'}:{' '}
+            {order.pickupDate ? new Date(order.pickupDate).toLocaleDateString() : 'TBD'}
+          </p>
+          {order.pickupOrDelivery === 'delivery' && order.deliveryAddress && (
+            <p>{order.deliveryAddress}</p>
+          )}
+          {order.pickupOrDelivery === 'pickup' && getDirectionsUrl(order.farm?.location) && (
+            <a
+              href={getDirectionsUrl(order.farm?.location)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="consumer-dashboard__directions-link"
+            >
+              Get directions →
+            </a>
+          )}
+        </div>
         <p className="consumer-dashboard__total">
           Total: ${order.totalAmount}
         </p>

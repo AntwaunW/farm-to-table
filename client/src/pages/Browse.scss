@@ -32,10 +32,25 @@
     margin-bottom: $spacing-lg;
   }
 
+  &__filters-row {
+    display: flex;
+    gap: $spacing-md;
+    margin-bottom: $spacing-md;
+
+    @include respond-to(mobile) {
+      flex-direction: column;
+    }
+  }
+
   &__search {
     @include input-base;
     max-width: 400px;
-    margin-bottom: $spacing-md;
+    margin-bottom: 0;
+  }
+
+  &__sort {
+    @include input-base;
+    max-width: 200px;
   }
 
   &__categories {

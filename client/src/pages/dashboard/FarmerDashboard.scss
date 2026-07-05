@@ -191,6 +191,35 @@
     }
   }
 
+  &__bio-field-label {
+    display: block;
+    font-size: $text-sm;
+    font-weight: 500;
+    color: $text-dark;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__bio-field-hint {
+    font-size: $text-xs;
+    font-weight: 400;
+    color: $text-muted;
+  }
+
+  &__bio-street-input {
+    width: 100%;
+    padding: $spacing-sm;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    font-family: inherit;
+    font-size: $text-sm;
+    margin-bottom: $spacing-md;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+    }
+  }
+
   &__bio-error {
     color: $error;
     font-size: $text-sm;
@@ -315,6 +344,19 @@
     @include button-primary;
     font-size: $text-sm;
     padding: $spacing-xs $spacing-md;
+  }
+
+  &__cancel-btn {
+    @include button-base;
+    background: none;
+    color: $error;
+    border: 1px solid $error;
+    font-size: $text-sm;
+    padding: $spacing-xs $spacing-md;
+
+    &:hover {
+      background: #fde8e8;
+    }
   }
 
   // Reviews grid

@@ -8,6 +8,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import api from '../utils/api';
+import { getDirectionsUrl } from '../utils/directions';
 import './Checkout.scss';
 
 // Initialize Stripe outside the component so it only loads once
@@ -223,6 +224,16 @@ const Checkout = () => {
             )}
             {order?.pickupOrDelivery === 'delivery' && order?.deliveryAddress && (
               <p>{order.deliveryAddress}</p>
+            )}
+            {order?.pickupOrDelivery === 'pickup' && getDirectionsUrl(order?.farm?.location) && (
+              <a
+                href={getDirectionsUrl(order.farm.location)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="checkout__directions-link"
+              >
+                Get directions →
+              </a>
             )}
             {order?.notes && <p>Note: {order.notes}</p>}
           </div>
