@@ -64,13 +64,14 @@ const Home = () => {
       {/* Hero Section — main value proposition and search bar */}
       <section className="hero">
         <div className="hero__container">
-          <span className="hero__tag">🌿 Texas-grown, direct to you</span>
+          <span className="hero__tag">🌿 Farm-fresh, direct to you</span>
+          <span className="hero__region-note">📍 Now serving Texas — more regions coming soon</span>
           <h1 className="hero__title">
             Fresh from the ranch,<br />straight to your table
           </h1>
           <p className="hero__subtitle">
             Skip the store. Know your farmer. Buy directly from local
-            Texas farms and ranchers — grass-fed beef, fresh produce,
+            farms and ranchers — grass-fed beef, fresh produce,
             raw dairy, and more.
           </p>
           <div className="hero__btns">
@@ -113,15 +114,15 @@ const Home = () => {
       <section className="stats">
         <div className="stats__item">
           <span className="stats__number">240+</span>
-          <span className="stats__label">Texas farms</span>
+          <span className="stats__label">Farms and ranches</span>
         </div>
         <div className="stats__item">
-          <span className="stats__number">130M+</span>
-          <span className="stats__label">Acres of Texas farmland</span>
+          <span className="stats__number">97%</span>
+          <span className="stats__label">Family-owned farms</span>
         </div>
         <div className="stats__item">
           <span className="stats__number">12</span>
-          <span className="stats__label">Texas regions</span>
+          <span className="stats__label">Regions served</span>
         </div>
       </section>
 
@@ -165,7 +166,7 @@ const Home = () => {
         <section className="home__cta">
           <div className="home__cta-container">
             <div className="home__cta-text">
-              <h2 className="home__cta-title">Are you a Texas farmer or rancher?</h2>
+              <h2 className="home__cta-title">Are you a farmer or rancher?</h2>
               <p className="home__cta-subtitle">
                 List your products and reach thousands of local buyers directly.
               </p>

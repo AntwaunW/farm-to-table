@@ -49,7 +49,7 @@ const sendWelcomeEmail = async (user) => {
           <h2 style="color: #1b1b1b;">Welcome, ${user.name}!</h2>
           <p style="color: #6b7280; line-height: 1.6;">
             Thanks for joining Cattle &amp; Crop. You now have access to fresh,
-            locally grown food directly from Texas farms and ranchers.
+            locally grown food directly from farms and ranchers near you.
           </p>
           ${user.role === 'farmer' ? `
             <p style="color: #6b7280; line-height: 1.6;">

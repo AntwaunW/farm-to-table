@@ -48,9 +48,68 @@
     margin-bottom: 0;
   }
 
-  &__sort {
+  &__sort,
+  &__radius {
     @include input-base;
     max-width: 200px;
+  }
+
+  &__near-btn {
+    @include button-base;
+    background: #ffffff;
+    color: $primary;
+    border: 1px solid $primary;
+    font-size: $text-sm;
+    padding: $spacing-xs $spacing-md;
+    white-space: nowrap;
+
+    &:hover {
+      background: #e8f5e0;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__near-clear {
+    @include button-base;
+    background: transparent;
+    color: $text-muted;
+    border: 1px solid $border;
+    font-size: $text-sm;
+    padding: $spacing-xs $spacing-md;
+
+    &:hover {
+      border-color: $text-muted;
+      color: $text-dark;
+    }
+  }
+
+  &__zip-form {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-md;
+    flex-wrap: wrap;
+  }
+
+  &__zip-note {
+    font-size: $text-sm;
+    color: $text-muted;
+  }
+
+  &__zip-input {
+    @include input-base;
+    max-width: 180px;
+    margin-bottom: 0;
+  }
+
+  &__zip-submit {
+    @include button-primary;
+    font-size: $text-sm;
+    padding: $spacing-xs $spacing-lg;
   }
 
   &__categories {

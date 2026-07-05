@@ -155,6 +155,15 @@
     margin-bottom: $spacing-md;
   }
 
+  // Small honest note that the marketplace is Texas-only for now — sits
+  // below the main tag so it doesn't compete with the welcoming headline
+  &__region-note {
+    display: block;
+    font-size: $text-xs;
+    color: rgba(255, 255, 255, 0.65);
+    margin-bottom: $spacing-md;
+  }
+
   &__title {
     font-size: $text-4xl;
     color: #ffffff;

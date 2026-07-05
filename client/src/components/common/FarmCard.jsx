@@ -24,6 +24,9 @@ const FarmCard = ({ farm }) => {
 
         <p className="farm-card__location">
           📍 {farm.location.city}, {farm.location.state}
+          {farm.distance !== undefined && (
+            <span className="farm-card__distance"> · {farm.distance} mi away</span>
+          )}
         </p>
 
         {/* Category tags — each farm can belong to multiple categories */}

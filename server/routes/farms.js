@@ -4,8 +4,31 @@
 
 const express = require('express');
 const router = express.Router();
+const zipcodes = require('zipcodes');
 const Farm = require('../models/Farm');
 const { protect, authorizeRoles } = require('../middleware/auth');
+
+// Shared by GET / and GET /near — category can be a comma-separated list
+// (e.g. "beef,dairy"); returns null when there's nothing to filter on
+const parseCategories = (category) => {
+  if (!category) return null;
+  const categories = category.split(',').filter(Boolean);
+  return categories.length > 0 ? categories : null;
+};
+
+const EARTH_RADIUS_MILES = 3958.8;
+const toRadians = (deg) => (deg * Math.PI) / 180;
+
+// Great-circle distance between two lat/lng points, in miles
+const haversineMiles = (lat1, lng1, lat2, lng2) => {
+  const dLat = toRadians(lat2 - lat1);
+  const dLng = toRadians(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLng / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return EARTH_RADIUS_MILES * c;
+};
 
 // @route   GET /api/farms
 // @desc    Get all active farms — supports filtering by category (comma-separated
@@ -18,14 +41,9 @@ router.get('/', async (req, res) => {
     // Only return active farms (isActive: true excludes soft-deleted farms)
     let query = { isActive: true };
 
-    // Apply optional query filters. category can be a comma-separated list
-    // (e.g. "beef,dairy") — $in matches a farm that sells ANY of the selected categories
-    if (category) {
-      const categories = category.split(',').filter(Boolean);
-      if (categories.length > 0) {
-        query.category = { $in: categories };
-      }
-    }
+    // $in matches a farm that sells ANY of the selected categories
+    const categories = parseCategories(category);
+    if (categories) query.category = { $in: categories };
     if (city) query['location.city'] = new RegExp(city, 'i');   // case-insensitive
     if (state) query['location.state'] = new RegExp(state, 'i');
 
@@ -39,6 +57,68 @@ router.get('/', async (req, res) => {
       .sort(sortOption);
 
     res.status(200).json({ success: true, count: farms.length, farms });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   GET /api/farms/near
+// @desc    Find active farms within a radius (miles) of a point, sorted by
+//          distance. The point can be given directly as lat/lng (browser
+//          Geolocation) or as a ZIP code (manual fallback), resolved to a
+//          centroid via the offline `zipcodes` dataset. Distance is computed
+//          with the Haversine formula against each farm's own ZIP centroid —
+//          a few miles of accuracy is plenty for "farms near me"; no paid
+//          geocoding API needed. Registered before GET /:id so "near" is
+//          never swallowed as an :id value.
+// @access  Public
+router.get('/near', async (req, res) => {
+  try {
+    const { lat, lng, zip, radius, category } = req.query;
+
+    let originLat;
+    let originLng;
+
+    if (lat && lng) {
+      originLat = parseFloat(lat);
+      originLng = parseFloat(lng);
+    } else if (zip) {
+      const origin = zipcodes.lookup(zip);
+      if (!origin) {
+        return res.status(400).json({ message: 'ZIP code not recognized' });
+      }
+      originLat = origin.latitude;
+      originLng = origin.longitude;
+    } else {
+      return res.status(400).json({ message: 'Provide either lat/lng or a zip code' });
+    }
+
+    const radiusMiles = parseFloat(radius) || 50;
+
+    let query = { isActive: true };
+    const categories = parseCategories(category);
+    if (categories) query.category = { $in: categories };
+
+    const farms = await Farm.find(query).populate('owner', 'name email');
+
+    const withDistance = farms
+      .map((farm) => {
+        const farmZip = zipcodes.lookup(farm.location.zip);
+        if (!farmZip) return null; // can't place this farm on the map — skip it
+        const distance = haversineMiles(originLat, originLng, farmZip.latitude, farmZip.longitude);
+        return { farm, distance };
+      })
+      .filter((entry) => entry !== null && entry.distance <= radiusMiles)
+      .sort((a, b) => a.distance - b.distance);
+
+    const results = withDistance.map(({ farm, distance }) => {
+      const farmObj = farm.toObject();
+      farmObj.distance = Math.round(distance * 10) / 10;
+      return farmObj;
+    });
+
+    res.status(200).json({ success: true, count: results.length, farms: results });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });

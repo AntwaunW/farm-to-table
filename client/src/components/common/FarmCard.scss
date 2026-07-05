@@ -49,6 +49,11 @@
     margin-bottom: $spacing-sm;
   }
 
+  &__distance {
+    color: $primary;
+    font-weight: 500;
+  }
+
   &__tags {
     display: flex;
     flex-wrap: wrap;

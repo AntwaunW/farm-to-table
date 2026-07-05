@@ -15,7 +15,7 @@ const values = [
   {
     icon: '🏡',
     title: 'Rooted in Community',
-    body: 'Every purchase on Cattle & Crop stays in Texas. You\'re not feeding a corporation — you\'re feeding your neighbor\'s livelihood and your own community.',
+    body: 'Every purchase on Cattle & Crop stays local. You\'re not feeding a corporation — you\'re feeding your neighbor\'s livelihood and your own community.',
   },
 ];
 
@@ -26,13 +26,13 @@ const About = () => {
       {/* Hero */}
       <section className="about__hero">
         <div className="about__hero-container">
-          <span className="about__hero-tag">Texas-grown. Community-driven.</span>
+          <span className="about__hero-tag">Farm-grown. Community-driven.</span>
           <h1 className="about__hero-title">
             Skip the store.<br />Know your farmer.
           </h1>
           <p className="about__hero-subtitle">
-            Cattle & Crop is building the bridge between Texas farms
-            and Texas tables — one direct relationship at a time.
+            Cattle & Crop is building the bridge between local farms
+            and local tables — one direct relationship at a time.
           </p>
         </div>
       </section>
@@ -44,7 +44,7 @@ const About = () => {
           <blockquote className="about__mission-quote">
             "We believe the most powerful thing a family can do is know where
             their food comes from. We exist to make that possible for every
-            Texan — not just those with access to a farmers market."
+            family — not just those with access to a farmers market."
           </blockquote>
         </div>
       </section>
@@ -78,16 +78,17 @@ const About = () => {
               better way.
             </p>
             <p>
-              Built in Texas, for Texans — Cattle & Crop connects families
+              Built from Texas, for everyone — Cattle & Crop connects families
               directly with the ranchers and growers who raise their food.
               No middlemen. No mystery. Just honest food from people who
               care about what they grow.
             </p>
             <p>
-              We're still early. Every farm that joins, every family that
-              buys direct, and every relationship built through this platform
-              makes the food system a little more honest. That's the company
-              we're building.
+              We're still early — starting in Texas, with more regions on
+              the way. Every farm that joins, every family that buys direct,
+              and every relationship built through this platform makes the
+              food system a little more honest. That's the company we're
+              building.
             </p>
           </div>
           <div className="about__story-stat-col">
@@ -97,7 +98,7 @@ const About = () => {
             </div>
             <div className="about__stat">
               <span className="about__stat-number">100%</span>
-              <span className="about__stat-label">Texas farms — every listing, every time</span>
+              <span className="about__stat-label">Farm direct — every listing, every time</span>
             </div>
             <div className="about__stat">
               <span className="about__stat-number">Direct</span>
@@ -114,7 +115,7 @@ const About = () => {
             Why Support Cattle & Crop?
           </h2>
           <p className="about__support-lead">
-            When you buy direct from a Texas farm or ranch, you're not just
+            When you buy direct from a local farm or ranch, you're not just
             buying food. You're casting a vote for a food system built on trust.
           </p>
           <ul className="about__support-list">
@@ -122,7 +123,7 @@ const About = () => {
             <li>You're getting food that hasn't sat in a warehouse for two weeks</li>
             <li>You're paying a fair price that actually reaches the farmer</li>
             <li>You're building a relationship with the person who feeds your family</li>
-            <li>You're supporting a Texas-owned business, not a national corporation</li>
+            <li>You're supporting a locally-owned business, not a national corporation</li>
           </ul>
         </div>
       </section>
@@ -132,7 +133,7 @@ const About = () => {
         <div className="about__container about__cta-inner">
           <div>
             <h2 className="about__cta-title">Ready to meet your farmer?</h2>
-            <p className="about__cta-subtitle">Browse Texas farms and buy direct today.</p>
+            <p className="about__cta-subtitle">Browse local farms and buy direct today.</p>
           </div>
           <div className="about__cta-btns">
             <Link to="/browse" className="about__cta-btn about__cta-btn--primary">Browse farms</Link>

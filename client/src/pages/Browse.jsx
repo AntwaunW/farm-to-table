@@ -5,6 +5,7 @@ import FarmCard from '../components/common/FarmCard';
 import './Browse.scss';
 
 const CATEGORIES = ['beef', 'produce', 'dairy', 'eggs', 'honey', 'pork', 'lamb', 'poultry', 'other'];
+const RADIUS_OPTIONS = [10, 25, 50, 100];
 
 const Browse = () => {
   const [farms, setFarms] = useState([]);
@@ -17,6 +18,17 @@ const Browse = () => {
   const selectedCategories = categoryParam ? categoryParam.split(',') : [];
   const sort = searchParams.get('sort') || 'newest';
 
+  // "Near me" is separate from the URL-driven filters above — it's a
+  // point-in-time location, not something worth deep-linking to
+  const [nearMeActive, setNearMeActive] = useState(false);
+  const [coords, setCoords] = useState(null);
+  const [nearZip, setNearZip] = useState('');
+  const [radius, setRadius] = useState(50);
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [geoError, setGeoError] = useState('');
+  const [showZipFallback, setShowZipFallback] = useState(false);
+  const [zipInput, setZipInput] = useState('');
+
   useEffect(() => {
     // Guards against out-of-order responses: if the filters change again before
     // this request resolves, its response is stale and should be discarded —
@@ -26,17 +38,25 @@ const Browse = () => {
     const fetchFarms = async () => {
       try {
         setLoading(true);
-        let url = '/farms?';
-        if (categoryParam) url += `category=${categoryParam}&`;
-        if (search) url += `city=${search}&`;
-        if (sort) url += `sort=${sort}`;
+        let url;
+
+        if (nearMeActive && (coords || nearZip)) {
+          url = `/farms/near?radius=${radius}&`;
+          url += coords ? `lat=${coords.lat}&lng=${coords.lng}&` : `zip=${nearZip}&`;
+          if (categoryParam) url += `category=${categoryParam}`;
+        } else {
+          url = '/farms?';
+          if (categoryParam) url += `category=${categoryParam}&`;
+          if (search) url += `city=${search}&`;
+          if (sort) url += `sort=${sort}`;
+        }
 
         const res = await api.get(url);
         if (isStale) return;
         setFarms(res.data.farms);
       } catch (err) {
         if (isStale) return;
-        setError('Failed to load farms. Please try again.');
+        setError(err.response?.data?.message || 'Failed to load farms. Please try again.');
       } finally {
         if (!isStale) setLoading(false);
       }
@@ -47,7 +67,7 @@ const Browse = () => {
     return () => {
       isStale = true;
     };
-  }, [search, categoryParam, sort]);
+  }, [search, categoryParam, sort, nearMeActive, coords, nearZip, radius]);
 
   // Toggles a single category in/out of the selected set — "All" clears the set entirely
   const handleCategoryToggle = (cat) => {
@@ -70,13 +90,58 @@ const Browse = () => {
     setSearchParams({ search, category: categoryParam, sort: e.target.value });
   };
 
+  const handleNearMeClick = () => {
+    if (!navigator.geolocation) {
+      setGeoError("Your browser doesn't support location — enter your ZIP instead.");
+      setShowZipFallback(true);
+      return;
+    }
+
+    setGeoLoading(true);
+    setGeoError('');
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setCoords({ lat: position.coords.latitude, lng: position.coords.longitude });
+        setNearZip('');
+        setNearMeActive(true);
+        setShowZipFallback(false);
+        setGeoLoading(false);
+      },
+      () => {
+        setGeoError("Couldn't get your location — enter your ZIP instead.");
+        setShowZipFallback(true);
+        setGeoLoading(false);
+      }
+    );
+  };
+
+  const handleZipSubmit = (e) => {
+    e.preventDefault();
+    if (!zipInput.trim()) return;
+    setCoords(null);
+    setNearZip(zipInput.trim());
+    setNearMeActive(true);
+    setShowZipFallback(false);
+  };
+
+  const handleClearNearMe = () => {
+    setNearMeActive(false);
+    setCoords(null);
+    setNearZip('');
+    setShowZipFallback(false);
+    setGeoError('');
+    setZipInput('');
+    setRadius(50);
+  };
+
   return (
     <div className="browse">
       <div className="browse__header">
         <div className="browse__header-container">
           <h1 className="browse__title">Browse farms</h1>
           <p className="browse__subtitle">
-            Find local Texas farms and ranchers near you
+            Find local farms and ranchers near you
           </p>
         </div>
       </div>
@@ -91,17 +156,63 @@ const Browse = () => {
               onChange={handleSearchChange}
               className="browse__search"
             />
-            <select
-              className="browse__sort"
-              value={sort}
-              onChange={handleSortChange}
-              aria-label="Sort farms by"
-            >
-              <option value="newest">Newest</option>
-              <option value="rating">Highest rated</option>
-              <option value="name">Name (A-Z)</option>
-            </select>
+
+            {!nearMeActive ? (
+              <button
+                type="button"
+                className="browse__near-btn"
+                onClick={handleNearMeClick}
+                disabled={geoLoading}
+              >
+                {geoLoading ? 'Locating...' : '📍 Near me'}
+              </button>
+            ) : (
+              <>
+                <select
+                  className="browse__radius"
+                  value={radius}
+                  onChange={(e) => setRadius(Number(e.target.value))}
+                  aria-label="Search radius"
+                >
+                  {RADIUS_OPTIONS.map((mi) => (
+                    <option key={mi} value={mi}>Within {mi} mi</option>
+                  ))}
+                </select>
+                <button type="button" className="browse__near-clear" onClick={handleClearNearMe}>
+                  Clear
+                </button>
+              </>
+            )}
+
+            {/* Results from /farms/near already come back sorted by distance */}
+            {!nearMeActive && (
+              <select
+                className="browse__sort"
+                value={sort}
+                onChange={handleSortChange}
+                aria-label="Sort farms by"
+              >
+                <option value="newest">Newest</option>
+                <option value="rating">Highest rated</option>
+                <option value="name">Name (A-Z)</option>
+              </select>
+            )}
           </div>
+
+          {showZipFallback && (
+            <form className="browse__zip-form" onSubmit={handleZipSubmit}>
+              <p className="browse__zip-note">{geoError}</p>
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="Enter your ZIP code"
+                value={zipInput}
+                onChange={(e) => setZipInput(e.target.value)}
+                className="browse__zip-input"
+              />
+              <button type="submit" className="browse__zip-submit">Search</button>
+            </form>
+          )}
 
           {/* Category buttons toggle independently — select as many as you like */}
           <div className="browse__categories">
@@ -127,7 +238,11 @@ const Browse = () => {
         {error && <p className="browse__error">{error}</p>}
 
         {!loading && !error && farms.length === 0 && (
-          <p className="browse__empty">No farms found. Try a different search or category.</p>
+          <p className="browse__empty">
+            {nearMeActive
+              ? `No farms found within ${radius} mi. Try a larger radius.`
+              : 'No farms found. Try a different search or category.'}
+          </p>
         )}
 
         <div className="browse__grid">
