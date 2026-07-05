@@ -18,7 +18,7 @@ Password: 123456
 Stripe activation checklist:
 
 Activate Stripe account (provide business info, bank account)
-Update business name to "Cattle & Crop"
+
 Switch API keys from sk_test_ to sk_live_ in production .env
 Switch frontend key from pk_test_ to pk_live_
 
@@ -36,7 +36,13 @@ farmer profile:
 
 consumer profile:
 
-- reviews box and order box to close
 
-- should be able to leave multiple reviews on farmers previously purchased from
+Phase 2 Features to Build Next:
 
+Admin analytics dashboard
+Farmer analytics (views, orders, revenue per farmer)
+Map view of farms
+SMS notifications via Twilio
+Subscription tiers for farmers
+Farm financial dashboard
+Mobile app (React Native)
