@@ -116,8 +116,8 @@ const Home = () => {
           <span className="stats__label">Texas farms</span>
         </div>
         <div className="stats__item">
-          <span className="stats__number">1,800+</span>
-          <span className="stats__label">Happy customers</span>
+          <span className="stats__number">130M+</span>
+          <span className="stats__label">Acres of Texas farmland</span>
         </div>
         <div className="stats__item">
           <span className="stats__number">12</span>

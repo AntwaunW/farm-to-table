@@ -79,7 +79,7 @@
   // Orders section
   &__section {
     @include card;
-    margin-bottom: $spacing-lg;
+    margin-bottom: $spacing-xl;
 
     &:last-child {
       margin-bottom: 0;
