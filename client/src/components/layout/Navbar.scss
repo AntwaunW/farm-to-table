@@ -9,10 +9,18 @@
   z-index: $z-navbar;
 
   &__container {
-    @include container;
+    // Deliberately not @include container — the navbar should span the full
+    // viewport width (logo flush left, links flush right) even on wide screens,
+    // unlike the page content below it which stays capped at $wide for readability
     @include flex-between;
+    width: 100%;
     height: 60px;
+    padding: 0 $spacing-lg;
     position: relative; // anchors the mobile dropdown panel
+
+    @include respond-to(mobile) {
+      padding: 0 $spacing-md;
+    }
   }
 
   &__logo {
