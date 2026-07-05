@@ -33,7 +33,7 @@ router.post('/', protect, authorizeRoles('consumer'), async (req, res) => {
     }
 
     // Make sure this order belongs to the logged in consumer
-    if (order.consumer.toString() !== req.user.id) {
+    if (!order.consumer || order.consumer.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized to review this order' });
     }
 
@@ -146,6 +146,7 @@ router.get('/can-review/:orderId', protect, authorizeRoles('consumer'), async (r
 
     const canReview =
       order.status === 'completed' &&
+      !!order.consumer &&
       order.consumer.toString() === req.user.id &&
       !existingReview;
 

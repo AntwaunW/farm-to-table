@@ -150,10 +150,14 @@ const ConsumerDashboard = () => {
       {/* Order footer */}
       <div className="consumer-dashboard__order-footer">
         <div className="consumer-dashboard__fulfillment-info">
-          <p>
-            {order.pickupOrDelivery === 'delivery' ? '🚚 Delivery' : '📍 Pickup'}:{' '}
-            {order.pickupDate ? new Date(order.pickupDate).toLocaleDateString() : 'TBD'}
-          </p>
+          {order.pickupOrDelivery === 'in-person' ? (
+            <p>🤝 In-person purchase</p>
+          ) : (
+            <p>
+              {order.pickupOrDelivery === 'delivery' ? '🚚 Delivery' : '📍 Pickup'}:{' '}
+              {order.pickupDate ? new Date(order.pickupDate).toLocaleDateString() : 'TBD'}
+            </p>
+          )}
           {order.pickupOrDelivery === 'delivery' && order.deliveryAddress && (
             <p>{order.deliveryAddress}</p>
           )}

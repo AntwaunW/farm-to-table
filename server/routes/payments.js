@@ -5,6 +5,7 @@
 //  2. Frontend calls POST /create-intent → gets a clientSecret to render Stripe's payment UI
 //  3. Consumer completes payment in the browser
 //  4. Stripe calls POST /webhook → we update the order to 'paid' / 'confirmed'
+//     (or 'completed' directly for in-person/quick-sale orders)
 //
 // The webhook endpoint uses raw body parsing (registered before express.json in server.js)
 // so Stripe can verify the request signature
@@ -29,7 +30,7 @@ router.post('/create-intent', protect, async (req, res) => {
     }
 
     // Only the consumer who placed the order can pay for it
-    if (order.consumer.toString() !== req.user.id) {
+    if (!order.consumer || order.consumer.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized' });
     }
 
@@ -98,7 +99,7 @@ router.post('/confirm', protect, async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    if (order.consumer.toString() !== req.user.id) {
+    if (!order.consumer || order.consumer.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized' });
     }
 
@@ -115,7 +116,9 @@ router.post('/confirm', protect, async (req, res) => {
 
     if (paymentIntent.status === 'succeeded') {
       order.paymentStatus = 'paid';
-      order.status = 'confirmed';
+      // In-person sales complete immediately — the goods already changed hands on
+      // the spot, so there's no separate ready/pickup wait like a normal order
+      order.status = order.pickupOrDelivery === 'in-person' ? 'completed' : 'confirmed';
       await order.save();
     }
 
@@ -152,11 +155,15 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     const orderId = paymentIntent.metadata.orderId;
 
     try {
-      await Order.findByIdAndUpdate(orderId, {
-        paymentStatus: 'paid',
-        status: 'confirmed', // Automatically moves the order out of 'pending'
-      });
-      console.log(`Order ${orderId} payment confirmed`);
+      const order = await Order.findById(orderId);
+      if (order) {
+        order.paymentStatus = 'paid';
+        // In-person sales complete immediately instead of moving to 'confirmed' —
+        // the goods already changed hands on the spot
+        order.status = order.pickupOrDelivery === 'in-person' ? 'completed' : 'confirmed';
+        await order.save();
+        console.log(`Order ${orderId} payment confirmed`);
+      }
     } catch (error) {
       console.error('Error updating order:', error);
     }

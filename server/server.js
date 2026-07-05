@@ -35,14 +35,19 @@ app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
 
 // API Routes
+const ordersRouter = require('./routes/orders'); // Order placement and management
 app.use('/api/auth', require('./routes/auth'));         // Register, login, get current user
 app.use('/api/farms', require('./routes/farms'));       // Farm profile CRUD
 app.use('/api/listings', require('./routes/listings')); // Product listing CRUD
-app.use('/api/orders', require('./routes/orders'));     // Order placement and management
+app.use('/api/orders', ordersRouter);
 app.use('/api/payments', require('./routes/payments')); // Stripe payment flow and webhooks
 app.use('/api/upload', require('./routes/upload'));   // Image upload to Cloudinary
 app.use('/api/reviews', require('./routes/reviews')); // Farm reviews by consumers
 app.use('/api/contact', require('./routes/contact')); // Contact form submissions
+
+// Periodically cancels abandoned quick-sale (in-person) orders so their
+// reserved inventory isn't locked up forever if the customer never pays
+ordersRouter.startQuickSaleExpirySweep();
 
 // Simple health check — confirms the API server is running
 app.get('/', (req, res) => {

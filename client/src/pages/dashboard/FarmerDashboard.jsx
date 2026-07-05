@@ -311,9 +311,14 @@ const FarmerDashboard = () => {
         <div className="farmer-dashboard__section">
           <div className="farmer-dashboard__section-header">
             <h2 className="farmer-dashboard__section-title">Your listings</h2>
-            <Link to="/listings/create" className="farmer-dashboard__btn">
-              + Add listing
-            </Link>
+            <div className="farmer-dashboard__header-actions">
+              <Link to="/quick-sale/new" className="farmer-dashboard__btn farmer-dashboard__btn--outline">
+                ⚡ Quick Sale
+              </Link>
+              <Link to="/listings/create" className="farmer-dashboard__btn">
+                + Add listing
+              </Link>
+            </div>
           </div>
 
           {listings.length === 0 ? (
@@ -351,15 +356,19 @@ const FarmerDashboard = () => {
               {orders.map((order) => (
                 <div key={order._id} className="farmer-dashboard__order-item">
                   <div className="farmer-dashboard__order-info">
-                    <h4>{order.consumer?.name}</h4>
+                    <h4>{order.consumer?.name || 'Awaiting customer...'}</h4>
                     <p>{order.consumer?.email}</p>
                     <p className="farmer-dashboard__order-id">Order #{order._id}</p>
                     <p>Total: ${order.totalAmount}</p>
                     <p>Payout: ${order.farmerPayout}</p>
-                    <p>
-                      {order.pickupOrDelivery === 'delivery' ? '🚚 Delivery' : '📍 Pickup'}:{' '}
-                      {order.pickupDate ? new Date(order.pickupDate).toLocaleDateString() : 'TBD'}
-                    </p>
+                    {order.pickupOrDelivery === 'in-person' ? (
+                      <p>🤝 In-person purchase</p>
+                    ) : (
+                      <p>
+                        {order.pickupOrDelivery === 'delivery' ? '🚚 Delivery' : '📍 Pickup'}:{' '}
+                        {order.pickupDate ? new Date(order.pickupDate).toLocaleDateString() : 'TBD'}
+                      </p>
+                    )}
                     {order.pickupOrDelivery === 'delivery' && order.deliveryAddress && (
                       <p>Deliver to: {order.deliveryAddress}</p>
                     )}

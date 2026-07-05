@@ -388,5 +388,14 @@
     @include button-primary;
     font-size: $text-sm;
     padding: $spacing-xs $spacing-md;
+
+    &--outline {
+      @include button-secondary;
+    }
+  }
+
+  &__header-actions {
+    display: flex;
+    gap: $spacing-sm;
   }
 }

@@ -1,0 +1,220 @@
+// QuickSale page styles — farmer in-person / farmers-market sale
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.quick-sale {
+  min-height: calc(100vh - 60px);
+  background: $background;
+  padding: $spacing-xl 0;
+
+  &__loading,
+  &__error,
+  &__error-page {
+    @include flex-center;
+    flex-direction: column;
+    min-height: 60vh;
+    color: $text-muted;
+    font-size: $text-lg;
+    text-align: center;
+  }
+
+  &__container {
+    @include container;
+    max-width: 560px;
+  }
+
+  &__title {
+    font-size: $text-3xl;
+    color: $text-dark;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__subtitle {
+    font-size: $text-md;
+    color: $text-muted;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__empty {
+    text-align: center;
+    padding: $spacing-lg;
+    color: $text-muted;
+  }
+
+  // ── Item selection ───────────────────────────────────────────────────────
+  &__listings {
+    @include card;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+    margin-bottom: $spacing-md;
+  }
+
+  &__listing-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $spacing-md;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid $border;
+
+    &:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    h4 {
+      font-size: $text-md;
+      color: $text-dark;
+      margin-bottom: $spacing-xs;
+    }
+
+    p {
+      font-size: $text-sm;
+      color: $text-muted;
+    }
+  }
+
+  &__qty-input {
+    width: 64px;
+    padding: $spacing-xs $spacing-sm;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    font-size: $text-md;
+    text-align: center;
+    flex-shrink: 0;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+    }
+  }
+
+  &__total {
+    @include flex-between;
+    @include card;
+    font-size: $text-xl;
+    font-weight: 700;
+    color: $text-dark;
+    margin-bottom: $spacing-md;
+  }
+
+  &__error-text {
+    color: $error;
+    font-size: $text-sm;
+    margin-bottom: $spacing-md;
+  }
+
+  &__start-btn {
+    @include button-primary;
+    width: 100%;
+    padding: $spacing-md;
+    font-size: $text-md;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  // ── Active sale (QR + status) ────────────────────────────────────────────
+  &__active {
+    @include card;
+    text-align: center;
+  }
+
+  &__qr-box {
+    @include flex-center;
+    padding: $spacing-lg;
+    background: #ffffff;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    margin-bottom: $spacing-md;
+  }
+
+  &__link-label {
+    font-size: $text-sm;
+    color: $text-muted;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__link-row {
+    display: flex;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__link-input {
+    flex: 1;
+    padding: $spacing-sm $spacing-md;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    font-size: $text-sm;
+    color: $text-muted;
+    background: $background;
+    min-width: 0;
+  }
+
+  &__copy-btn {
+    @include button-base;
+    background: none;
+    color: $primary;
+    border: 1px solid $primary;
+    font-size: $text-sm;
+    padding: $spacing-xs $spacing-md;
+    white-space: nowrap;
+
+    &:hover {
+      background: #e8f5e0;
+    }
+  }
+
+  &__status {
+    padding: $spacing-md;
+    border-radius: $radius-md;
+    margin-bottom: $spacing-lg;
+    font-size: $text-md;
+    font-weight: 500;
+
+    &--waiting {
+      background: #fff8e8;
+      color: $warning;
+    }
+
+    &--paid {
+      background: #e8f5e0;
+      color: $primary;
+    }
+
+    &--cancelled {
+      background: #fde8e8;
+      color: $error;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
+  &__cancel-btn {
+    @include button-base;
+    flex: 1;
+    background: none;
+    color: $error;
+    border: 1px solid $error;
+    font-size: $text-sm;
+    padding: $spacing-sm $spacing-md;
+
+    &:hover {
+      background: #fde8e8;
+    }
+  }
+
+  &__new-btn {
+    @include button-primary;
+    flex: 1;
+    font-size: $text-sm;
+    padding: $spacing-sm $spacing-md;
+  }
+}

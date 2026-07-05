@@ -26,6 +26,8 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import ListingDetail from './pages/listings/ListingDetail';
 import MyListings from './pages/listings/MyListings';
+import QuickSale from './pages/dashboard/QuickSale';
+import QuickSaleClaim from './pages/orders/QuickSaleClaim';
 
 // Farmers get their dashboard here; consumers are sent to /orders,
 // which is their equivalent "My orders" page
@@ -53,6 +55,10 @@ function App() {
           <Route path="/trademark" element={<Trademark />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          {/* Public so a logged-out customer scanning a Quick Sale QR code sees a
+              tailored "log in" message instead of losing the order id through the
+              generic /login redirect (see QuickSaleClaim.jsx for why) */}
+          <Route path="/quick-sale/:id" element={<QuickSaleClaim />} />
 
           {/* Protected route - must be logged in */}
           <Route element={<ProtectedRoute />}>
@@ -64,6 +70,7 @@ function App() {
             <Route path="/listings" element={<MyListings />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/orders" element={<ConsumerDashboard />} />
+            <Route path="/quick-sale/new" element={<QuickSale />} />
           </Route>
         </Routes>
       </Layout>

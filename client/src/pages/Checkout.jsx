@@ -218,7 +218,13 @@ const Checkout = () => {
           {/* Pickup details */}
           <div className="checkout__pickup">
             <h3 className="checkout__pickup-title">Pickup details</h3>
-            <p>{order?.pickupOrDelivery === 'pickup' ? '📍 Pickup' : '🚚 Delivery'}</p>
+            <p>
+              {order?.pickupOrDelivery === 'in-person'
+                ? '🤝 In-person purchase'
+                : order?.pickupOrDelivery === 'pickup'
+                ? '📍 Pickup'
+                : '🚚 Delivery'}
+            </p>
             {order?.pickupDate && (
               <p>{new Date(order.pickupDate).toLocaleDateString()}</p>
             )}

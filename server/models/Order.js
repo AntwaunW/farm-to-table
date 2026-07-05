@@ -3,7 +3,9 @@
 // Fee structure: platform takes 4% of the item subtotal, farmer receives the remaining 96%
 //                plus the full delivery fee on delivery orders (pickup orders have none)
 // Payment flow: order is created (unpaid) → Stripe payment intent created →
-//               Stripe webhook fires on success → paymentStatus set to 'paid', status to 'confirmed'
+//               Stripe webhook fires on success → paymentStatus set to 'paid', status to
+//               'confirmed' (or straight to 'completed' for in-person orders — handoff already
+//               happened on the spot, so there's no separate ready/pickup wait)
 //
 // Item data (title, price, unit) is snapshotted at order time so the order
 // remains accurate even if the farmer later edits or deletes the listing
@@ -11,11 +13,12 @@
 const mongoose = require('mongoose');
 
 const OrderSchema = new mongoose.Schema({
-  // The consumer who placed the order
+  // The consumer who placed the order. Not required at the schema level because
+  // a "quick sale" (in-person) order is created by the farmer before any consumer
+  // is attached — it stays unset until a consumer scans the link and claims it.
   consumer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
   },
   // The farm this order was placed with
   farm: {
@@ -75,9 +78,11 @@ const OrderSchema = new mongoose.Schema({
   stripePaymentIntentId: {
     type: String,
   },
+  // 'in-person' is a "quick sale" — farmer and consumer are physically together
+  // (e.g. a farmers market), so there's no pickup date/address to collect
   pickupOrDelivery: {
     type: String,
-    enum: ['pickup', 'delivery'],
+    enum: ['pickup', 'delivery', 'in-person'],
     default: 'pickup',
   },
   // When the consumer wants to pick up or expects delivery
