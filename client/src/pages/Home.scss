@@ -114,12 +114,34 @@
 
 // Hero
 .hero {
-  background: $primary-dark;
+  // Subtle diagonal light-green stripes over the solid dark green base —
+  // the stripe layer is listed first so it paints on top of $primary-dark
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(#e8f5e0, 0.08) 0,
+      rgba(#e8f5e0, 0.08) 12px,
+      transparent 12px,
+      transparent 24px
+    ),
+    $primary-dark;
   padding: $spacing-xl 0;
   text-align: center;
 
   &__container {
-    @include container;
+    // A plain-color box the same shade as the base background — it blends in
+    // seamlessly, but blocks the striped layer behind it from showing through
+    // the text, so the stripes only appear in the open space around the content
+    max-width: 700px;
+    margin: 0 auto;
+    padding: $spacing-lg $spacing-xl;
+    background: $primary-dark;
+    border-radius: $radius-lg;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+
+    @include respond-to(mobile) {
+      padding: $spacing-lg $spacing-md;
+    }
   }
 
   &__tag {
