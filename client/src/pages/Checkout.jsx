@@ -19,7 +19,7 @@ const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 // Stripe requires the payment form to live inside the <Elements> provider
 // So we separate it into its own component
 
-const PaymentForm = ({ order, onSuccess }) => {
+const PaymentForm = ({ order, onSuccess, orderId }) => {
   // useStripe and useElements are Stripe hooks that give us access
   // to the Stripe instance and the payment form elements
   const stripe = useStripe();
@@ -43,8 +43,11 @@ const PaymentForm = ({ order, onSuccess }) => {
       // We never see the card number — Stripe handles it entirely
       const { error } = await stripe.confirmPayment({
         elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/orders/${orderId}/confirmation`,
+        },
         redirect: 'if_required',
-      });
+    });
 
       if (error) {
         // Stripe returns user-friendly error messages
@@ -262,6 +265,7 @@ const Checkout = () => {
               <PaymentForm
                 order={order}
                 onSuccess={handlePaymentSuccess}
+                orderId={orderId}
               />
             </Elements>
           )}
