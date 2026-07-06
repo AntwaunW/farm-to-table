@@ -3,7 +3,7 @@
 // Sends farm data to POST /api/farms on the backend
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../utils/api';
 import ImageUpload from '../../components/common/ImageUpload';
@@ -19,6 +19,11 @@ const CreateFarm = () => {
   // -------------------------------------------------------------------
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Farmers who just registered already gave us their farm name — carried
+  // here via navigation state so they don't have to type it twice
+  const prefillFarmName = location.state?.farmName || '';
 
   // -------------------------------------------------------------------
   // 🎓 WHAT IS formData?
@@ -28,7 +33,7 @@ const CreateFarm = () => {
   // filled-out form to the backend.
   // -------------------------------------------------------------------
   const [formData, setFormData] = useState({
-    farmName: '',
+    farmName: prefillFarmName,
     description: '',
     location: {
       street: '',

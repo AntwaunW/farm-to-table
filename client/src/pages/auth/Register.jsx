@@ -15,6 +15,7 @@ const Register = () => {
     password: '',
     confirmPassword: '',
     role: 'consumer', // Default role — user can switch to 'farmer' via the dropdown
+    farmName: '', // Only used when role is 'farmer' — carried into the farm setup step
     location: {
       city: '',
       state: '',
@@ -53,13 +54,22 @@ const Register = () => {
     setLoading(true);
 
     try {
-      // Strip confirmPassword before sending — the backend doesn't expect it
-      const { confirmPassword, ...submitData } = formData;
+      // Strip confirmPassword and farmName before sending — the account itself
+      // doesn't have a farmName field, it's only collected here to carry into
+      // the farm setup step below
+      const { confirmPassword, farmName, ...submitData } = formData;
       const res = await api.post('/auth/register', submitData);
 
       // Log the user in immediately after successful registration
       login(res.data.user, res.data.token);
-      navigate('/');
+
+      // Farmers go straight into finishing their farm profile, with the name
+      // they already gave us pre-filled — everyone else just lands on home
+      if (formData.role === 'farmer') {
+        navigate('/farms/create', { state: { farmName } });
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       // Display the server's error message or a generic fallback
       setError(err.response?.data?.message || 'Something went wrong');
@@ -119,6 +129,22 @@ const Register = () => {
               <option value="farmer">Farmer — I want to sell</option>
             </select>
           </div>
+
+          {/* Only farmers need this — carried into the farm setup step after signup */}
+          {formData.role === 'farmer' && (
+            <div className="auth__field">
+              <label className="auth__label">Farm name</label>
+              <input
+                className="auth__input"
+                type="text"
+                name="farmName"
+                placeholder="e.g. Lone Star Ranch"
+                value={formData.farmName}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          )}
 
           <div className="auth__field">
             <label className="auth__label">City</label>
