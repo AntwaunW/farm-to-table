@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://cattle-and-crop-api.onrender.com/sitemap.xml"
+    }
+  ]
+}

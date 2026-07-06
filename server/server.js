@@ -7,6 +7,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
+const generateSitemap = require('./utils/sitemap');
 
 // Always load .env from the server/ directory, regardless of where the process is started from
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -52,6 +53,20 @@ ordersRouter.startQuickSaleExpirySweep();
 // Simple health check — confirms the API server is running
 app.get('/', (req, res) => {
   res.send('Cattle & Crop API running');
+});
+
+// Served at the root path (not under /api) since that's the sitemap
+// convention — production routing proxies cattleandcrop.com/sitemap.xml
+// here via a Vercel rewrite (see client/vercel.json)
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const xml = await generateSitemap();
+    res.header('Content-Type', 'application/xml');
+    res.send(xml);
+  } catch (error) {
+    console.error('Sitemap generation failed:', error);
+    res.status(500).send('Failed to generate sitemap');
+  }
 });
 
 const PORT = process.env.PORT || 5000;
