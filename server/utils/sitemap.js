@@ -9,7 +9,11 @@
 const Farm = require('../models/Farm');
 const Listing = require('../models/Listing');
 
-const CLIENT_URL = process.env.CLIENT_URL || 'http://cattleandcrop.com';
+// A sitemap describes the public, external-facing site, so this is always
+// the real production domain — never derived from CLIENT_URL, which is
+// meant to vary per environment (e.g. localhost in local dev) and would
+// otherwise leak a non-public URL into search engines
+const CLIENT_URL = 'https://cattleandcrop.com';
 
 const STATIC_PAGES = [
   { path: '/', changefreq: 'daily', priority: '1.0' },
