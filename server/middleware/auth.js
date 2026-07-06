@@ -36,6 +36,12 @@ const protect = async (req, res, next) => {
         return res.status(401).json({ message: 'Not authorized, user no longer exists' });
       }
 
+      // Account was soft-deleted — invalidate any still-unexpired token
+      // immediately instead of waiting for it to expire on its own
+      if (!req.user.isActive) {
+        return res.status(401).json({ message: 'This account no longer exists' });
+      }
+
       next();
     } catch (error) {
       // Token is expired, tampered, or otherwise invalid

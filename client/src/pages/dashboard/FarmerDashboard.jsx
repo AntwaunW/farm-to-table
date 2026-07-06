@@ -8,6 +8,7 @@ import api from '../../utils/api';
 import AvatarUpload from '../../components/common/AvatarUpload';
 import FarmGallery from '../../components/common/FarmGallery';
 import ReviewCard from '../../components/common/ReviewCard';
+import DeleteAccountSection from '../../components/common/DeleteAccountSection';
 import './FarmerDashboard.scss';
 
 const FarmerDashboard = () => {
@@ -439,6 +440,8 @@ const FarmerDashboard = () => {
             )}
           </div>
         )}
+
+        <DeleteAccountSection />
 
       </div>
     </div>

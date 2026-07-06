@@ -5,6 +5,7 @@ import ReviewForm from '../../components/common/ReviewForm';
 import ReviewCard from '../../components/common/ReviewCard';
 import AvatarUpload from '../../components/common/AvatarUpload';
 import OrderProgress from '../../components/common/OrderProgress';
+import DeleteAccountSection from '../../components/common/DeleteAccountSection';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import api from '../../utils/api';
@@ -311,6 +312,8 @@ const ConsumerDashboard = () => {
             </div>
           )}
         </div>
+
+        <DeleteAccountSection />
 
       </div>
     </div>

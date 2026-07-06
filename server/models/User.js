@@ -40,6 +40,14 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  // Soft-delete flag — set false when the user deletes their account.
+  // The document itself stays (not hard-deleted) so existing orders/reviews
+  // that reference this user keep working; see deletion route in auth.js
+  // for the full anonymization that happens alongside this flag flipping.
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

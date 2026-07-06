@@ -1,0 +1,98 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.delete-account {
+  @include card;
+  border: 1px solid #fde8e8;
+  margin-top: $spacing-xl;
+
+  &__title {
+    font-size: $text-lg;
+    color: $error;
+    margin-bottom: $spacing-md;
+  }
+
+  &__toggle {
+    @include button-base;
+    background: none;
+    color: $error;
+    border: 1px solid $error;
+    font-size: $text-sm;
+    padding: $spacing-sm $spacing-lg;
+
+    &:hover {
+      background: #fde8e8;
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__warning {
+    font-size: $text-sm;
+    color: $text-muted;
+    line-height: 1.6;
+    background: #fde8e8;
+    padding: $spacing-md;
+    border-radius: $radius-md;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    max-width: 320px;
+  }
+
+  &__label {
+    font-size: $text-sm;
+    font-weight: 500;
+    color: $text-dark;
+  }
+
+  &__error {
+    color: $error;
+    font-size: $text-sm;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
+  &__cancel-btn {
+    font-size: $text-sm;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $radius-md;
+    border: 1px solid $border;
+    background: transparent;
+    color: $text-muted;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover {
+      border-color: $text-muted;
+      color: $text-dark;
+    }
+  }
+
+  &__confirm-btn {
+    @include button-base;
+    background: $error;
+    color: #ffffff;
+    font-size: $text-sm;
+    padding: $spacing-sm $spacing-lg;
+
+    &:hover {
+      background: #c0392b;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
