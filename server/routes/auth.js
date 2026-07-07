@@ -10,6 +10,7 @@ const User = require('../models/User');
 const Farm = require('../models/Farm');
 const Listing = require('../models/Listing');
 const Order = require('../models/Order');
+const Testimonial = require('../models/Testimonial');
 const { protect } = require('../middleware/auth');
 const { sendWelcomeEmail } = require('../utils/email');
 
@@ -194,6 +195,7 @@ router.delete('/me', protect, async (req, res) => {
     if (farm) {
       await Farm.findByIdAndUpdate(farm._id, { isActive: false });
       await Listing.updateMany({ farm: farm._id }, { isAvailable: false });
+      await Testimonial.deleteOne({ farmer: user._id });
     }
 
     user.name = 'Deleted user';

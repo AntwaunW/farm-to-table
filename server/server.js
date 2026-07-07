@@ -44,6 +44,7 @@ app.use('/api/orders', ordersRouter);
 app.use('/api/payments', require('./routes/payments')); // Stripe payment flow and webhooks
 app.use('/api/upload', require('./routes/upload'));   // Image upload to Cloudinary
 app.use('/api/reviews', require('./routes/reviews')); // Farm reviews by consumers
+app.use('/api/testimonials', require('./routes/testimonials')); // Farmer testimonials for the home page carousel
 app.use('/api/contact', require('./routes/contact')); // Contact form submissions
 
 // Periodically cancels abandoned quick-sale (in-person) orders so their

@@ -1,0 +1,61 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+.testimonial-section {
+  @include card;
+  margin-top: $spacing-xl;
+
+  &__title {
+    font-size: $text-lg;
+    color: $text-dark;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__subtitle {
+    font-size: $text-sm;
+    color: $text-muted;
+    margin-bottom: $spacing-md;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    max-width: 480px;
+  }
+
+  &__textarea {
+    @include input-base;
+    resize: vertical;
+    margin-bottom: 0;
+  }
+
+  &__count {
+    font-size: $text-xs;
+    color: $text-muted;
+    text-align: right;
+    margin: -#{$spacing-xs} 0 0;
+  }
+
+  &__error {
+    color: $error;
+    font-size: $text-sm;
+  }
+
+  &__success {
+    color: $primary;
+    font-size: $text-sm;
+  }
+
+  &__submit {
+    @include button-primary;
+    align-self: flex-start;
+    font-size: $text-sm;
+    padding: $spacing-sm $spacing-lg;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}

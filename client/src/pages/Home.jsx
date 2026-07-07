@@ -9,6 +9,7 @@ import api from '../utils/api';
 import './Home.scss';
 import FarmCard from '../components/common/FarmCard';
 import ListingCard from '../components/common/ListingCard';
+import TestimonialCarousel from '../components/common/TestimonialCarousel';
 
 const Home = () => {
   const { user } = useAuth();
@@ -175,6 +176,8 @@ const Home = () => {
           </div>
         </section>
       )}
+
+      <TestimonialCarousel />
 
     </div>
   );
