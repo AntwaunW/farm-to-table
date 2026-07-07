@@ -126,7 +126,10 @@ const ListingDetail = () => {
 
         {/* Right column — all listing details */}
         <div className="listing-detail__info">
-          <h1 className="listing-detail__title">{listing.title}</h1>
+          <h1 className="listing-detail__title">
+            {listing.title}
+            {farm?.isSeed && <span className="listing-detail__demo-badge">Demo</span>}
+          </h1>
 
           {/* Farm name links back to the farm profile page */}
           {farm && (
@@ -172,46 +175,55 @@ const ListingDetail = () => {
             <p className="listing-detail__description">{listing.description}</p>
           )}
 
-          {/* Add to cart — only shown to logged-in consumers, and only when in stock */}
-          {user && user.role === 'consumer' && listing.isAvailable && listing.quantityAvailable > 0 && (
-            <div className="listing-detail__add-row">
-              <label className="listing-detail__qty-label">
-                Qty
-                <input
-                  type="number"
-                  className="listing-detail__qty-input"
-                  min={1}
-                  max={listing.quantityAvailable}
-                  value={quantity}
-                  onChange={(e) => {
-                    // Clamp between 1 and however many units the farmer has in stock
-                    const value = Math.max(1, Math.min(listing.quantityAvailable, Number(e.target.value) || 1));
-                    setQuantity(value);
-                  }}
-                />
-              </label>
-              <button
-                className="listing-detail__add-btn"
-                onClick={handleAddToCart}
-              >
-                + Add to cart
-              </button>
-            </div>
-          )}
-
-          {/* Prompt non-logged-in visitors to register */}
-          {!user && (
-            <p className="listing-detail__login-prompt">
-              <Link to="/register">Create an account</Link> or{' '}
-              <Link to="/login">log in</Link> to order from this farm.
+          {/* Demo listings are for illustration only — never allow a real purchase */}
+          {farm?.isSeed ? (
+            <p className="listing-detail__demo-notice">
+              This is a demo listing for illustration purposes and isn't available for purchase.
             </p>
-          )}
+          ) : (
+            <>
+              {/* Add to cart — only shown to logged-in consumers, and only when in stock */}
+              {user && user.role === 'consumer' && listing.isAvailable && listing.quantityAvailable > 0 && (
+                <div className="listing-detail__add-row">
+                  <label className="listing-detail__qty-label">
+                    Qty
+                    <input
+                      type="number"
+                      className="listing-detail__qty-input"
+                      min={1}
+                      max={listing.quantityAvailable}
+                      value={quantity}
+                      onChange={(e) => {
+                        // Clamp between 1 and however many units the farmer has in stock
+                        const value = Math.max(1, Math.min(listing.quantityAvailable, Number(e.target.value) || 1));
+                        setQuantity(value);
+                      }}
+                    />
+                  </label>
+                  <button
+                    className="listing-detail__add-btn"
+                    onClick={handleAddToCart}
+                  >
+                    + Add to cart
+                  </button>
+                </div>
+              )}
 
-          {/* Unavailable notice — either the farmer disabled it or stock has run out */}
-          {(!listing.isAvailable || listing.quantityAvailable === 0) && (
-            <p className="listing-detail__unavailable">
-              This listing is currently unavailable.
-            </p>
+              {/* Prompt non-logged-in visitors to register */}
+              {!user && (
+                <p className="listing-detail__login-prompt">
+                  <Link to="/register">Create an account</Link> or{' '}
+                  <Link to="/login">log in</Link> to order from this farm.
+                </p>
+              )}
+
+              {/* Unavailable notice — either the farmer disabled it or stock has run out */}
+              {(!listing.isAvailable || listing.quantityAvailable === 0) && (
+                <p className="listing-detail__unavailable">
+                  This listing is currently unavailable.
+                </p>
+              )}
+            </>
           )}
         </div>
 

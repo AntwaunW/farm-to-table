@@ -95,6 +95,28 @@
     margin-bottom: $spacing-xs;
   }
 
+  // Marks sample listings created by seed.js so shoppers know it's not real
+  &__demo-badge {
+    display: inline-block;
+    margin-left: $spacing-xs;
+    font-size: $text-xs;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #fff;
+    background: $warning;
+    padding: 2px $spacing-sm;
+    border-radius: $radius-full;
+    vertical-align: middle;
+  }
+
+  &__demo-notice {
+    font-size: $text-xs;
+    color: $text-muted;
+    font-style: italic;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
   &__price {
     font-size: $text-lg;
     font-weight: 600;

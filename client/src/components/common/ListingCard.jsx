@@ -72,7 +72,10 @@ const ListingCard = ({ listing, farm }) => {
           {getCategoryIcon(listing.category)}
         </div>
         <div className="listing-card__info">
-          <h4 className="listing-card__title">{listing.title}</h4>
+          <h4 className="listing-card__title">
+            {listing.title}
+            {effectiveFarm?.isSeed && <span className="listing-card__demo-badge">Demo</span>}
+          </h4>
           <p className="listing-card__farm">{listing.farm?.farmName}</p>
           <p className="listing-card__price">
             ${listing.pricePerUnit}
@@ -87,29 +90,34 @@ const ListingCard = ({ listing, farm }) => {
         </div>
       </Link>
 
-      {/* Only show the quantity selector + Add to cart for logged-in consumers, and only when in stock */}
-      {user && user.role === 'consumer' && effectiveFarm && listing.isAvailable && listing.quantityAvailable > 0 && (
-        <div className="listing-card__add-row">
-          <input
-            type="number"
-            className="listing-card__qty-input"
-            min={1}
-            max={listing.quantityAvailable}
-            value={quantity}
-            onChange={(e) => {
-              // Clamp between 1 and however many units the farmer has in stock
-              const value = Math.max(1, Math.min(listing.quantityAvailable, Number(e.target.value) || 1));
-              setQuantity(value);
-            }}
-            aria-label={`Quantity of ${listing.title}`}
-          />
-          <button
-            className="listing-card__add-btn"
-            onClick={handleAddToCart}
-          >
-            + Add to cart
-          </button>
-        </div>
+      {/* Demo listings are for illustration only — never allow a real purchase */}
+      {effectiveFarm?.isSeed ? (
+        <p className="listing-card__demo-notice">Demo listing — not available for purchase</p>
+      ) : (
+        /* Only show the quantity selector + Add to cart for logged-in consumers, and only when in stock */
+        user && user.role === 'consumer' && effectiveFarm && listing.isAvailable && listing.quantityAvailable > 0 && (
+          <div className="listing-card__add-row">
+            <input
+              type="number"
+              className="listing-card__qty-input"
+              min={1}
+              max={listing.quantityAvailable}
+              value={quantity}
+              onChange={(e) => {
+                // Clamp between 1 and however many units the farmer has in stock
+                const value = Math.max(1, Math.min(listing.quantityAvailable, Number(e.target.value) || 1));
+                setQuantity(value);
+              }}
+              aria-label={`Quantity of ${listing.title}`}
+            />
+            <button
+              className="listing-card__add-btn"
+              onClick={handleAddToCart}
+            >
+              + Add to cart
+            </button>
+          </div>
+        )
       )}
 
       {showConfirm && (

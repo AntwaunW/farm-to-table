@@ -59,6 +59,12 @@ const ListingSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  // True for demo/sample listings created by seed.js — used to show farmers what
+  // the app looks like populated, while blocking real purchases against them
+  isSeed: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

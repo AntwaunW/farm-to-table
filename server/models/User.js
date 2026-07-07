@@ -48,6 +48,12 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  // True only for the dedicated placeholder account seed.js creates to own
+  // demo farms/listings — lets seed.js --remove find and delete it unambiguously
+  isSeed: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

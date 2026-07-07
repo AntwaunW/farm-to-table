@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
     }
 
     const listings = await Listing.find(query)
-      .populate('farm', 'farmName location rating') // Attach farm details consumers care about
+      .populate('farm', 'farmName location rating isSeed') // Attach farm details consumers care about
       .populate('owner', 'name')
       .sort({ createdAt: -1 }); // Newest listings first
 
@@ -81,7 +81,7 @@ router.get('/farm/:farmId', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id)
-      .populate('farm', 'farmName location rating photos description')
+      .populate('farm', 'farmName location rating photos description isSeed')
       .populate('owner', 'name email');
 
     if (!listing) {

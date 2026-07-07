@@ -125,6 +125,12 @@ router.post('/', protect, authorizeRoles('consumer'), async (req, res) => {
       return res.status(404).json({ message: 'Farm not found' });
     }
 
+    // Seed/demo farms are shown to illustrate the app to farmers — never
+    // allow a real order (and therefore a real Stripe charge) against one
+    if (farm.isSeed) {
+      return res.status(403).json({ message: 'This is demo data for illustration purposes and cannot be purchased.' });
+    }
+
     let itemsTotal = 0;
     const orderItems = [];
     const decremented = [];
@@ -389,6 +395,12 @@ router.post('/quick-sale', protect, authorizeRoles('farmer'), async (req, res) =
     const farm = await Farm.findOne({ owner: req.user.id });
     if (!farm) {
       return res.status(404).json({ message: 'You must create a farm profile before making a sale' });
+    }
+
+    // Same demo-data guard as the normal order route — the seed farmer account
+    // should never be able to run a real in-person sale against a walk-up customer
+    if (farm.isSeed) {
+      return res.status(403).json({ message: 'This is demo data for illustration purposes and cannot be purchased.' });
     }
 
     let itemsTotal = 0;

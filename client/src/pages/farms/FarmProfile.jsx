@@ -138,7 +138,10 @@ const FarmProfile = () => {
 
           {/* Farm info */}
           <div className="farm-profile__info">
-            <h1 className="farm-profile__name">{farm.farmName}</h1>
+            <h1 className="farm-profile__name">
+              {farm.farmName}
+              {farm.isSeed && <span className="farm-profile__demo-badge">Demo</span>}
+            </h1>
             <p className="farm-profile__location">
               📍 {farm.location.city}, {farm.location.state} {farm.location.zip}
             </p>
