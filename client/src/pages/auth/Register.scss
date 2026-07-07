@@ -1,0 +1,70 @@
+// Register page — extends the shared .auth classes defined in Login.scss
+// with styles for the two-step role-select flow
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
+// Step 1 — big role-selector cards
+.auth__roles {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.auth__role-card {
+  @include flex-center;
+  flex-direction: column;
+  gap: $spacing-xs;
+  width: 100%;
+  padding: $spacing-lg;
+  background: $surface;
+  border: 2px solid $border;
+  border-radius: $radius-lg;
+  cursor: pointer;
+  font-family: $font-main;
+  text-align: center;
+  transition: $transition;
+
+  &:hover {
+    border-color: $primary;
+    box-shadow: $shadow-sm;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary;
+    outline-offset: 2px;
+  }
+}
+
+.auth__role-icon {
+  font-size: $text-3xl;
+  line-height: 1;
+}
+
+.auth__role-title {
+  font-size: $text-lg;
+  font-weight: 600;
+  color: $text-dark;
+}
+
+.auth__role-subtitle {
+  font-size: $text-sm;
+  color: $text-muted;
+}
+
+// Step 2 — back-to-role-selection button, styled as a plain text link
+.auth__back {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-bottom: $spacing-xs;
+  font-family: $font-main;
+  font-size: $text-sm;
+  font-weight: 500;
+  color: $text-muted;
+  cursor: pointer;
+
+  &:hover {
+    color: $primary;
+  }
+}

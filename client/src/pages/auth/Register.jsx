@@ -1,5 +1,6 @@
-// Register page — creates a new user account (farmer or consumer)
-// On success, calls AuthContext's login() to log them in immediately and redirects home
+// Register page — two-step signup: pick a role (buyer/farmer), then fill in
+// account details. On success, calls AuthContext's login() to log them in
+// immediately and redirects home (or into farm setup for farmers).
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -9,36 +10,33 @@ import PasswordInput from '../../components/common/PasswordInput';
 import './Register.scss';
 
 const Register = () => {
+  // 1 = choosing a role, 2 = filling in account details
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'consumer', // Default role — user can switch to 'farmer' via the dropdown
+    role: '', // Empty until a role card is clicked on step 1
     farmName: '', // Only used when role is 'farmer' — carried into the farm setup step
-    location: {
-      city: '',
-      state: '',
-      zip: '',
-    },
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Handles both top-level fields and nested location fields
-  // City, state, and zip are nested under formData.location
+  // Picking a role on step 1 sets it and immediately advances to step 2
+  const selectRole = (role) => {
+    setFormData({ ...formData, role });
+    setStep(2);
+  };
+
+  // Returning to step 1 keeps everything already typed — only the visible step changes
+  const goBack = () => setStep(1);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (['city', 'state', 'zip'].includes(name)) {
-      setFormData({
-        ...formData,
-        location: { ...formData.location, [name]: value }
-      });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -89,138 +87,115 @@ const Register = () => {
         {/* Show server-side or validation errors above the form */}
         {error && <div className="auth__error">{error}</div>}
 
-        <form className="auth__form" onSubmit={handleSubmit}>
-          <div className="auth__field">
-            <label className="auth__label">Full name</label>
-            <input
-              className="auth__input"
-              type="text"
-              name="name"
-              placeholder="John Smith"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="auth__field">
-            <label className="auth__label">Email address</label>
-            <input
-              className="auth__input"
-              type="email"
-              name="email"
-              placeholder="you@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          {/* Role selection — determines what the user can do in the app */}
-          <div className="auth__field">
-            <label className="auth__label">I am a</label>
-            <select
-              className="auth__input"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
+        {/* ===== STEP 1: ROLE ===== */}
+        {step === 1 && (
+          <div className="auth__roles">
+            <button
+              type="button"
+              className="auth__role-card"
+              onClick={() => selectRole('consumer')}
             >
-              <option value="consumer">Consumer — I want to buy</option>
-              <option value="farmer">Farmer — I want to sell</option>
-            </select>
-          </div>
+              <span className="auth__role-icon" aria-hidden="true">🛒</span>
+              <span className="auth__role-title">I want to buy</span>
+              <span className="auth__role-subtitle">from local farms</span>
+            </button>
 
-          {/* Only farmers need this — carried into the farm setup step after signup */}
-          {formData.role === 'farmer' && (
+            <button
+              type="button"
+              className="auth__role-card"
+              onClick={() => selectRole('farmer')}
+            >
+              <span className="auth__role-icon" aria-hidden="true">🌾</span>
+              <span className="auth__role-title">I want to sell</span>
+              <span className="auth__role-subtitle">I'm a farmer</span>
+            </button>
+          </div>
+        )}
+
+        {/* ===== STEP 2: DETAILS ===== */}
+        {step === 2 && (
+          <form className="auth__form" onSubmit={handleSubmit}>
+            {/* Lets the user change their mind about role without retyping anything */}
+            <button type="button" className="auth__back" onClick={goBack}>
+              ← Back
+            </button>
+
             <div className="auth__field">
-              <label className="auth__label">Farm name</label>
+              <label className="auth__label">Full name</label>
               <input
                 className="auth__input"
                 type="text"
-                name="farmName"
-                placeholder="e.g. Lone Star Ranch"
-                value={formData.farmName}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          )}
-
-          <div className="auth__field">
-            <label className="auth__label">City</label>
-            <input
-              className="auth__input"
-              type="text"
-              name="city"
-              placeholder="Austin"
-              value={formData.location.city}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          {/* State and zip are side by side using the auth__row layout */}
-          <div className="auth__row">
-            <div className="auth__field">
-              <label className="auth__label">State</label>
-              <input
-                className="auth__input"
-                type="text"
-                name="state"
-                placeholder="TX"
-                value={formData.location.state}
+                name="name"
+                placeholder="John Smith"
+                value={formData.name}
                 onChange={handleChange}
                 required
               />
             </div>
 
             <div className="auth__field">
-              <label className="auth__label">Zip code</label>
+              <label className="auth__label">Email address</label>
               <input
                 className="auth__input"
-                type="text"
-                name="zip"
-                placeholder="78701"
-                value={formData.location.zip}
+                type="email"
+                name="email"
+                placeholder="you@example.com"
+                value={formData.email}
                 onChange={handleChange}
                 required
               />
             </div>
-          </div>
 
-          <div className="auth__field">
-            <label className="auth__label">Password</label>
-            <PasswordInput
-              className="auth__input"
-              name="password"
-              placeholder="At least 6 characters"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
+            {/* Only farmers need this — carried into the farm setup step after signup */}
+            {formData.role === 'farmer' && (
+              <div className="auth__field">
+                <label className="auth__label">Farm name</label>
+                <input
+                  className="auth__input"
+                  type="text"
+                  name="farmName"
+                  placeholder="e.g. Lone Star Ranch"
+                  value={formData.farmName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            )}
 
-          <div className="auth__field">
-            <label className="auth__label">Confirm password</label>
-            <PasswordInput
-              className="auth__input"
-              name="confirmPassword"
-              placeholder="Re-enter your password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-            />
-          </div>
+            <div className="auth__field">
+              <label className="auth__label">Password</label>
+              <PasswordInput
+                className="auth__input"
+                name="password"
+                placeholder="At least 6 characters"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-          {/* Disable the button while the request is in flight to prevent duplicate submissions */}
-          <button
-            className="auth__btn"
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? 'Creating account...' : 'Create account'}
-          </button>
-        </form>
+            <div className="auth__field">
+              <label className="auth__label">Confirm password</label>
+              <PasswordInput
+                className="auth__input"
+                name="confirmPassword"
+                placeholder="Re-enter your password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            {/* Disable the button while the request is in flight to prevent duplicate submissions */}
+            <button
+              className="auth__btn"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? 'Creating account...' : 'Create account'}
+            </button>
+          </form>
+        )}
 
         <p className="auth__switch">
           Already have an account?{' '}
