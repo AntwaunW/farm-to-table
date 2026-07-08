@@ -36,6 +36,27 @@
     color: rgba(255, 255, 255, 0.6);
   }
 
+  &__social {
+    display: flex;
+    gap: $spacing-sm;
+    margin-top: $spacing-md;
+  }
+
+  &__social-link {
+    display: flex;
+    color: rgba(255, 255, 255, 0.6);
+    transition: $transition;
+
+    &:hover {
+      color: #ffffff;
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
   &__links {
     display: flex;
     gap: $spacing-xl;
