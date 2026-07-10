@@ -22,7 +22,7 @@ const FarmCard = ({ farm }) => {
       <div className="farm-card__info">
         <h3 className="farm-card__name">
           {farm.farmName}
-          {farm.isSeed && <span className="farm-card__demo-badge">Demo</span>}
+          {farm.isSeed && <span className="farm-card__sample-badge">Sample</span>}
         </h3>
 
         <p className="farm-card__location">

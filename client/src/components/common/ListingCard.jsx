@@ -74,7 +74,7 @@ const ListingCard = ({ listing, farm }) => {
         <div className="listing-card__info">
           <h4 className="listing-card__title">
             {listing.title}
-            {effectiveFarm?.isSeed && <span className="listing-card__demo-badge">Demo</span>}
+            {effectiveFarm?.isSeed && <span className="listing-card__sample-badge">Sample listing</span>}
           </h4>
           <p className="listing-card__farm">{listing.farm?.farmName}</p>
           <p className="listing-card__price">
@@ -90,9 +90,9 @@ const ListingCard = ({ listing, farm }) => {
         </div>
       </Link>
 
-      {/* Demo listings are for illustration only — never allow a real purchase */}
+      {/* Sample listings are for illustration only — never allow a real purchase */}
       {effectiveFarm?.isSeed ? (
-        <p className="listing-card__demo-notice">Demo listing — not available for purchase</p>
+        <p className="listing-card__sample-notice">Sample listing — not available for purchase</p>
       ) : (
         /* Only show the quantity selector + Add to cart for logged-in consumers, and only when in stock */
         user && user.role === 'consumer' && effectiveFarm && listing.isAvailable && listing.quantityAvailable > 0 && (

@@ -44,15 +44,15 @@
   }
 
   // Marks sample farms created by seed.js so visitors know it's not a real farm
-  &__demo-badge {
+  &__sample-badge {
     display: inline-block;
     margin-left: $spacing-xs;
     font-size: $text-xs;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: #fff;
-    background: $warning;
-    padding: 2px $spacing-sm;
+    font-weight: 500;
+    color: $text-muted;
+    background: rgba($text-muted, 0.1);
+    border: 1px solid $border;
+    padding: 1px $spacing-sm;
     border-radius: $radius-full;
     vertical-align: middle;
   }

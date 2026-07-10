@@ -128,7 +128,7 @@ const ListingDetail = () => {
         <div className="listing-detail__info">
           <h1 className="listing-detail__title">
             {listing.title}
-            {farm?.isSeed && <span className="listing-detail__demo-badge">Demo</span>}
+            {farm?.isSeed && <span className="listing-detail__sample-badge">Sample listing</span>}
           </h1>
 
           {/* Farm name links back to the farm profile page */}
@@ -175,10 +175,10 @@ const ListingDetail = () => {
             <p className="listing-detail__description">{listing.description}</p>
           )}
 
-          {/* Demo listings are for illustration only — never allow a real purchase */}
+          {/* Sample listings are for illustration only — never allow a real purchase */}
           {farm?.isSeed ? (
-            <p className="listing-detail__demo-notice">
-              This is a demo listing for illustration purposes and isn't available for purchase.
+            <p className="listing-detail__sample-notice">
+              This is a sample listing for illustration purposes and isn't available for purchase.
             </p>
           ) : (
             <>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import api from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 import FarmCard from '../components/common/FarmCard';
 import './Browse.scss';
 
@@ -8,6 +9,10 @@ const CATEGORIES = ['beef', 'produce', 'dairy', 'eggs', 'honey', 'pork', 'lamb',
 const RADIUS_OPTIONS = [10, 25, 50, 100];
 
 const Browse = () => {
+  const { user } = useAuth();
+  // Consumers are here to find farms, not list one — only show this to
+  // guests and farmers, same gating as Home.jsx's farmer CTA
+  const showFarmerCta = !user || user.role === 'farmer';
   const [farms, setFarms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -238,11 +243,19 @@ const Browse = () => {
         {error && <p className="browse__error">{error}</p>}
 
         {!loading && !error && farms.length === 0 && (
-          <p className="browse__empty">
-            {nearMeActive
-              ? `No farms found within ${radius} mi. Try a larger radius.`
-              : 'No farms found. Try a different search or category.'}
-          </p>
+          <div className="browse__empty-state">
+            <p className="browse__empty">
+              {nearMeActive
+                ? `No farms found within ${radius} mi. Try a larger radius.`
+                : 'No farms found. Try a different search or category.'}
+            </p>
+            {showFarmerCta && (
+              <div className="browse__empty-cta">
+                <p className="browse__empty-cta-text">Know a farmer who should be here?</p>
+                <Link to="/register" className="browse__empty-cta-btn">List your farm →</Link>
+              </div>
+            )}
+          </div>
         )}
 
         <div className="browse__grid">

@@ -96,20 +96,20 @@
   }
 
   // Marks sample listings created by seed.js so shoppers know it's not real
-  &__demo-badge {
+  &__sample-badge {
     display: inline-block;
     margin-left: $spacing-xs;
     font-size: $text-xs;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: #fff;
-    background: $warning;
-    padding: 2px $spacing-sm;
+    font-weight: 500;
+    color: $text-muted;
+    background: rgba($text-muted, 0.1);
+    border: 1px solid $border;
+    padding: 1px $spacing-sm;
     border-radius: $radius-full;
     vertical-align: middle;
   }
 
-  &__demo-notice {
+  &__sample-notice {
     font-size: $text-xs;
     color: $text-muted;
     font-style: italic;

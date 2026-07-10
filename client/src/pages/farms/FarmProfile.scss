@@ -85,14 +85,15 @@
   }
 
   // Marks a sample farm created by seed.js so visitors know it's not real
-  &__demo-badge {
+  // (light/translucent since it sits on the dark header background)
+  &__sample-badge {
     display: inline-block;
     margin-left: $spacing-sm;
     font-size: $text-sm;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: #fff;
-    background: $warning;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     padding: 2px $spacing-sm;
     border-radius: $radius-full;
     vertical-align: middle;
@@ -345,5 +346,40 @@
   margin-left: $spacing-md;
   font-family: $font-main;
   font-weight: 500;
+  }
+
+  // Guest signup CTA — same visual language as Home.scss's farmer CTA band
+  &__signup-cta {
+    background: $primary;
+    padding: $spacing-xl 0;
+
+    &-container {
+      @include container;
+      text-align: center;
+    }
+
+    &-title {
+      font-size: $text-2xl;
+      color: #ffffff;
+      margin-bottom: $spacing-sm;
+    }
+
+    &-subtitle {
+      font-size: $text-md;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: $spacing-lg;
+    }
+
+    &-btn {
+      @include button-base;
+      background: #ffffff;
+      color: $primary;
+      font-size: $text-md;
+      padding: $spacing-sm $spacing-lg;
+
+      &:hover {
+        background: $background;
+      }
+    }
   }
 }

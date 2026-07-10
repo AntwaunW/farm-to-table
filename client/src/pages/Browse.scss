@@ -153,11 +153,43 @@
     padding: $spacing-md;
   }
 
-  &__empty {
+  &__empty-state {
     text-align: center;
-    padding: $spacing-xl;
+    padding: $spacing-xl 0;
+  }
+
+  &__empty {
     color: $text-muted;
     font-size: $text-lg;
+    margin-bottom: $spacing-lg;
+  }
+
+  &__empty-cta {
+    @include flex-center;
+    flex-direction: column;
+    gap: $spacing-sm;
+    max-width: 360px;
+    margin: 0 auto;
+    padding: $spacing-lg;
+    border: 1px solid $border;
+    border-radius: $radius-lg;
+  }
+
+  &__empty-cta-text {
+    font-size: $text-sm;
+    color: $text-muted;
+  }
+
+  &__empty-cta-btn {
+    @include button-base;
+    background: $primary;
+    color: #ffffff;
+    font-size: $text-sm;
+    padding: $spacing-xs $spacing-lg;
+
+    &:hover {
+      background: $primary-dark;
+    }
   }
 
   &__grid {

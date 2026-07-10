@@ -7,6 +7,9 @@ import { useParams, Link } from 'react-router-dom';
 // Our axios instance for API calls
 import api from '../../utils/api';
 
+// Lets us know whether a guest is viewing this page, to show the signup CTA
+import { useAuth } from '../../context/AuthContext';
+
 // Reusable components
 import ListingCard from '../../components/common/ListingCard';
 import ReviewCard from '../../components/common/ReviewCard';
@@ -17,6 +20,7 @@ import './FarmProfile.scss';
 const FarmProfile = () => {
   // Get the farm ID from the URL (e.g. /farms/6a1479b2...)
   const { id } = useParams();
+  const { user } = useAuth();
 
   // State for the farm data
   const [farm, setFarm] = useState(null);
@@ -140,7 +144,7 @@ const FarmProfile = () => {
           <div className="farm-profile__info">
             <h1 className="farm-profile__name">
               {farm.farmName}
-              {farm.isSeed && <span className="farm-profile__demo-badge">Demo</span>}
+              {farm.isSeed && <span className="farm-profile__sample-badge">Sample</span>}
             </h1>
             <p className="farm-profile__location">
               📍 {farm.location.city}, {farm.location.state} {farm.location.zip}
@@ -307,6 +311,20 @@ const FarmProfile = () => {
           )}
         </div>
       </div>
+
+      {/* Guest signup CTA — only shown to logged-out visitors, after they've
+          had a chance to look through the farm's listings and reviews */}
+      {!user && (
+        <section className="farm-profile__signup-cta">
+          <div className="farm-profile__signup-cta-container">
+            <h2 className="farm-profile__signup-cta-title">Like what you see at {farm.farmName}?</h2>
+            <p className="farm-profile__signup-cta-subtitle">
+              Create a free account to order directly from local farms and ranches like this one.
+            </p>
+            <Link to="/register" className="farm-profile__signup-cta-btn">Sign up to order →</Link>
+          </div>
+        </section>
+      )}
 
     </div>
   );

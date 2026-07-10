@@ -4,12 +4,18 @@
 
 require('dotenv').config();
 const crypto = require('crypto');
+const path = require('path');
 const mongoose = require('mongoose');
+const cloudinary = require('./config/cloudinary');
 const Farm = require('./models/Farm');
 const Listing = require('./models/Listing');
 const User = require('./models/User');
 
-const SEED_FARMER_EMAIL = 'seedfarmer@farmtable.dev';
+// The single placeholder account used before each farm had its own seed
+// farmer — deleted on reseed so it doesn't linger as an orphan
+const LEGACY_SEED_FARMER_EMAIL = 'seedfarmer@farmtable.dev';
+
+const SEED_IMAGES_DIR = path.join(__dirname, '..', 'client', 'src', 'images.jpg');
 
 // ─── Connect to MongoDB ───────────────────────────────────────────────────────
 const connectDB = async () => {
@@ -18,6 +24,51 @@ const connectDB = async () => {
     tlsAllowInvalidCertificates: false,
   });
   console.log(`MongoDB Connected: ${conn.connection.host}`);
+};
+
+// Uploads one local seed image to Cloudinary. A stable public_id (the
+// filename, minus extension) means reseeding overwrites the same asset
+// instead of piling up duplicates every time this script runs.
+const uploadSeedImage = async (filename) => {
+  const result = await cloudinary.uploader.upload(
+    path.join(SEED_IMAGES_DIR, filename),
+    {
+      folder: 'cattle-and-crop/seed',
+      public_id: path.parse(filename).name,
+      overwrite: true,
+    }
+  );
+  return result.secure_url;
+};
+
+// Finds or creates a dedicated seed farmer account by a stable email, so
+// reseeding is idempotent and each farm has its own distinct-looking owner
+// instead of one shared "Seed Farmer" placeholder.
+const findOrCreateSeedFarmer = async (name, email) => {
+  let farmer = await User.findOne({ email });
+
+  if (!farmer) {
+    // Nothing should ever need to log into this account — it only exists to
+    // satisfy the required `owner` field on Farm/Listing — so its password
+    // is a random value that's never written down anywhere.
+    const bcrypt = require('bcryptjs');
+    const randomPassword = crypto.randomBytes(16).toString('hex');
+    const hashed = await bcrypt.hash(randomPassword, 10);
+    farmer = await User.create({
+      name,
+      email,
+      password: hashed,
+      role: 'farmer',
+      isSeed: true,
+    });
+  } else if (!farmer.isSeed) {
+    // Found an account from before the isSeed flag existed — flag it now so
+    // seed.js --remove can find and delete it later
+    farmer.isSeed = true;
+    await farmer.save();
+  }
+
+  return farmer;
 };
 
 // ─── Seed Data ────────────────────────────────────────────────────────────────
@@ -41,54 +92,55 @@ const seedData = async () => {
     await Listing.deleteMany({ isSeed: true });
     console.log('Cleared existing seed farms and listings...');
 
-    // Step 2 — Find or create the dedicated seed farmer user to own all demo data.
-    // Always the same fixed account (by email) — never reuse a real farmer's
-    // account, so demo farms never get attributed to an actual person.
-    let seedUser = await User.findOne({ email: SEED_FARMER_EMAIL });
+    // Each farm now has its own seed farmer account (see below), so the old
+    // single shared placeholder is no longer used — remove it if present
+    await User.deleteOne({ email: LEGACY_SEED_FARMER_EMAIL });
 
-    if (!seedUser) {
-      // Nothing should ever need to log into this account — it only exists to
-      // satisfy the required `owner` field on Farm/Listing — so its password
-      // is a random value that's never written down anywhere.
-      const bcrypt = require('bcryptjs');
-      const randomPassword = crypto.randomBytes(16).toString('hex');
-      const hashed = await bcrypt.hash(randomPassword, 10);
-      seedUser = await User.create({
-        name: 'Seed Farmer',
-        email: SEED_FARMER_EMAIL,
-        password: hashed,
-        role: 'farmer',
-        isSeed: true,
-      });
-      console.log('Created seed farmer user...');
-    } else if (!seedUser.isSeed) {
-      // Found an account from before the isSeed flag existed — flag it now so
-      // seed.js --remove can find and delete it later
-      seedUser.isSeed = true;
-      await seedUser.save();
-    }
+    // Step 2 — Upload the local sample photos to Cloudinary once, keyed by
+    // what they actually depict, so they can be assigned to matching farms
+    console.log('Uploading seed farm photos...');
+    const images = {
+      produceCrate: await uploadSeedImage('Social_media_food_promo.jpg'),
+      tomatoHarvest: await uploadSeedImage('social_media_promo_v8.jpg'),
+      cornStalk: await uploadSeedImage('social_media_promo_v9.jpg'),
+      strawberries: await uploadSeedImage('social_media_promo_v11.jpg'),
+      chickenFlock: await uploadSeedImage('social_media_v3.jpg'),
+      sheepChickens: await uploadSeedImage('social_media_promo_v2.jpg'),
+      tractorField: await uploadSeedImage('social_media_promo.jpg'),
+    };
+    console.log('Seed photos uploaded.');
 
-    // Step 3 — Create sample Texas farms
+    // Step 3 — Find or create a dedicated farmer account for each farm
+    const wyatt = await findOrCreateSeedFarmer('Wyatt Coleman', 'wyatt.coleman.seed@farmtable.dev');
+    const bettySue = await findOrCreateSeedFarmer('Betty Sue Whitfield', 'bettysue.whitfield.seed@farmtable.dev');
+    const maria = await findOrCreateSeedFarmer('Maria Delgado', 'maria.delgado.seed@farmtable.dev');
+    const robert = await findOrCreateSeedFarmer('Robert Hensley', 'robert.hensley.seed@farmtable.dev');
+    console.log('Seed farmer accounts ready...');
+
+    // Step 4 — Create sample Texas farms, each with its own owner and photos
+    // that actually match what the farm sells (Hill Country Honey Co. has no
+    // dedicated photo since none of the source images show bees or hives —
+    // it falls back to the app's existing placeholder icon instead)
     const farms = await Farm.insertMany([
       {
-        owner: seedUser._id,
+        owner: wyatt._id,
         isSeed: true,
         farmName: 'Lone Star Grass Farm',
         description:
-          'Family-owned cattle ranch in the Texas Hill Country. We raise 100% grass-fed, pasture-raised Angus beef with no hormones or antibiotics. Our cattle roam freely on 400 acres of native Texas grasses.',
+          'Run by fourth-generation rancher Wyatt Coleman in the Texas Hill Country, we raise 100% grass-fed, pasture-raised Angus beef with no hormones or antibiotics. Our cattle roam freely on 400 acres of native Texas grasses.',
         location: { city: 'Fredericksburg', state: 'TX', zip: '78624' },
-        photos: [],
+        photos: [images.tractorField],
         category: ['beef'],
         subscriptionTier: 'pro',
         rating: 4.8,
         isActive: true,
       },
       {
-        owner: seedUser._id,
+        owner: bettySue._id,
         isSeed: true,
         farmName: 'Hill Country Honey Co.',
         description:
-          'Third-generation beekeepers producing raw, unfiltered wildflower honey from the Texas Hill Country. Our bees pollinate native wildflowers including bluebonnets, Indian paintbrush, and cedar.',
+          'Beekeeper Betty Sue Whitfield has tended hives in the Texas Hill Country for over 20 years, producing raw, unfiltered wildflower honey. Our bees pollinate native wildflowers including bluebonnets, Indian paintbrush, and cedar.',
         location: { city: 'Kerrville', state: 'TX', zip: '78028' },
         photos: [],
         category: ['honey'],
@@ -97,26 +149,26 @@ const seedData = async () => {
         isActive: true,
       },
       {
-        owner: seedUser._id,
+        owner: maria._id,
         isSeed: true,
         farmName: 'Rio Grande Valley Fresh',
         description:
-          'Certified organic produce farm in the fertile Rio Grande Valley. We grow seasonal vegetables, citrus, and herbs year-round thanks to the warm South Texas climate. Direct from our field to your table.',
+          'Maria Delgado grows certified organic produce in the fertile Rio Grande Valley, where the warm South Texas climate means seasonal vegetables, citrus, and herbs year-round. Straight from her fields to your table.',
         location: { city: 'McAllen', state: 'TX', zip: '78501' },
-        photos: [],
+        photos: [images.produceCrate, images.tomatoHarvest, images.cornStalk, images.strawberries],
         category: ['produce'],
         subscriptionTier: 'free',
         rating: 4.6,
         isActive: true,
       },
       {
-        owner: seedUser._id,
+        owner: robert._id,
         isSeed: true,
         farmName: 'Central Texas Dairy',
         description:
-          'Small-batch raw dairy farm producing fresh whole milk, cream, and artisan cheeses. Our Jersey cows are pasture-raised and never treated with rBST. Farm pickup available daily.',
+          'Robert Hensley runs a small-batch raw dairy outside Waco, producing fresh whole milk, cream, and artisan cheeses from pasture-raised Jersey cows never treated with rBST. Farm pickup available daily.',
         location: { city: 'Waco', state: 'TX', zip: '76701' },
-        photos: [],
+        photos: [images.chickenFlock, images.sheepChickens],
         category: ['dairy', 'eggs'],
         subscriptionTier: 'free',
         rating: 4.7,
@@ -126,12 +178,12 @@ const seedData = async () => {
 
     console.log(`Created ${farms.length} farms...`);
 
-    // Step 4 — Create sample listings tied to the farms above
+    // Step 5 — Create sample listings tied to the farms above
     await Listing.insertMany([
       // Lone Star Grass Farm listings
       {
         farm: farms[0]._id,
-        owner: seedUser._id,
+        owner: wyatt._id,
         isSeed: true,
         title: 'Grass-Fed Ground Beef',
         description:
@@ -146,7 +198,7 @@ const seedData = async () => {
       },
       {
         farm: farms[0]._id,
-        owner: seedUser._id,
+        owner: wyatt._id,
         isSeed: true,
         title: 'Quarter Beef Share',
         description:
@@ -162,7 +214,7 @@ const seedData = async () => {
       // Hill Country Honey listings
       {
         farm: farms[1]._id,
-        owner: seedUser._id,
+        owner: bettySue._id,
         isSeed: true,
         title: 'Raw Wildflower Honey',
         description:
@@ -179,7 +231,7 @@ const seedData = async () => {
       // Rio Grande Valley listings
       {
         farm: farms[2]._id,
-        owner: seedUser._id,
+        owner: maria._id,
         isSeed: true,
         title: 'Seasonal Veggie Bundle',
         description:
@@ -194,7 +246,7 @@ const seedData = async () => {
       },
       {
         farm: farms[2]._id,
-        owner: seedUser._id,
+        owner: maria._id,
         isSeed: true,
         title: 'Texas Ruby Red Grapefruit',
         description:
@@ -211,7 +263,7 @@ const seedData = async () => {
       // Central Texas Dairy listings
       {
         farm: farms[3]._id,
-        owner: seedUser._id,
+        owner: robert._id,
         isSeed: true,
         title: 'Fresh Whole Milk',
         description:
@@ -226,7 +278,7 @@ const seedData = async () => {
       },
       {
         farm: farms[3]._id,
-        owner: seedUser._id,
+        owner: robert._id,
         isSeed: true,
         title: 'Farm Fresh Eggs',
         description:
@@ -253,7 +305,7 @@ const seedData = async () => {
 
 // ─── Remove Seed Data ─────────────────────────────────────────────────────────
 // Deletes only documents flagged isSeed: true (farms, listings, and the
-// dedicated seed farmer user) — real farmers/listings/users are never touched.
+// dedicated seed farmer users) — real farmers/listings/users are never touched.
 // Run once real users have joined and the demo data is no longer needed:
 //   node seed.js --remove
 

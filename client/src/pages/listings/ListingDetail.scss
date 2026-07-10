@@ -130,26 +130,26 @@
   }
 
   // Marks a sample listing created by seed.js so shoppers know it's not real
-  &__demo-badge {
+  &__sample-badge {
     display: inline-block;
     margin-left: $spacing-sm;
     font-size: $text-sm;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: #fff;
-    background: $warning;
+    font-weight: 500;
+    color: $text-muted;
+    background: rgba($text-muted, 0.1);
+    border: 1px solid $border;
     padding: 2px $spacing-sm;
     border-radius: $radius-full;
     vertical-align: middle;
   }
 
-  &__demo-notice {
+  &__sample-notice {
     font-size: $text-sm;
-    color: $text-dark;
-    background: #fff4e6;
+    color: $text-muted;
+    background: $background;
     padding: $spacing-sm $spacing-md;
     border-radius: $radius-md;
-    border-left: 3px solid $warning;
+    border-left: 3px solid $border;
   }
 
   // Farm name + location link
