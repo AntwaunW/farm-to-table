@@ -14,7 +14,7 @@
     // unlike the page content below it which stays capped at $wide for readability
     @include flex-between;
     width: 100%;
-    height: 60px;
+    height: 72px;
     padding: 0 $spacing-lg;
     position: relative; // anchors the mobile dropdown panel
 
@@ -26,13 +26,13 @@
   &__logo {
     @include flex-start;
     gap: $spacing-sm;
-    font-size: $text-lg;
+    font-size: $text-2xl;
     font-weight: 600;
     color: $primary;
     text-decoration: none;
     background: #e8f5e0;
     border-radius: $radius-md;
-    padding: $spacing-xs $spacing-sm;
+    padding: $spacing-sm $spacing-md;
 
     &:hover {
       color: $primary-dark;
@@ -49,7 +49,7 @@
   }
 
   &__link {
-    font-size: $text-sm;
+    font-size: $text-md;
     color: $text-muted;
     text-decoration: none;
     font-weight: 500;
@@ -75,8 +75,8 @@
 
   &__btn {
     @include button-primary;
-    font-size: $text-sm;
-    padding: $spacing-xs $spacing-md;
+    font-size: $text-md;
+    padding: $spacing-sm $spacing-lg;
   }
 
   // Hamburger toggle — hidden on desktop, shown only once links no longer fit

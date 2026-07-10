@@ -114,24 +114,18 @@
 
 // Hero
 .hero {
-  // Subtle diagonal light-green stripes over the solid dark green base —
-  // the stripe layer is listed first so it paints on top of $primary-dark
-  background:
-    repeating-linear-gradient(
-      45deg,
-      rgba(#e8f5e0, 0.08) 0,
-      rgba(#e8f5e0, 0.08) 12px,
-      transparent 12px,
-      transparent 24px
-    ),
-    $primary-dark;
+  // Real farm photo behind the hero card, replacing the previous striped
+  // placeholder. &__container below stays an opaque solid color, so the
+  // photo only shows through in the open space around it — same coverage
+  // the stripes had before.
+  background: $primary-dark url('../images.jpg/vegetable_basket_farm.jpg') center / cover no-repeat;
   padding: $spacing-xl 0;
   text-align: center;
 
   &__container {
-    // A plain-color box the same shade as the base background — it blends in
-    // seamlessly, but blocks the striped layer behind it from showing through
-    // the text, so the stripes only appear in the open space around the content
+    // A plain-color box the same shade as the base background — it blocks
+    // the photo behind it from showing through the text, so the photo only
+    // appears in the open space around the content
     max-width: 700px;
     margin: 0 auto;
     padding: $spacing-lg $spacing-xl;
