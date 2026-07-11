@@ -52,8 +52,10 @@ const Navbar = () => {
           className={`navbar__links ${menuOpen ? 'navbar__links--open' : ''}`}
           onClick={() => setMenuOpen(false)}
         >
-          {/* Browse is always visible regardless of auth state */}
+          {/* Browse, About, and Contact are always visible regardless of auth state */}
           <Link to="/browse" className="navbar__link">Browse farms</Link>
+          <Link to="/about" className="navbar__link">About us</Link>
+          <Link to="/contact" className="navbar__link">Contact</Link>
 
           {/* Show Login and Sign up only when no user is logged in */}
           {!user && (

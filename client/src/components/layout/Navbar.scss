@@ -56,12 +56,14 @@
     transition: $transition;
     background: none;
     border: none;
+    border-radius: $radius-md;
     cursor: pointer;
-    padding: 0;
+    padding: $spacing-xs $spacing-sm;
     font-family: $font-main;
 
     &:hover {
       color: $primary;
+      background: #e8f5e0;
     }
 
     &--logout {
@@ -69,6 +71,7 @@
 
       &:hover {
         color: darken($error, 10%);
+        background: rgba($error, 0.08);
       }
     }
   }
