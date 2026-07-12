@@ -122,6 +122,20 @@
   padding: $spacing-xl 0;
   text-align: center;
 
+  // On small screens, go back to the original striped pattern instead of
+  // the photo — the photo crops too tightly to read well at mobile widths
+  @include respond-to(mobile) {
+    background:
+      repeating-linear-gradient(
+        45deg,
+        rgba(#e8f5e0, 0.08) 0,
+        rgba(#e8f5e0, 0.08) 12px,
+        transparent 12px,
+        transparent 24px
+      ),
+      $primary-dark;
+  }
+
   &__container {
     // A plain-color box the same shade as the base background — it blocks
     // the photo behind it from showing through the text, so the photo only

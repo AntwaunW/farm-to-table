@@ -11,6 +11,9 @@
   align-items: center;
   gap: $spacing-md;
   transition: $transition;
+  // Anchors &__sample-badge's absolute positioning on mobile — harmless
+  // at other widths since nothing else in the card is positioned
+  position: relative;
 
   // The link wraps the icon and info so the whole card body is clickable
   &__link {
@@ -107,6 +110,15 @@
     padding: 1px $spacing-sm;
     border-radius: $radius-full;
     vertical-align: middle;
+
+    // On mobile the card is too narrow for the badge to sit inline next to
+    // the title without crowding/wrapping — pin it to the corner instead
+    @include respond-to(mobile) {
+      position: absolute;
+      top: $spacing-xs;
+      right: $spacing-xs;
+      margin-left: 0;
+    }
   }
 
   &__sample-notice {
