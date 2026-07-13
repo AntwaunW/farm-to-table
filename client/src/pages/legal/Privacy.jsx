@@ -1,9 +1,11 @@
 // Privacy Policy page
 import './Terms.scss';
+import PageMeta from '../../components/common/PageMeta';
 
 const Privacy = () => {
   return (
     <div className="legal">
+      <PageMeta title="Privacy Policy | Cattle & Crop" />
       <div className="legal__container">
         <h1 className="legal__title">Privacy Policy</h1>
         <p className="legal__updated">Last updated: June 2026</p>

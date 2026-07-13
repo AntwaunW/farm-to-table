@@ -9,6 +9,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import ConfirmAddToCartModal from '../../components/common/ConfirmAddToCartModal';
 import './ListingDetail.scss';
+import { getPreloadedState } from '../../utils/preloadedState';
 
 // Maps a category string to an emoji icon — same map used in ListingCard
 const getCategoryIcon = (category) => {
@@ -33,9 +34,15 @@ const ListingDetail = () => {
   const { user } = useAuth();
   const { addToCart, cartFarmId } = useCart();
 
+  // Only trust preloaded data if it was embedded for this exact listing
+  const [preloaded] = useState(() => {
+    const data = getPreloadedState();
+    return data?.listingId === id ? data : null;
+  });
+
   // State for the listing and the farm it belongs to
-  const [listing, setListing] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [listing, setListing] = useState(preloaded?.listing ?? null);
+  const [loading, setLoading] = useState(!preloaded);
   const [error, setError] = useState('');
 
   // How many units the consumer wants to add at once
@@ -46,6 +53,8 @@ const ListingDetail = () => {
 
   // Fetch the listing when the component mounts or the ID changes
   useEffect(() => {
+    if (preloaded) return;
+
     const fetchListing = async () => {
       try {
         // GET /api/listings/:id — populates farm name, location, and photos
@@ -59,7 +68,7 @@ const ListingDetail = () => {
     };
 
     fetchListing();
-  }, [id]);
+  }, [id, preloaded]);
 
   // Clicking "Add to cart" opens a confirm-quantity modal rather than adding right away,
   // so a mis-typed quantity can be caught before it's actually in the cart

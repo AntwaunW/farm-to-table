@@ -10,15 +10,20 @@ import './Home.scss';
 import FarmCard from '../components/common/FarmCard';
 import ListingCard from '../components/common/ListingCard';
 import TestimonialCarousel from '../components/common/TestimonialCarousel';
+import PageMeta from '../components/common/PageMeta';
+import { getPreloadedState } from '../utils/preloadedState';
 
 const Home = () => {
   const { user } = useAuth();
   // Consumers are here to find farms, not list one — only show that CTA
   // to logged-out visitors and farmers
   const showFarmerCta = !user || user.role === 'farmer';
-  const [farms, setFarms] = useState([]);
-  const [listings, setListings] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // If this page was served prerendered, its farms/listings are already embedded —
+  // seed state from that instead of starting from a loading spinner and refetching
+  const [preloaded] = useState(() => getPreloadedState());
+  const [farms, setFarms] = useState(preloaded?.farms ?? []);
+  const [listings, setListings] = useState(preloaded?.listings ?? []);
+  const [loading, setLoading] = useState(!preloaded);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchCategory, setSearchCategory] = useState('');
@@ -26,6 +31,8 @@ const Home = () => {
 
   // Fetch farms and listings in parallel on mount to minimize load time
   useEffect(() => {
+    if (preloaded) return;
+
     const fetchData = async () => {
       try {
         const [farmsRes, listingsRes] = await Promise.all([
@@ -42,7 +49,7 @@ const Home = () => {
     };
 
     fetchData();
-  }, []);
+  }, [preloaded]);
 
   // Pass search inputs as query params to the Browse page where filtering happens
   const handleSearch = (e) => {
@@ -61,6 +68,7 @@ const Home = () => {
 
   return (
     <div className="home">
+      <PageMeta title="Cattle & Crop | Skip the store. Know your farmer." />
 
       {/* Hero Section — main value proposition and search bar */}
       <section className="hero">
@@ -177,7 +185,7 @@ const Home = () => {
         </section>
       )}
 
-      <TestimonialCarousel />
+      <TestimonialCarousel initialTestimonials={preloaded?.testimonials} />
 
     </div>
   );

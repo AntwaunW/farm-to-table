@@ -9,13 +9,18 @@ import './TestimonialCarousel.scss';
 
 const ROTATE_INTERVAL_MS = 5000;
 
-const TestimonialCarousel = () => {
-  const [testimonials, setTestimonials] = useState([]);
+// initialTestimonials lets a prerendered page seed this with the same data the
+// snapshot was captured with — otherwise this component's own independent fetch
+// would start empty on hydration and mismatch the server-rendered markup
+const TestimonialCarousel = ({ initialTestimonials }) => {
+  const [testimonials, setTestimonials] = useState(initialTestimonials ?? []);
   const [startIndex, setStartIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const intervalRef = useRef(null);
 
   useEffect(() => {
+    if (initialTestimonials) return;
+
     const fetchTestimonials = async () => {
       try {
         const res = await api.get('/testimonials');
@@ -25,7 +30,7 @@ const TestimonialCarousel = () => {
       }
     };
     fetchTestimonials();
-  }, []);
+  }, [initialTestimonials]);
 
   const total = testimonials.length;
   const shouldRotate = total > 3;

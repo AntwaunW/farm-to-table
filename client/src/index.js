@@ -9,8 +9,8 @@ import reportWebVitals from './reportWebVitals';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+const container = document.getElementById('root');
+const app = (
   <React.StrictMode>
     <AuthProvider>
       <CartProvider>
@@ -19,6 +19,16 @@ root.render(
     </AuthProvider>
   </React.StrictMode>
 );
+
+// Prerendered pages already have markup in #root — hydrate it instead of
+// blowing it away with a fresh client render. The pristine 200.html shell
+// (used for routes that weren't prerendered) has an empty #root, so it
+// still takes the normal createRoot path.
+if (container.hasChildNodes()) {
+  ReactDOM.hydrateRoot(container, app);
+} else {
+  ReactDOM.createRoot(container).render(app);
+}
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

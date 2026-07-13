@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#2d6a4f" />
     <meta
       name="description"
       content="Cattle & Crop — connecting local farmers directly with families."
@@ -24,9 +24,38 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>Cattle &amp; Crop | Skip the store. Know your farmer.</title>
+    <title data-default>Cattle &amp; Crop | Skip the store. Know your farmer.</title>
+
+    <!-- Open Graph / Twitter Card -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cattle & Crop" />
+    <meta property="og:title" content="Cattle & Crop | Skip the store. Know your farmer." />
+    <meta property="og:description" content="Cattle & Crop — connecting local farmers directly with families." />
+    <meta property="og:image" content="https://cattleandcrop.com/og-image.jpg" />
+    <meta property="og:url" content="https://cattleandcrop.com/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Cattle & Crop | Skip the store. Know your farmer." />
+    <meta name="twitter:description" content="Cattle & Crop — connecting local farmers directly with families." />
+    <meta name="twitter:image" content="https://cattleandcrop.com/og-image.jpg" />
+
+    <!-- Organization structured data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Cattle & Crop",
+        "url": "https://cattleandcrop.com",
+        "logo": "https://cattleandcrop.com/logo512.png",
+        "description": "Cattle & Crop — connecting local farmers directly with families.",
+        "sameAs": [
+          "https://www.facebook.com/cattleandcropco/",
+          "https://www.instagram.com/cattleandcrop.co/"
+        ]
+      }
+    </script>
+
     <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NBSVNVW7M9"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}

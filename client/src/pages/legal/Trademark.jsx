@@ -1,9 +1,11 @@
 // Trademark Notice page
 import './Terms.scss';
+import PageMeta from '../../components/common/PageMeta';
 
 const Trademark = () => {
   return (
     <div className="legal">
+      <PageMeta title="Trademark Notice | Cattle & Crop" />
       <div className="legal__container">
         <h1 className="legal__title">Trademark Notice</h1>
         <p className="legal__updated">Last updated: June 2026</p>

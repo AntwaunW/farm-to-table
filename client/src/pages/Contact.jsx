@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import api from '../utils/api';
 import './Contact.scss';
+import PageMeta from '../components/common/PageMeta';
 
 const SUBJECTS = [
   'General inquiry',
@@ -47,6 +48,7 @@ const Contact = () => {
 
   return (
     <div className="contact">
+      <PageMeta title="Contact Us | Cattle & Crop" />
 
       {/* Header */}
       <section className="contact__header">

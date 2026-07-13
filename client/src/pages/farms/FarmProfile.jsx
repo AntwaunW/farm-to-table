@@ -17,22 +17,31 @@ import ReviewCard from '../../components/common/ReviewCard';
 // Page styles
 import './FarmProfile.scss';
 
+// Reads farm/listings/reviews embedded by the prerender script, when present
+import { getPreloadedState } from '../../utils/preloadedState';
+
 const FarmProfile = () => {
   // Get the farm ID from the URL (e.g. /farms/6a1479b2...)
   const { id } = useParams();
   const { user } = useAuth();
 
+  // Only trust preloaded data if it was embedded for this exact farm
+  const [preloaded] = useState(() => {
+    const data = getPreloadedState();
+    return data?.farmId === id ? data : null;
+  });
+
   // State for the farm data
-  const [farm, setFarm] = useState(null);
+  const [farm, setFarm] = useState(preloaded?.farm ?? null);
 
   // State for the farm's listings
-  const [listings, setListings] = useState([]);
+  const [listings, setListings] = useState(preloaded?.listings ?? []);
 
   // State for the farm's reviews
-  const [reviews, setReviews] = useState([]);
+  const [reviews, setReviews] = useState(preloaded?.reviews ?? []);
 
   // Loading and error states
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!preloaded);
   const [error, setError] = useState('');
 
   // Lightbox state — null means the lightbox is closed
@@ -73,6 +82,8 @@ const FarmProfile = () => {
 
   // Fetch farm, listings and reviews when component mounts
   useEffect(() => {
+    if (preloaded) return;
+
     const fetchFarmData = async () => {
       try {
         // Fetch farm details, listings and reviews all at the same time
@@ -93,7 +104,7 @@ const FarmProfile = () => {
     };
 
     fetchFarmData();
-  }, [id]);
+  }, [id, preloaded]);
 
   // Show loading state while data is being fetched
   if (loading) {

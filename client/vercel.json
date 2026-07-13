@@ -3,6 +3,10 @@
     {
       "source": "/sitemap.xml",
       "destination": "https://cattle-and-crop-api.onrender.com/sitemap.xml"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/200.html"
     }
   ]
 }

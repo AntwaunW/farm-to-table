@@ -78,7 +78,7 @@ const ListingCard = ({ listing, farm }) => {
           </h4>
           <p className="listing-card__farm">{listing.farm?.farmName}</p>
           <p className="listing-card__price">
-            ${listing.pricePerUnit}
+            {`$${listing.pricePerUnit}`}
             <span className="listing-card__unit"> / {listing.unit}</span>
           </p>
           {/* Lets shoppers see how many units the farmer has left before choosing a quantity */}
