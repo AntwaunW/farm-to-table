@@ -10,13 +10,52 @@
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 
 const CLIENT_DIR = path.join(__dirname, '..');
 const BUILD_DIR = path.join(CLIENT_DIR, 'build');
 const PORT = 3000;
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 const SITE_URL = 'https://cattleandcrop.com';
+
+// Vercel's build container has no system libraries for a plain downloaded
+// Chromium to run against (this is what broke the first deploy — Puppeteer's
+// bundled Chromium failed with "error while loading shared libraries").
+// @sparticuz/chromium ships a Chromium build compiled specifically for
+// serverless/CI containers like Vercel's, so it's used there instead. That
+// binary is Linux-only, so local `npm run build` on Windows/Mac falls back to
+// a locally-installed Chrome — if none is found, prerendering is skipped
+// (with a warning) rather than failing the whole local build.
+const isVercel = !!process.env.VERCEL;
+
+async function launchBrowser() {
+  if (isVercel) {
+    const chromium = require('@sparticuz/chromium');
+    return puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+    });
+  }
+
+  const candidates = [
+    process.env.PUPPETEER_EXECUTABLE_PATH,
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/usr/bin/google-chrome',
+    '/usr/bin/chromium-browser',
+  ].filter(Boolean);
+  const executablePath = candidates.find((p) => fs.existsSync(p));
+  if (!executablePath) {
+    throw new Error(
+      'No local Chrome/Chromium found. Set PUPPETEER_EXECUTABLE_PATH to a Chrome ' +
+      'install to prerender locally — this step always runs for real on Vercel.'
+    );
+  }
+  return puppeteer.launch({ headless: true, executablePath, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+}
 
 // Mirrors server/utils/sitemap.js's STATIC_PAGES path list — keep in sync if that changes.
 // Titles for these are already set client-side by each page's <PageMeta>, captured
@@ -293,7 +332,16 @@ async function main() {
   fs.copyFileSync(path.join(BUILD_DIR, 'index.html'), path.join(BUILD_DIR, '200.html'));
 
   const server = await startServer();
-  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+
+  let browser;
+  try {
+    browser = await launchBrowser();
+  } catch (err) {
+    server.close();
+    if (isVercel) throw err; // must work on Vercel — a real build failure
+    console.warn(`[prerender] Skipping prerender locally: ${err.message}`);
+    return;
+  }
 
   const results = [];
 
