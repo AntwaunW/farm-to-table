@@ -30,12 +30,26 @@ const isVercel = !!process.env.VERCEL;
 
 async function launchBrowser() {
   if (isVercel) {
-    const chromium = require('@sparticuz/chromium');
+    // @sparticuz/chromium ships as ESM — CommonJS require() only gets the
+    // module wrapper, with the real chromium object under .default
+    const chromium = require('@sparticuz/chromium').default;
+    // Following the package's own documented usage exactly: it exposes only
+    // `args` and `executablePath()` (no defaultViewport/headless properties —
+    // those don't exist on this API despite seeming like they should), and
+    // its binary is headless_shell-only, which requires headless: 'shell'
+    // rather than the default 'new' headless mode.
     return puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
+      args: await puppeteer.defaultArgs({ args: chromium.args, headless: 'shell' }),
+      defaultViewport: {
+        width: 1920,
+        height: 1080,
+        deviceScaleFactor: 1,
+        isMobile: false,
+        hasTouch: false,
+        isLandscape: true,
+      },
       executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
+      headless: 'shell',
     });
   }
 
