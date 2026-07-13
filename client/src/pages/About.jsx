@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import './About.scss';
+import PageMeta from '../components/common/PageMeta';
 
 const values = [
   {
@@ -22,6 +23,7 @@ const values = [
 const About = () => {
   return (
     <div className="about">
+      <PageMeta title="About Us | Cattle & Crop" />
 
       {/* Hero */}
       <section className="about__hero">

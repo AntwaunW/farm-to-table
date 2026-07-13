@@ -1,9 +1,11 @@
 // Terms of Service page
 import './Terms.scss';
+import PageMeta from '../../components/common/PageMeta';
 
 const Terms = () => {
   return (
     <div className="legal">
+      <PageMeta title="Terms of Service | Cattle & Crop" />
       <div className="legal__container">
         <h1 className="legal__title">Terms of Service</h1>
         <p className="legal__updated">Last updated: June 2026</p>

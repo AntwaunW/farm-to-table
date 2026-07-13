@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import FarmCard from '../components/common/FarmCard';
 import './Browse.scss';
+import PageMeta from '../components/common/PageMeta';
+import { getPreloadedState } from '../utils/preloadedState';
 
 const CATEGORIES = ['beef', 'produce', 'dairy', 'eggs', 'honey', 'pork', 'lamb', 'poultry', 'other'];
 const RADIUS_OPTIONS = [10, 25, 50, 100];
@@ -13,8 +15,13 @@ const Browse = () => {
   // Consumers are here to find farms, not list one — only show this to
   // guests and farmers, same gating as Home.jsx's farmer CTA
   const showFarmerCta = !user || user.role === 'farmer';
-  const [farms, setFarms] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Only the plain, unfiltered /browse route is prerendered — this seeds state from
+  // that snapshot when present, and skipInitialFetch below skips the redundant
+  // first fetch that would otherwise re-request the exact same default data
+  const [preloaded] = useState(() => getPreloadedState());
+  const skipInitialFetch = useRef(!!preloaded);
+  const [farms, setFarms] = useState(preloaded?.farms ?? []);
+  const [loading, setLoading] = useState(!preloaded);
   const [error, setError] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -39,6 +46,15 @@ const Browse = () => {
     // this request resolves, its response is stale and should be discarded —
     // otherwise a slower earlier request can overwrite a faster later one
     let isStale = false;
+
+    // The prerendered snapshot already reflects the default (no-filter) fetch —
+    // skip only this first run so subsequent filter changes still fetch normally
+    if (skipInitialFetch.current) {
+      skipInitialFetch.current = false;
+      return () => {
+        isStale = true;
+      };
+    }
 
     const fetchFarms = async () => {
       try {
@@ -142,6 +158,7 @@ const Browse = () => {
 
   return (
     <div className="browse">
+      <PageMeta title="Browse Farms | Cattle & Crop" />
       <div className="browse__header">
         <div className="browse__header-container">
           <h1 className="browse__title">Browse farms</h1>
